@@ -57,7 +57,7 @@ function adapt(req, res, url) {
   return res;
 }
 
-http.createServer(async (req, res) => {
+const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
 
   if (url.pathname.startsWith('/api/mp/')) {
@@ -81,7 +81,19 @@ http.createServer(async (req, res) => {
   }
   res.setHeader('Content-Type', MIME[path.extname(file)] || 'application/octet-stream');
   res.end(fs.readFileSync(file));
-}).listen(PORT, () => {
+});
+
+server.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`\n  El puerto ${PORT} ya está ocupado.`);
+    console.error(`  Probá con otro:  PORT=${PORT + 1} npm run dev`);
+    console.error('  O averiguá quién lo tiene:  ss -ltnp | grep :' + PORT + '\n');
+    process.exit(1);
+  }
+  throw error;
+});
+
+server.listen(PORT, () => {
   const configured = Boolean(process.env.MAPAPROP_API_TOKEN);
   console.log(`\n  Sitio en  http://localhost:${PORT}`);
   console.log(`  API       ${process.env.MAPAPROP_API_BASE || 'https://mapaprop.app/api/action/express-v1'}`);
