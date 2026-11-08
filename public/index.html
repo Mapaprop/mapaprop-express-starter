@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inicio</title>
+  <meta name="description" content="Propiedades en venta y alquiler. Cartera actualizada al día.">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/config.js"></script>
+</head>
+<body>
+  <section class="hero" id="hero">
+    <div class="hero__inner">
+      <h1 id="hero-title">Encontrá tu próxima propiedad</h1>
+      <p id="hero-subtitle">Toda nuestra cartera, actualizada al día.</p>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <form class="searcher" id="searcher">
+      <div class="searcher__grid">
+        <div>
+          <label for="s-operation">Operación</label>
+          <select id="s-operation" name="operation"><option value="">Todas</option></select>
+        </div>
+        <div>
+          <label for="s-type">Tipo</label>
+          <select id="s-type" name="type"><option value="">Todos</option></select>
+        </div>
+        <div>
+          <label for="s-zone">Zona</label>
+          <select id="s-zone" name="zone"><option value="">Todas</option></select>
+        </div>
+        <div>
+          <label for="s-term">Buscar</label>
+          <input id="s-term" name="term" type="search" placeholder="Código, dirección, zona…">
+        </div>
+        <button class="btn btn--primary" type="submit">Buscar</button>
+      </div>
+    </form>
+  </div>
+
+  <section class="section" id="cta-1-wrap" hidden>
+    <div class="wrap"><div class="cta" id="cta-1"></div></div>
+  </section>
+
+  <section class="section" id="developments-section" hidden>
+    <div class="wrap">
+      <div class="section__head">
+        <h2>Emprendimientos</h2>
+        <a href="emprendimientos.html">Ver todos →</a>
+      </div>
+      <div class="grid" id="developments"></div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap">
+      <div class="section__head">
+        <h2>Propiedades destacadas</h2>
+        <a href="propiedades.html">Ver toda la cartera →</a>
+      </div>
+      <div class="grid" id="featured"></div>
+    </div>
+  </section>
+
+  <section class="section" id="zones-section" hidden>
+    <div class="wrap">
+      <div class="section__head"><h2>Buscá por zona</h2></div>
+      <ul class="pills" id="zones"></ul>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="branches-section" hidden>
+    <div class="wrap">
+      <div class="section__head"><h2>Nuestras sucursales</h2></div>
+      <div class="branches" id="branches"></div>
+    </div>
+  </section>
+
+  <section class="section" id="cta-2-wrap" hidden>
+    <div class="wrap"><div class="cta" id="cta-2"></div></div>
+  </section>
+
+  <script type="module" src="js/home.js"></script>
+</body>
+</html>

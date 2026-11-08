@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Propiedades</title>
+  <meta name="description" content="Buscá entre todas nuestras propiedades en venta y alquiler.">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/config.js"></script>
+</head>
+<body>
+  <main class="wrap section">
+    <div class="section__head">
+      <h1 id="listing-title">Propiedades</h1>
+      <span id="listing-count"></span>
+    </div>
+
+    <div class="listing">
+      <form class="filters" id="filters">
+        <h2>Filtros</h2>
+        <div>
+          <label for="f-term">Buscar</label>
+          <input id="f-term" name="term" type="search" placeholder="Código, dirección, zona…">
+        </div>
+        <div>
+          <label for="f-operation">Operación</label>
+          <select id="f-operation" name="operation"><option value="">Todas</option></select>
+        </div>
+        <div>
+          <label for="f-type">Tipo</label>
+          <select id="f-type" name="type"><option value="">Todos</option></select>
+        </div>
+        <div>
+          <label for="f-zone">Zona</label>
+          <select id="f-zone" name="zone"><option value="">Todas</option></select>
+        </div>
+        <div class="filters__row">
+          <div>
+            <label for="f-bedrooms">Dormitorios</label>
+            <select id="f-bedrooms" name="bedrooms">
+              <option value="">—</option><option value="1">1</option><option value="2">2</option>
+              <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+            </select>
+          </div>
+          <div>
+            <label for="f-bathrooms">Baños</label>
+            <select id="f-bathrooms" name="bathrooms">
+              <option value="">—</option><option value="1">1</option><option value="2">2</option>
+              <option value="3">3</option><option value="4">4</option>
+            </select>
+          </div>
+        </div>
+        <div class="filters__row">
+          <div>
+            <label for="f-priceFrom">Precio desde</label>
+            <input id="f-priceFrom" name="priceFrom" type="number" min="0" placeholder="0">
+          </div>
+          <div>
+            <label for="f-priceTo">Precio hasta</label>
+            <input id="f-priceTo" name="priceTo" type="number" min="0" placeholder="Sin tope">
+          </div>
+        </div>
+        <button class="btn btn--primary" type="submit">Aplicar</button>
+        <button class="btn btn--ghost" type="reset" id="f-clear">Limpiar</button>
+      </form>
+
+      <div>
+        <div class="grid" id="results"></div>
+        <div id="pagination"></div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/listado.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+// Thin client over the proxy. Every call goes to our own origin: the token lives server-side.
+const BASE = '/api/mp';
+
+async function call(action, { params = {}, method = 'GET', body = null } = {}) {
+  const url = new URL(`${BASE}/${action}`, window.location.origin);
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') url.searchParams.set(key, value);
+  });
+
+  const init = { method };
+  if (body) {
+    init.headers = { 'Content-Type': 'application/json' };
+    init.body = JSON.stringify(body);
+  }
+
+  const response = await fetch(url, init);
+  const text = await response.text();
+  let payload;
+  try {
+    payload = text ? JSON.parse(text) : {};
+  } catch {
+    payload = { error: 'BAD_JSON', message: text.slice(0, 200) };
+  }
+
+  if (!response.ok) {
+    const error = new Error(payload.message || payload.error || `HTTP ${response.status}`);
+    error.status = response.status;
+    error.code = payload.error || payload.code || null;
+    error.payload = payload;
+    throw error;
+  }
+  return payload;
+}
+
+export const api = {
+  // Inventory. `size` is capped at 20 per request by the API; pass `from` to page through `total`.
+  properties: (params) => call('properties', { params }),
+  property: (hash) => call(`properties/${encodeURIComponent(hash)}`),
+  developments: (params) => call('developments', { params }),
+  developmentUnits: (propertyIds, params = {}) =>
+    call('development/properties', { params: { ...params, propertyIds: [].concat(propertyIds).join(',') } }),
+
+  // Catalogs. These return only what THIS account has in use, not the country catalog.
+  types: () => call('types'),
+  operations: () => call('operations'),
+  zones: () => call('zones'),
+  branches: () => call('branches'),
+
+  // Identity and design. Both need an active website on the account; callers must tolerate a 400.
+  settings: () => call('settings-v2'),
+  design: () => call('design'),
+
+  // The two entry points. `ip`, `userAgent` and `referer` are filled by the proxy.
+  sendMessage: (payload) => call('messages', { method: 'POST', body: payload }),
+  sendSellerSubmission: (payload) => call('seller-submissions', { method: 'POST', body: payload }),
+};
+
+export const PAGE_SIZE = 20; // hard cap of the API
