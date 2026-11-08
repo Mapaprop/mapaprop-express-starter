@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   amenities, blueprints, collectZones, cover, escapeHtml, money, multiline, num, photos, specs,
-  statusBadge, videoEmbed, isActive,
+  statusBadge, videoEmbed, isActive, contrast, luminance, readableOn,
 } from '../public/js/ui.js';
 
 test('num treats 0 as "not informed", because that is what the API means by it', () => {
@@ -127,4 +127,20 @@ test('only one nav item is active, even though three links share a page', () => 
   assert.equal(isActive('propiedades.html?operation=1', 'propiedades.html', search('')), false);
   assert.equal(isActive('index.html', 'index.html', search('')), true);
   assert.equal(isActive('index.html', 'contacto.html', search('')), false);
+});
+
+test('a pale palette does not become unreadable text', () => {
+  // Measured on a real account: primary #dfe1d6 over white is a 1.32 ratio.
+  assert.ok(contrast('#dfe1d6', '#ffffff') < 1.5);
+  assert.ok(contrast('#9d0c21', '#ffffff') > 4.5);
+  // With a pale primary the accent falls through to the secondary.
+  assert.equal(readableOn('#ffffff', ['#dfe1d6', '#9d0c21', '#16202b']), '#9d0c21');
+  // With a dark primary it is kept.
+  assert.equal(readableOn('#ffffff', ['#195fa9', '#4a7fe8', '#16202b']), '#195fa9');
+  // If nothing passes, the last candidate is the guaranteed-dark ink.
+  assert.equal(readableOn('#ffffff', ['#eeeeee', '#dddddd', '#16202b']), '#16202b');
+  // Garbage from the API must not blow up the page.
+  assert.equal(luminance('nope'), null);
+  assert.equal(contrast('nope', '#ffffff'), 0);
+  assert.equal(readableOn('#ffffff', [null, undefined, '#16202b']), '#16202b');
 });

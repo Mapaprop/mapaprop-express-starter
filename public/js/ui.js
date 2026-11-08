@@ -213,3 +213,51 @@ export function isActive(href, current, search) {
   const actual = search.get('operation');
   return wanted === actual || (!wanted && !actual);
 }
+
+// --- Contrast -------------------------------------------------------------------------------
+// The design endpoint hands back whatever palette the agency picked, and `primary` is often a pale
+// tint meant to sit BEHIND dark text. Using it as a foreground on a white surface then produces
+// unreadable prices and links (measured on a real account: #dfe1d6 on white is a 1.32 ratio, where
+// 4.5 is the readable floor). So the accent used for text is derived, not assumed.
+export function luminance(hex) {
+  const value = String(hex || '').replace('#', '');
+  if (!/^[0-9a-f]{6}$/i.test(value)) return null;
+  const channel = (c) => {
+    const n = parseInt(c, 16) / 255;
+    return n <= 0.03928 ? n / 12.92 : ((n + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * channel(value.slice(0, 2))
+    + 0.7152 * channel(value.slice(2, 4))
+    + 0.0722 * channel(value.slice(4, 6));
+}
+
+export function contrast(a, b) {
+  const la = luminance(a);
+  const lb = luminance(b);
+  if (la === null || lb === null) return 0;
+  return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+}
+
+// Returns the first candidate readable on `background`, falling back to the last one.
+export function readableOn(background, candidates, minimum = 4.5) {
+  const list = candidates.filter(Boolean);
+  return list.find((colour) => contrast(colour, background) >= minimum) || list[list.length - 1];
+}
+
+// --- Broken images --------------------------------------------------------------------------
+// A photo can 404 (deleted in Mapaprop, or a dev row pointing at an object that is not in the dev
+// bucket). Without this the browser renders the alt text over an empty box, which looks broken.
+// `error` does not bubble, so it is caught in the capture phase.
+export function installImageFallback() {
+  document.addEventListener('error', (event) => {
+    const img = event.target;
+    if (!(img instanceof HTMLImageElement) || img.dataset.fallbackDone) return;
+    img.dataset.fallbackDone = '1';
+    const media = img.closest('.card__media, .gallery__main');
+    if (media) {
+      media.innerHTML = '<div class="card__media--empty">Sin fotos</div>';
+      return;
+    }
+    img.remove();
+  }, true);
+}

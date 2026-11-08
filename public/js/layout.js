@@ -1,7 +1,7 @@
 // Header and footer injected from one place. There is no build step here, so sharing the chrome
 // through a script is what keeps the nav from being copied into six files.
 import { getBrand, applyBrand } from './brand.js';
-import { isActive } from './ui.js';
+import { isActive, installImageFallback } from './ui.js';
 
 const LINKS = [
   { href: 'index.html', label: 'Inicio' },
@@ -62,6 +62,7 @@ function footer() {
 
 export async function layout() {
   const current = window.location.pathname.split('/').pop() || 'index.html';
+  installImageFallback();
   const data = await getBrand();
 
   document.body.insertAdjacentHTML('afterbegin', header(current, data));

@@ -3,7 +3,7 @@
 // and `settings-v2`, and the site must still render (that is the normal case for someone building
 // their own site here).
 import { api } from './api.js';
-import { escapeHtml } from './ui.js';
+import { escapeHtml, readableOn } from './ui.js';
 
 const FALLBACK = window.SITE_CONFIG || {};
 const CACHE_KEY = 'mp-brand-v1';
@@ -100,6 +100,14 @@ function paint(brand) {
   root.setProperty('--primary-text', brand.colors.primaryText || '#ffffff');
   root.setProperty('--secondary', brand.colors.secondary || '#4a7fe8');
   root.setProperty('--secondary-text', brand.colors.secondaryText || '#ffffff');
+
+  // Accents used as TEXT on the white surface. The palette is the agency's and may be pale, so the
+  // first readable candidate wins instead of trusting `primary` to be dark.
+  const surface = '#ffffff';
+  root.setProperty('--accent-ink',
+    readableOn(surface, [brand.colors.primary, brand.colors.secondary, '#16202b']));
+  root.setProperty('--accent-ink-alt',
+    readableOn(surface, [brand.colors.secondary, brand.colors.primary, '#16202b']));
 
   if (brand.fontFamily) {
     root.setProperty('--font', `'${brand.fontFamily}', system-ui, sans-serif`);

@@ -11,6 +11,7 @@ function hero(data) {
   const fallback = (window.SITE_CONFIG || {}).hero || {};
 
   if (slides.length) {
+    host.classList.add('has-slides');
     slides.forEach((slide, index) => {
       const el = document.createElement('div');
       el.className = `hero__slide${index === 0 ? ' is-active' : ''}`;
