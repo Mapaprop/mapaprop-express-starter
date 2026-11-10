@@ -31,16 +31,43 @@ const { default: handler } = MOCK
   ? await import('./fixtures/mock-handler.mjs')
   : await import('./api/mp/[...path].js');
 
+// Leidas de vercel.json para que haya UNA sola definicion: dos copias de una CSP divergen, y la
+// que se queda vieja es siempre la que nadie mira.
+const SECURITY_HEADERS = Object.fromEntries(
+  (JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8')).headers?.[0]?.headers || [])
+    .map((h) => [h.key, h.value]),
+);
+
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml',
   '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon',
 };
 
+// 🔴 A body limit is not optional in a server that faces the internet. `seller-submissions` takes
+// base64 attachments, so the body is legitimately large -- but without a ceiling a single request
+// can buffer until the process dies. Vercel caps this for you at 4.5 MB; nothing does when you run
+// this yourself behind nginx, which is a supported way to deploy the kit.
+const MAX_BODY_BYTES = Number(process.env.MAX_BODY_BYTES || 6 * 1024 * 1024);
+
 function readBody(req) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const chunks = [];
-    req.on('data', (chunk) => chunks.push(chunk));
+    let size = 0;
+    req.on('data', (chunk) => {
+      size += chunk.length;
+      if (size > MAX_BODY_BYTES) {
+        // PAUSE, do not destroy: destroying the request tears down the socket, and then the 413 we
+        // are about to write never reaches the client -- it sees a connection reset and cannot tell
+        // "too big" from "server died". The socket is closed after the response is flushed.
+        req.pause();
+        const error = new Error('BODY_TOO_LARGE');
+        error.tooLarge = true;
+        return reject(error);
+      }
+      chunks.push(chunk);
+    });
+    req.on('error', reject);
     req.on('end', () => {
       const raw = Buffer.concat(chunks).toString('utf8');
       if (!raw) return resolve({});
@@ -55,8 +82,12 @@ function readBody(req) {
 
 // Shapes a Node request/response pair like the one the Vercel runtime hands the function.
 function adapt(req, res, url) {
-  req.query = { path: url.pathname.replace('/api/mp/', '').split('/').filter(Boolean) };
+  req.query = {};
   url.searchParams.forEach((value, key) => { req.query[key] = value; });
+  // `path` is assigned AFTER the query string, never before: on Vercel it is the catch-all segment
+  // list, so letting a `?path=` from the caller overwrite it would make this server pick a
+  // different action than the URL says -- and then local and deployed stop behaving the same.
+  req.query.path = url.pathname.replace('/api/mp/', '').split('/').filter(Boolean);
   res.status = (code) => { res.statusCode = code; return res; };
   res.json = (payload) => { res.setHeader('Content-Type', 'application/json'); res.end(JSON.stringify(payload)); return res; };
   res.send = (text) => { res.end(text); return res; };
@@ -67,25 +98,51 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
 
   if (url.pathname.startsWith('/api/mp/')) {
-    req.body = await readBody(req);
+    try {
+      req.body = await readBody(req);
+    } catch (error) {
+      if (error?.tooLarge) {
+        res.statusCode = 413;
+        res.setHeader('Content-Type', 'application/json');
+        // The rest of the upload is never read, so the connection cannot be reused: say so, and
+        // drop it once the answer is out.
+        res.setHeader('Connection', 'close');
+        res.once('finish', () => req.destroy());
+        res.end(JSON.stringify({ error: 'BODY_TOO_LARGE', message: 'El envío es demasiado grande.' }));
+        return;
+      }
+      res.statusCode = 400;
+      res.end(JSON.stringify({ error: 'BAD_REQUEST', message: 'No pudimos leer el pedido.' }));
+      return;
+    }
     adapt(req, res, url);
     try {
       await handler(req, res);
     } catch (error) {
+      // The reason goes to the log, not to the visitor: an exception message can name an internal
+      // host or a file path.
+      console.error('[api] handler error:', error);
       res.statusCode = 500;
-      res.end(JSON.stringify({ error: 'HANDLER_ERROR', message: String(error) }));
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ error: 'HANDLER_ERROR', message: 'Error interno.' }));
     }
     return;
   }
 
   const requested = url.pathname === '/' ? '/index.html' : url.pathname;
   const file = path.join(PUBLIC_DIR, path.normalize(requested).replace(/^(\.\.[/\\])+/, ''));
-  if (!file.startsWith(PUBLIC_DIR) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
+  // `startsWith(PUBLIC_DIR)` alone is not enough: a sibling directory called `public-anything`
+  // also starts with it. The separator is what makes it mean "inside".
+  if (!(file + path.sep).startsWith(PUBLIC_DIR + path.sep)
+      || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
     res.statusCode = 404;
     res.end('No encontrado');
     return;
   }
   res.setHeader('Content-Type', MIME[path.extname(file)] || 'application/octet-stream');
+  // Las mismas cabeceras que declara vercel.json: si sólo viajaran ahí, la defensa dependería de
+  // en qué plataforma desplegaste, y el self-hosting es un camino soportado.
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) res.setHeader(name, value);
   res.end(fs.readFileSync(file));
 });
 

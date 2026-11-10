@@ -279,3 +279,60 @@ test('🔴 las fotos de ejemplo no llevan texto: una imagen no se traduce', () =
     assert.ok(!/<text/.test(svg), `${file} tiene texto adentro: en ingles o portugues quedaria en castellano`);
   }
 });
+
+// ---------------------------------------------------------------------------------------------
+// 🔴 Los tests de arriba verifican que las claves DECLARADAS coincidan. No ven el texto que nunca
+// se declaró: `vender.html` tenía su meta description y su párrafo de intro sin marcar, y en inglés
+// o portugués esa página mostraba dos bloques en castellano. Un test de paridad no puede verlo
+// nunca. Esto barre al revés: busca texto visible SIN su clave. Es el mismo chequeo que el gate
+// cross-app de mapaprop-v2.
+// ---------------------------------------------------------------------------------------------
+
+// Lo intencional va acá, con su razón escrita.
+const SIN_TRADUCIR = [
+  // Es una MARCA: el nombre de un producto no cambia de idioma.
+  'Powered by Mapaprop API',
+];
+// Los codigos ISO de moneda (USD, ARS, EUR) se filtran por forma, no por lista: son los mismos en
+// los tres idiomas y la cuenta puede usar cualquiera.
+
+test('🔴 ningun texto visible del HTML quedo sin su clave de traduccion', () => {
+  const huecos = [];
+  for (const [archivo, contenido] of html()) {
+    const cuerpo = contenido
+      .replace(/<script[\s\S]*?<\/script>/g, '')
+      .replace(/<style[\s\S]*?<\/style>/g, '')
+      .replace(/<!--[\s\S]*?-->/g, '');
+
+    // Elementos de texto con contenido propio y sin data-i18n.
+    for (const m of cuerpo.matchAll(/<(h1|h2|h3|h4|p|label|button|option|summary|figcaption)\b([^>]*)>([^<]+)</g)) {
+      const [, etiqueta, atributos, texto] = m;
+      if (/data-i18n\b/.test(atributos)) continue;
+      const limpio = texto.replace(/\s+/g, ' ').trim();
+      // Dos letras alcanzan: "Sí"/"No" son texto de cara al usuario y un umbral de 3 los escondia.
+      if (!limpio || !/[a-záéíóúñ]{2}/i.test(limpio)) continue;      // simbolos, numeros, iconos
+      if (/^[A-Z]{3}$/.test(limpio)) continue;                       // codigo ISO de moneda: no se traduce
+      if (SIN_TRADUCIR.includes(limpio)) continue;
+      huecos.push(`${archivo}  <${etiqueta}> ${limpio.slice(0, 60)}`);
+    }
+
+    // La meta description es texto que el buscador muestra: cuenta igual.
+    for (const m of cuerpo.matchAll(/<meta\s+name="description"([^>]*)>/g)) {
+      if (!/data-i18n-content\b/.test(m[1])) huecos.push(`${archivo}  <meta description> sin data-i18n-content`);
+    }
+  }
+  assert.deepEqual(huecos, [],
+    'quedo texto visible sin clave; en otro idioma esa pagina muestra castellano:\n  ' + huecos.join('\n  '));
+});
+
+test('🔴 el error de "los dos archivos juntos" existe en los tres idiomas y lo usa vender.js', () => {
+  // El cliente es el UNICO lugar que sabe que son dos archivos: ni la API ni el host pueden decir
+  // "el total no entra", sólo "demasiado grande".
+  for (const l of LANGS) {
+    assert.ok(STRINGS[l]['sell.errFilesTooBigTogether'], `falta en ${l}`);
+  }
+  const vender = fs.readFileSync(path.join(PUBLIC, 'js', 'vender.js'), 'utf8');
+  assert.match(vender, /MAX_PAYLOAD_CHARS/, 'se fue el techo del total');
+  assert.match(vender, /\(image\?\.length \|\| 0\) \+ \(pdf\?\.length \|\| 0\)/,
+    'el chequeo dejo de sumar los dos adjuntos');
+});

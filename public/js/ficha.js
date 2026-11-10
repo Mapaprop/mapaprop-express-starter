@@ -2,7 +2,7 @@ import { api } from './api.js';
 import { layout } from './layout.js';
 import {
   amenities, blueprints, escapeHtml, message, money, multiline, num, photos, qs, specs,
-  statusBadge, videoEmbed, card, skeletons,
+  statusBadge, videoEmbed, card, skeletons, safeUrl,
 } from './ui.js';
 import { t, formatNumber } from './i18n.js';
 
@@ -46,11 +46,11 @@ function gallery(property) {
   return `
     <div class="gallery">
       <div class="gallery__main">
-        <img id="gallery-main" src="${escapeHtml(all[0].image)}" alt="${escapeHtml(property.title || t('card.property'))}">
+        <img id="gallery-main" src="${escapeHtml(safeUrl(all[0].image))}" alt="${escapeHtml(property.title || t('card.property'))}">
       </div>
       ${all.length > 1
         ? `<div class="gallery__thumbs">${all
-            .map((img, index) => `<img data-full="${escapeHtml(img.image)}" src="${escapeHtml(img.thumbnail || img.image)}"
+            .map((img, index) => `<img data-full="${escapeHtml(safeUrl(img.image))}" src="${escapeHtml(safeUrl(img.thumbnail || img.image))}"
                  class="${index === 0 ? 'is-active' : ''}" alt="${escapeHtml(t('detail.photoAlt', { n: index + 1 }))}" loading="lazy">`)
             .join('')}</div>`
         : ''}
@@ -126,7 +126,10 @@ function videos(property) {
   return `<section class="section">
       <h2>${escapeHtml(t('detail.videos'))}</h2>
       <div class="videos">${embeds
-        .map((src) => `<iframe src="${escapeHtml(src)}" title="${escapeHtml(t('detail.videoTitle'))}" loading="lazy"
+        // `safeUrl` en el sink: hoy el unico que decide que entra aca es `videoEmbed()`, y nada
+        // obliga a que siga siendo asi. Un <iframe src> enmarca contenido arbitrario, que es lo
+        // que lo diferencia de un <img>.
+        .map((src) => `<iframe src="${escapeHtml(safeUrl(src))}" title="${escapeHtml(t('detail.videoTitle'))}" loading="lazy"
              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
              allowfullscreen></iframe>`)
         .join('')}</div>
@@ -168,7 +171,10 @@ function render(property) {
 
   document.querySelectorAll('.gallery__thumbs img').forEach((thumb) => {
     thumb.addEventListener('click', () => {
-      document.getElementById('gallery-main').src = thumb.dataset.full;
+      // Viaje de ida y vuelta por el DOM: el valor se escapo al escribir el atributo y vuelve
+      // CRUDO por `dataset`. En un <img> no ejecuta, pero el patron `data-*` -> propiedad copiado
+      // a un <a> si lo haria, y este archivo es el ejemplo que alguien va a copiar.
+      document.getElementById('gallery-main').src = safeUrl(thumb.dataset.full);
       document.querySelectorAll('.gallery__thumbs img').forEach((other) => other.classList.remove('is-active'));
       thumb.classList.add('is-active');
     });

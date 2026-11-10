@@ -13,6 +13,12 @@ import { t } from './i18n.js';
 // Limits that come from the API, not from here: 2 MB per file, 10 MB of bandwidth per hour and 10
 // submissions per hour.
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
+// 🔴 Y un techo para los DOS JUNTOS, que es el que de verdad corta. Los adjuntos viajan en base64,
+// que infla ~33%: dos archivos de 2 MB son ~5,33 MiB de cuerpo. El self-hosting lo aguanta (6 MiB
+// por defecto), pero el host del boton "Deploy" corta antes -- y ahi el visitante recibe un 413 de
+// la plataforma, no de la API, despues de haber respetado los dos limites que la pantalla le
+// mostro. Este es el unico lugar del kit que sabe que son dos archivos.
+const MAX_PAYLOAD_CHARS = 3_300_000;
 const form = document.getElementById('seller');
 const feedback = document.getElementById('seller-feedback');
 
@@ -101,6 +107,11 @@ form.addEventListener('submit', async (event) => {
     if (image) payload.image = image;
     if (pdf) payload.pdf = pdf;
 
+    if ((image?.length || 0) + (pdf?.length || 0) > MAX_PAYLOAD_CHARS) {
+      message(feedback, t('sell.errFilesTooBigTogether'), 'error');
+      return;
+    }
+
     const response = await api.sendSellerSubmission(payload);
 
     if (response.error === true) {
@@ -122,6 +133,8 @@ function explain(code, fallback) {
   if (code === 'NOT_FOUND') return t('sell.errNoWebsite');
   if (code === 'RATE_LIMIT_EXCEEDED') return t('sell.errRateLimit');
   if (code === 'INVALID_FILE') return t('sell.errInvalidFile');
+  // Lo corto una capa de infraestructura, no la API: el caso tipico son los adjuntos.
+  if (code === 'BAD_RESPONSE' || code === 'BODY_TOO_LARGE') return t('sell.errFilesTooBigTogether');
   return t('sell.errGeneric', { message: fallback || t('sell.errUnknown') });
 }
 

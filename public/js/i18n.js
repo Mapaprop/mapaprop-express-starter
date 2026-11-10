@@ -197,6 +197,10 @@ export const STRINGS = {
     'contact.mailPhone': 'Teléfono: {phone}',
 
     'sell.docTitle': 'Quiero vender o alquilar',
+    'sell.docDescription': 'Contanos sobre tu propiedad y te ayudamos a venderla o alquilarla.',
+    'sell.intro': 'Contanos los datos principales y nos ponemos en contacto. Si querés, podés adjuntar una foto y la documentación.',
+    'sell.yes': 'Sí',
+    'sell.no': 'No',
     'sell.title': 'Quiero vender o alquilar mi propiedad',
     'sell.yourData': 'Tus datos',
     'sell.name': 'Nombre y apellido *',
@@ -230,6 +234,7 @@ export const STRINGS = {
     'sell.errNoWebsite': 'Este formulario todavía no está disponible. (Para el administrador del sitio: el envío de propietarios necesita un sitio web atado al Token de API, en Configuración > Token de API, tarjeta "Función Sitio Web".)',
     'sell.errRateLimit': 'Recibimos muchos envíos seguidos. Probá de nuevo en un rato.',
     'sell.errInvalidFile': 'Alguno de los archivos no es válido. Se aceptan JPG, PNG, GIF, WebP y PDF.',
+    'sell.errFilesTooBigTogether': 'Los dos archivos juntos pesan demasiado. Probá con uno solo, o con versiones más livianas.',
     'sell.errGeneric': 'No pudimos enviar el formulario: {message}',
     'sell.errUnknown': 'error desconocido',
 
@@ -416,6 +421,10 @@ export const STRINGS = {
     'contact.mailPhone': 'Phone: {phone}',
 
     'sell.docTitle': 'I want to sell or rent',
+    'sell.docDescription': 'Tell us about your property and we will help you sell or rent it.',
+    'sell.intro': 'Tell us the main details and we will get in touch. If you want, you can attach a photo and the paperwork.',
+    'sell.yes': 'Yes',
+    'sell.no': 'No',
     'sell.title': 'I want to sell or rent my property',
     'sell.yourData': 'Your details',
     'sell.name': 'Full name *',
@@ -449,6 +458,7 @@ export const STRINGS = {
     'sell.errNoWebsite': 'This form is not available yet. (For the site administrator: seller submissions need a website tied to the API token, under Configuración > Token de API, card "Función Sitio Web".)',
     'sell.errRateLimit': 'We got a lot of submissions in a row. Please try again later.',
     'sell.errInvalidFile': 'One of the files is not valid. JPG, PNG, GIF, WebP and PDF are accepted.',
+    'sell.errFilesTooBigTogether': 'The two files together are too large. Try sending just one, or lighter versions.',
     'sell.errGeneric': 'We could not send the form: {message}',
     'sell.errUnknown': 'unknown error',
 
@@ -635,6 +645,10 @@ export const STRINGS = {
     'contact.mailPhone': 'Telefone: {phone}',
 
     'sell.docTitle': 'Quero vender ou alugar',
+    'sell.docDescription': 'Conte sobre o seu imóvel e ajudamos você a vendê-lo ou alugá-lo.',
+    'sell.intro': 'Conte os dados principais e entramos em contato. Se quiser, pode anexar uma foto e a documentação.',
+    'sell.yes': 'Sim',
+    'sell.no': 'Não',
     'sell.title': 'Quero vender ou alugar meu imóvel',
     'sell.yourData': 'Seus dados',
     'sell.name': 'Nome completo *',
@@ -668,6 +682,7 @@ export const STRINGS = {
     'sell.errNoWebsite': 'Este formulário ainda não está disponível. (Para o administrador do site: o envio de proprietários precisa de um site vinculado ao Token de API, em Configuración > Token de API, cartão "Función Sitio Web".)',
     'sell.errRateLimit': 'Recebemos muitos envios seguidos. Tente de novo mais tarde.',
     'sell.errInvalidFile': 'Algum dos arquivos não é válido. Aceitamos JPG, PNG, GIF, WebP e PDF.',
+    'sell.errFilesTooBigTogether': 'Os dois arquivos juntos são muito grandes. Tente enviar só um, ou versões mais leves.',
     'sell.errGeneric': 'Não conseguimos enviar o formulário: {message}',
     'sell.errUnknown': 'erro desconhecido',
 

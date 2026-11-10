@@ -1,6 +1,6 @@
 import { api, PAGE_SIZE } from './api.js';
 import { layout } from './layout.js';
-import { escapeHtml, message, money, num, pager, propertyUrl, skeletons, cover, statusBadge } from './ui.js';
+import { escapeHtml, message, money, num, pager, propertyUrl, skeletons, cover, statusBadge, safeUrl } from './ui.js';
 import { t, formatNumber } from './i18n.js';
 
 const host = document.getElementById('developments');
@@ -39,7 +39,7 @@ function developmentCard(property) {
     <a class="card" href="${propertyUrl(property)}">
       <div class="card__media">
         ${image
-          ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(property.title || t('card.development'))}" loading="lazy">`
+          ? `<img src="${escapeHtml(safeUrl(image))}" alt="${escapeHtml(property.title || t('card.development'))}" loading="lazy">`
           : `<div class="card__media--empty">${escapeHtml(t('card.noPhotos'))}</div>`}
         ${badge ? `<span class="badge badge--status">${badge}</span>` : ''}
         <span class="badge badge--dev">${escapeHtml(t('card.development'))}</span>

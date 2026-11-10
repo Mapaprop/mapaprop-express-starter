@@ -133,7 +133,18 @@ export default async function handler(req, res) {
     // Nothing leaves the machine, and nothing reaches anyone's CRM. The kit treats any response
     // without an error flag as success, so an empty object is enough -- inventing a richer payload
     // would be inventing a contract.
-    console.log(`  [mock] ${action} recibido, NO se envió a ninguna parte:`, JSON.stringify(req.body).slice(0, 160));
+    // Se loguea lo que REALMENTE viajaría, o sea el cuerpo ya filtrado contra la lista de campos
+    // de la ruta. Mostrar el crudo escondería la allowlist justo en el modo donde más se mira la
+    // consola -- es el mismo motivo por el que el mock aplica la proyección de las respuestas.
+    const enviado = {};
+    for (const field of route.fields || []) {
+      if (req.body?.[field] !== undefined) enviado[field] = req.body[field];
+    }
+    const descartadas = Object.keys(req.body || {}).filter((k) => !(k in enviado));
+    console.log(`  [mock] ${action} recibido, NO se envió a ninguna parte:`, JSON.stringify(enviado).slice(0, 160));
+    if (descartadas.length) {
+      console.log(`  [mock] el proxy descartó estas claves (no están en la lista de la ruta): ${descartadas.join(', ')}`);
+    }
     return res.status(200).json({});
   }
 
@@ -171,7 +182,11 @@ export default async function handler(req, res) {
       return res.status(200).json(absoluteImages(fixture('design'), req));
     }
 
-    return res.status(200).json(fixture(action));
+    // The projection of a route is part of the SAME boundary as its allowlist, so the mock applies
+    // it too: a fixture served whole would hide, in the one mode a contributor runs most, exactly
+    // the leak that `pick` exists to close.
+    const body = fixture(action);
+    return res.status(200).json(route.pick ? route.pick(body) : body);
   } catch (error) {
     if (error.code === 'ENOENT') {
       return res.status(501).json({

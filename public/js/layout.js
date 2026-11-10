@@ -82,7 +82,18 @@ function footer() {
 export async function layout() {
   const current = window.location.pathname.split('/').pop() || 'index.html';
   installImageFallback();
-  const data = await getBrand();
+
+  // 🔴 El chrome se pinta PASE LO QUE PASE. Sin este catch, cualquier excepcion al traer o aplicar
+  // la marca deja la pagina sin header y sin footer: sin navegacion, sin datos de contacto y sin la
+  // atribucion -- que es un requisito del producto, no decoracion. Y el modo de falla es realista:
+  // basta que `design` o `settings-v2` devuelvan una forma inesperada (un `mobile` numerico, un
+  // `colors` nulo) para que la pagina quede en blanco de la cintura para arriba.
+  let data = {};
+  try {
+    data = await getBrand();
+  } catch (error) {
+    console.error('[layout] no se pudo traer la marca; se pinta el chrome igual:', error);
+  }
 
   document.body.insertAdjacentHTML('afterbegin', header(current, data));
   document.body.insertAdjacentHTML('beforeend', footer());
@@ -91,8 +102,13 @@ export async function layout() {
   // another language is active.
   applyI18n(document);
 
-  // Paint only now: the placeholders the brand fills live in the chrome injected above.
-  applyBrand(data);
+  // Paint only now: the placeholders the brand fills live in the chrome injected above. Y tambien
+  // protegido: si pintar la marca falla, el chrome ya esta puesto y la pagina sigue siendo usable.
+  try {
+    applyBrand(data);
+  } catch (error) {
+    console.error('[layout] no se pudo aplicar la marca:', error);
+  }
 
   document.querySelector('.nav__toggle')?.addEventListener('click', () => {
     document.querySelector('.nav')?.classList.toggle('is-open');

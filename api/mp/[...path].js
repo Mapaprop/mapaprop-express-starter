@@ -15,8 +15,32 @@
 // backend while developing; a deployed site should never set it.
 const API_BASE = process.env.MAPAPROP_API_BASE || 'https://mapaprop.app/api/action/express-v1';
 
+// 🔴 El gemelo de entrada de `pick`: lo que el visitante manda en el cuerpo viaja upstream CON EL
+// TOKEN DE LA CUENTA, asi que vale el mismo argumento que la lista de rutas -- "sin esa lista, algo
+// armado a mano podria llegar mas lejos con tu token". Una clave que el endpoint lea y no este
+// documentada (un `branchId`, un `userId` de asignacion) dejaria a un visitante dirigiendo el lead.
+// Las dos listas salen de la wiki publica de cada endpoint, no de memoria.
+const MESSAGE_FIELDS = [
+  'propertyHash', 'name', 'email', 'phone', 'message',
+  'url', 'ip', 'userAgent', 'referer',
+];
+
 // The allowlist is a security boundary, not housekeeping. Without it, a crafted path could reach a
 // different web service carrying the same token. Add a row here before using a new action.
+const SELLER_FIELDS = [
+  'name', 'email', 'phone', 'contactHours',
+  'propertyType', 'propertyOperation', 'propertyAddress', 'propertyZone', 'propertyZipcode',
+  'propertyBetweenStreets', 'propertyCurrency', 'propertyPrice', 'propertyBuildingArea',
+  'propertyLandArea', 'propertyRooms', 'propertyBathrooms', 'propertyAmbiences',
+  'propertyYearsOld', 'propertyStatus', 'propertyDescription', 'propertyLegalId',
+  'propertyAttributes', 'propertyListed', 'propertyValuation', 'availabilityDate',
+  'image', 'pdf',
+  'domain', 'url', 'ip', 'userAgent', 'referer',
+  // `websiteId` esta documentado y NO esta aca a proposito: el kit no lo manda, y dejarlo pasar
+  // permitiria que un visitante elija a cual de tus sitios se asocia la captacion. Agregalo si tu
+  // sitio de verdad necesita elegir.
+];
+
 const ROUTES = [
   // inventory
   { method: 'GET', match: /^properties$/, sMaxAge: 60 },
@@ -30,21 +54,67 @@ const ROUTES = [
   { method: 'GET', match: /^branches$/, sMaxAge: 86400 },
   { method: 'GET', match: /^features$/, sMaxAge: 3600 },
   // identity and site design
-  { method: 'GET', match: /^settings-v2$/, sMaxAge: 3600 },
+  // 🔴 `settings-v2` is PROJECTED, not forwarded whole. See `pickSettings` below.
+  { method: 'GET', match: /^settings-v2$/, sMaxAge: 3600, pick: pickSettings },
   { method: 'GET', match: /^design$/, sMaxAge: 3600 },
   // the two entry points: a lead on a property, and the seller form
-  { method: 'POST', match: /^messages$/, sMaxAge: 0, form: true },
-  { method: 'POST', match: /^seller-submissions$/, sMaxAge: 0, json: true },
+  { method: 'POST', match: /^messages$/, sMaxAge: 0, form: true, fields: MESSAGE_FIELDS },
+  { method: 'POST', match: /^seller-submissions$/, sMaxAge: 0, json: true, fields: SELLER_FIELDS },
 ];
+
+// 🔴 Everything this proxy returns is readable by ANYONE: a visitor can open
+// /api/mp/settings-v2 with curl, and with `s-maxage` the CDN serves it from the edge without the
+// account ever seeing the request. So what the site does not use must not be forwarded.
+//
+// `settings-v2` is the one action where that matters. Besides the six fields the kit reads, it
+// carries the account's TAX DATA -- `taxId` (the CUIT), `taxName`, `taxAddress`, `taxCondition` --
+// and a `settings[]` array with the account's Mapbox token and reCAPTCHA site key. Those two keys
+// are publishable by design (a browser needs them), but THIS KIT USES NEITHER, so publishing them
+// is a cost with no benefit. The tax data is not publishable at all: for a monotributista the CUIT
+// is their national id with a prefix.
+//
+// If you add a feature that needs another field, add it HERE, deliberately. The allowlist is the
+// same idea as the route list above: say what goes out, not what does not.
+const CUSTOMER_FIELDS = [
+  'name', 'email', 'phone1', 'phone2', 'mobile',
+  'address', 'zone1Description', 'zone2Description', 'zone3Description', 'zip',
+  'tempRental', 'bio',
+];
+
+// Un telefono que llega como NUMERO rompe cualquier `.replace()` del otro lado. Se normaliza aca,
+// en el borde, en vez de en cada lugar que lo consume: es un arreglo y no tres, y vale para
+// cualquier consumidor futuro de este endpoint.
+const PHONE_FIELDS = ['phone1', 'phone2', 'mobile'];
+
+function pickSettings(payload) {
+  const customer = payload?.customer;
+  if (!customer || typeof customer !== 'object') return { customer: null };
+  const out = {};
+  for (const field of CUSTOMER_FIELDS) {
+    if (customer[field] === undefined) continue;
+    out[field] = PHONE_FIELDS.includes(field) && customer[field] !== null
+      ? String(customer[field])
+      : customer[field];
+  }
+  return { customer: out };
+}
 
 // Minimal in-process throttle for the write paths. Serverless instances are not shared, so this
 // only slows down a single warm instance: it is a speed bump, not a defense. The real antispam runs
-// on Mapaprop's side, and reCAPTCHA v3 is available if you want a stronger gate (see README).
+// on Mapaprop's side. If you want a stronger gate, reCAPTCHA v3 is the usual one -- note the kit
+// does NOT wire it: the site key your account has configured no longer reaches the browser (it is
+// not in CUSTOMER_FIELDS above), so you would add it to that list first, on purpose.
+const UNKNOWN_IP = 'unknown';
 const WRITE_WINDOW_MS = 60 * 1000;
 const WRITE_MAX_PER_WINDOW = 10;
 const writeHits = new Map();
 
 function throttled(ip) {
+  // Sin IP no se puede distinguir a un visitante de otro, asi que throttlear los juntaria a todos
+  // en un cupo compartido y le rechazaria la consulta a un cliente real por una condicion que no
+  // sabemos reproducir. Preferimos que pase y que el log grite: el antispam de verdad corre del
+  // lado de Mapaprop, y este throttle esta declarado como lomo de burro, no como defensa.
+  if (ip === UNKNOWN_IP) return false;
   const now = Date.now();
   const hits = (writeHits.get(ip) || []).filter((t) => now - t < WRITE_WINDOW_MS);
   hits.push(now);
@@ -53,10 +123,39 @@ function throttled(ip) {
   return hits.length > WRITE_MAX_PER_WINDOW;
 }
 
+// 🔴 `X-Forwarded-For` is a header, so the CLIENT can send one. Reading its FIRST entry -- the
+// usual reflex -- reads whatever the visitor typed: nginx's `$proxy_add_x_forwarded_for` APPENDS
+// the real address to what arrived, so the first entry is attacker-controlled. That matters twice
+// here: the throttle below is keyed by it, and the value is forwarded to Mapaprop as the `ip` its
+// antispam scores. So we read the LAST entry, the one our own edge appended, and prefer
+// `X-Real-IP` when the reverse proxy sets it (single value, overwritten on every hop).
+//
+// If you put a CDN in front of nginx, set `X-Real-IP` there or this returns the CDN's address.
+// 🔴 `X-Real-IP` SOLO si lo pediste explicitamente. El codigo no puede distinguir si esa cabecera
+// la puso tu reverse proxy o el visitante: si se prefiere siempre, alcanza con mandar un
+// `X-Real-IP` distinto en cada pedido para volver al spoofing por la otra puerta -- y pasa
+// justamente en la configuracion mas comun, un nginx que setea `X-Forwarded-For` y no setea
+// `X-Real-IP`. El ultimo salto del XFF lo agrega SIEMPRE nuestro propio borde, asi que es la mas
+// confiable de las dos sin pedir nada. Activalo con TRUST_X_REAL_IP=1 cuando sepas que tu proxy la
+// escribe (la receta de nginx del README la escribe).
 function visitorIp(req) {
+  if (process.env.TRUST_X_REAL_IP === '1') {
+    const real = req.headers['x-real-ip'];
+    if (typeof real === 'string' && real.trim()) return real.trim();
+  }
+
   const forwarded = req.headers['x-forwarded-for'];
-  if (typeof forwarded === 'string' && forwarded.length) return forwarded.split(',')[0].trim();
-  return req.socket?.remoteAddress || '0.0.0.0';
+  if (typeof forwarded === 'string' && forwarded.trim()) {
+    const hops = forwarded.split(',').map((h) => h.trim()).filter(Boolean);
+    if (hops.length) return hops[hops.length - 1];
+  }
+  // 🔴 Sentinela, NO una IP inventada. Si se llega aca, todos los visitantes se keyean con la misma
+  // cadena y el throttle pasa a ser global: el 11º envio de CUALQUIERA devuelve 429 a todos, y eso
+  // se lee exactamente igual que un rate limit sano. `0.0.0.0` lo escondia detras de algo plausible.
+  const direct = req.socket?.remoteAddress;
+  if (direct) return direct;
+  console.warn('[proxy] sin IP de visitante: el throttle queda deshabilitado para este pedido');
+  return UNKNOWN_IP;
 }
 
 // Path building and route lookup are exported so they can be tested on their own: this pair IS the
@@ -116,7 +215,12 @@ export default async function handler(req, res) {
       return res.status(429).json({ error: 'RATE_LIMITED', message: 'Demasiados envíos. Probá de nuevo en un minuto.' });
     }
 
-    const sent = typeof req.body === 'object' && req.body !== null ? { ...req.body } : {};
+    const body = typeof req.body === 'object' && req.body !== null ? req.body : {};
+    // Se filtra ANTES de rellenar la identidad, para que lo nuestro no se pueda excluir desde afuera.
+    const sent = {};
+    for (const field of route.fields) {
+      if (body[field] !== undefined) sent[field] = body[field];
+    }
 
     // The browser cannot know these three, and `messages` requires all of them for its antispam
     // check. Fill them here from the real request and ignore whatever the client sent.
@@ -147,10 +251,27 @@ export default async function handler(req, res) {
       res.setHeader('Cache-Control', 'no-store');
     }
     res.setHeader('Content-Type', upstreamResponse.headers.get('content-type') || 'application/json');
+
+    if (route.pick && upstreamResponse.ok) {
+      // Fails CLOSED: a body we cannot parse is not forwarded as-is, because forwarding it is
+      // exactly what the projection exists to prevent.
+      let parsed;
+      try {
+        parsed = JSON.parse(text);
+      } catch (error) {
+        console.error('[proxy] unparseable body on a projected route:', action, error);
+        return res.status(502).json({ error: 'UPSTREAM_UNAVAILABLE', message: 'No pudimos contactar a Mapaprop.' });
+      }
+      return res.status(upstreamResponse.status).send(JSON.stringify(route.pick(parsed)));
+    }
+
     return res.status(upstreamResponse.status).send(text);
   } catch (error) {
+    // The reason goes to the log, NOT to the browser: a fetch error can carry the hostname it tried
+    // to reach, which on a site pointed at an internal backend is a free map of the infrastructure.
+    console.error('[proxy] upstream unavailable:', error);
     return res
       .status(502)
-      .json({ error: 'UPSTREAM_UNAVAILABLE', message: 'No pudimos contactar a Mapaprop.', detail: String(error) });
+      .json({ error: 'UPSTREAM_UNAVAILABLE', message: 'No pudimos contactar a Mapaprop.' });
   }
 }

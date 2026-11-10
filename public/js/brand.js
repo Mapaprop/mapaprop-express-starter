@@ -3,7 +3,7 @@
 // and `settings-v2`, and the site must still render (that is the normal case for someone building
 // their own site here).
 import { api, servedByMock } from './api.js';
-import { escapeHtml, readableOn } from './ui.js';
+import { escapeHtml, readableOn, safeUrl } from './ui.js';
 import { t, lang } from './i18n.js';
 
 const FALLBACK = window.SITE_CONFIG || {};
@@ -109,8 +109,11 @@ async function load() {
 
 function paint(brand) {
   const root = document.documentElement.style;
-  const primary = brand.colors.primary || '#195fa9';
-  const secondary = brand.colors.secondary || '#4a7fe8';
+  // Lo que llega de la API puede tener cualquier forma: `colors` ausente o nulo no debe tumbar el
+  // pintado entero. El default es el mismo que config.js.
+  const colors = brand.colors || {};
+  const primary = colors.primary || '#195fa9';
+  const secondary = colors.secondary || '#4a7fe8';
   root.setProperty('--primary', primary);
   root.setProperty('--secondary', secondary);
 
@@ -118,16 +121,16 @@ function paint(brand) {
   // `design` endpoint returned `primary: #ededed` and no `primaryText`, so the fallback white left
   // "Buscar" and "Enviar consulta" as white on near-white -- a 1.07 ratio. What the agency
   // configured still wins whenever it is readable; it is only overridden when it is not.
-  root.setProperty('--primary-text', readableOn(primary, [brand.colors.primaryText, '#ffffff', '#16202b']));
-  root.setProperty('--secondary-text', readableOn(secondary, [brand.colors.secondaryText, '#ffffff', '#16202b']));
+  root.setProperty('--primary-text', readableOn(primary, [colors.primaryText, '#ffffff', '#16202b']));
+  root.setProperty('--secondary-text', readableOn(secondary, [colors.secondaryText, '#ffffff', '#16202b']));
 
   // Accents used as TEXT on the white surface. The palette is the agency's and may be pale, so the
   // first readable candidate wins instead of trusting `primary` to be dark.
   const surface = '#ffffff';
   root.setProperty('--accent-ink',
-    readableOn(surface, [brand.colors.primary, brand.colors.secondary, '#16202b']));
+    readableOn(surface, [colors.primary, colors.secondary, '#16202b']));
   root.setProperty('--accent-ink-alt',
-    readableOn(surface, [brand.colors.secondary, brand.colors.primary, '#16202b']));
+    readableOn(surface, [colors.secondary, colors.primary, '#16202b']));
 
   if (brand.fontFamily) {
     root.setProperty('--font', `'${brand.fontFamily}', system-ui, sans-serif`);
@@ -140,7 +143,9 @@ function paint(brand) {
   if (brand.favicon) {
     const icon = document.querySelector('link[rel="icon"]') || document.createElement('link');
     icon.rel = 'icon';
-    icon.href = brand.favicon;
+    // usableImage() ya lo filtro al cargarlo, pero esa defensa vive arriba: la garantia se
+    // escribe donde se escribe el href.
+    icon.href = safeUrl(brand.favicon);
     document.head.appendChild(icon);
   }
 
@@ -148,7 +153,7 @@ function paint(brand) {
 
   document.querySelectorAll('[data-brand-logo]').forEach((el) => {
     el.innerHTML = brand.logo
-      ? `<img src="${escapeHtml(brand.logo)}" alt="${escapeHtml(brand.name)}">`
+      ? `<img src="${escapeHtml(safeUrl(brand.logo))}" alt="${escapeHtml(brand.name)}">`
       : `<span class="logo__text">${escapeHtml(brand.name)}</span>`;
   });
 
@@ -159,7 +164,9 @@ function paint(brand) {
   document.querySelectorAll('[data-brand-contact]').forEach((el) => {
     const bits = [];
     if (brand.address) bits.push(escapeHtml(brand.address));
-    if (brand.phone) bits.push(`<a href="tel:${escapeHtml(brand.phone.replace(/[^\d+]/g, ''))}">${escapeHtml(brand.phone)}</a>`);
+    // `String(...)` igual que en el whatsapp: el proxy ya normaliza los telefonos, pero este
+    // archivo tambien corre contra la API directa de quien no use el proxy del kit.
+    if (brand.phone) bits.push(`<a href="tel:${escapeHtml(String(brand.phone).replace(/[^\d+]/g, ''))}">${escapeHtml(brand.phone)}</a>`);
     if (brand.email) bits.push(`<a href="mailto:${escapeHtml(brand.email)}">${escapeHtml(brand.email)}</a>`);
     el.innerHTML = bits.join(' · ');
   });
@@ -170,14 +177,22 @@ function paint(brand) {
   };
   document.querySelectorAll('[data-brand-social]').forEach((el) => {
     el.innerHTML = Object.entries(brand.social || {})
+      // The social links are typed by hand in the Mapaprop admin, by any user of the account. They
+      // reach every visitor of the public site, so the scheme is validated, not just escaped.
+      .map(([key, url]) => [key, safeUrl(url)])
       .filter(([key, url]) => socialIcons[key] && url)
-      .map(([key, url]) => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${socialIcons[key]}</a>`)
+      // `safeUrl` otra vez, a proposito: ya se aplico arriba para poder descartar los invalidos,
+      // pero la garantia se escribe DONDE se escribe el href. Quien lee esta linea no deberia tener
+      // que subir tres lineas para saber si el esquema esta validado -- y el barrido de hrefs de
+      // tests/ui.test.mjs tampoco puede saberlo.
+      .map(([key, url]) => `<a href="${escapeHtml(safeUrl(url))}" target="_blank" rel="noopener">${socialIcons[key]}</a>`)
       .join('');
   });
 
   document.querySelectorAll('[data-brand-whatsapp]').forEach((el) => {
     if (!brand.whatsapp) { el.remove(); return; }
-    el.href = `https://wa.me/${brand.whatsapp.replace(/[^\d]/g, '')}`;
+    // `String(...)`: el campo llega de la API y un `mobile` numerico rompia el `.replace`.
+    el.href = `https://wa.me/${String(brand.whatsapp).replace(/[^\d]/g, '')}`;
   });
 }
 

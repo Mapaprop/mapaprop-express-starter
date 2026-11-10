@@ -54,12 +54,12 @@ async function fillCatalogs(params) {
   if (operations.status === 'fulfilled') {
     const select = document.getElementById('f-operation');
     (operations.value.operations || []).forEach((o) =>
-      select.insertAdjacentHTML('beforeend', `<option value="${o.id}">${escapeHtml(o.description)}</option>`));
+      select.insertAdjacentHTML('beforeend', `<option value="${Number(o.id)}">${escapeHtml(o.description)}</option>`));
   }
   if (types.status === 'fulfilled') {
     const select = document.getElementById('f-type');
     (types.value.types || []).forEach((type) =>
-      select.insertAdjacentHTML('beforeend', `<option value="${type.id}">${escapeHtml(type.description)}</option>`));
+      select.insertAdjacentHTML('beforeend', `<option value="${Number(type.id)}">${escapeHtml(type.description)}</option>`));
   }
   if (zones.status === 'fulfilled') {
     const select = document.getElementById('f-zone');

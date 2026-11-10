@@ -79,8 +79,11 @@ Es un servidor de **formas**, no una segunda implementación de la API:
 | los POST | no salen de tu máquina. **No llegan a ningún CRM** |
 | el carrusel del inicio | 🔴 **es el único lugar donde el mock es MÁS capaz que la API**, y está explicado abajo |
 
-Lo que **sí** respeta es la allowlist: el mock importa el `findRoute` del proxy real, así que una
-acción que el proxy no habilita tampoco la sirve el mock. Hay un solo borde, no dos.
+Lo que **sí** respeta es el borde entero del proxy, no sólo una parte: el mock importa su
+`findRoute`, así que una acción que el proxy no habilita tampoco la sirve el mock — y aplica también
+la **proyección** de la ruta, así que `settings-v2` sale recortado igual que en producción. Si la
+fixture se sirviera entera, el modo que más corre un colaborador escondería justamente la filtración
+que la proyección cierra. Un solo borde, no dos.
 
 ### 🔴 El carrusel: la única licencia que se tomó el mock, y por qué
 

@@ -28,13 +28,24 @@ async function call(action, { params = {}, method = 'GET', body = null } = {}) {
   try {
     payload = text ? JSON.parse(text) : {};
   } catch {
-    payload = { error: 'BAD_JSON', message: text.slice(0, 200) };
+    // 🔴 El cuerpo NO se usa como mensaje. Cuando una capa de infraestructura corta -- un 413 del
+    // host, un 502 de un balanceador -- contesta HTML, y pasarlo al visitante le muestra
+    // "<!DOCTYPE html>..." en el formulario. Va al log, que es donde sirve.
+    console.error('[api] respuesta que no es JSON:', response.status, text.slice(0, 300));
+    payload = { error: 'BAD_RESPONSE' };
   }
 
   if (!response.ok) {
     const error = new Error(payload.message || payload.error || `HTTP ${response.status}`);
     error.status = response.status;
-    error.code = payload.error || payload.code || null;
+    // 🔴 Los dos POST no tienen la misma forma de error, y leer `error` primero rompe uno de los
+    // dos: `messages` devuelve `{success:false, error:"INVALID_EMAIL"}` -- ahi `error` ES el codigo
+    // -- y `seller-submissions` devuelve `{error:true, code:"NOT_FOUND"}` -- ahi `error` es un
+    // booleano y el codigo esta en `code`. Con `payload.error || payload.code`, el `true` del
+    // segundo cortaba el `||` y `code` quedaba en `true`, asi que ninguna comparacion contra un
+    // codigo podia dar nunca.
+    error.code = payload.code
+      || (typeof payload.error === 'string' ? payload.error : null);
     error.payload = payload;
     throw error;
   }

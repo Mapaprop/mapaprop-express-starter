@@ -4,15 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title data-i18n="sell.docTitle">Quiero vender o alquilar</title>
-  <meta name="description" content="Contanos sobre tu propiedad y te ayudamos a venderla o alquilarla.">
+  <meta name="description" data-i18n-content="sell.docDescription" content="Contanos sobre tu propiedad y te ayudamos a venderla o alquilarla.">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/config.js"></script>
 </head>
 <body>
   <main class="wrap section">
     <h1 data-i18n="sell.title">Quiero vender o alquilar mi propiedad</h1>
-    <p>Contanos los datos principales y nos ponemos en contacto. Si querés, podés adjuntar una foto
-       y la documentación.</p>
+    <p data-i18n="sell.intro">Contanos los datos principales y nos ponemos en contacto. Si querés, podés adjuntar una foto y la documentación.</p>
 
     <form class="form" id="seller" style="max-width:760px;margin-top:1.5rem">
       <h3 data-i18n="sell.yourData">Tus datos</h3>
@@ -52,10 +51,10 @@
       <div><label for="v-description" data-i18n="sell.description">Contanos más (máx. 4000 caracteres)</label><textarea id="v-description" maxlength="4000"></textarea></div>
       <div class="form__row">
         <div><label for="v-valuation" data-i18n="sell.valuation">¿Querés una tasación?</label>
-          <select id="v-valuation"><option value="">—</option><option value="true">Sí</option><option value="false">No</option></select>
+          <select id="v-valuation"><option value="">—</option><option value="true" data-i18n="sell.yes">Sí</option><option value="false" data-i18n="sell.no">No</option></select>
         </div>
         <div><label for="v-listed" data-i18n="sell.listed">¿Está publicada hoy?</label>
-          <select id="v-listed"><option value="">—</option><option value="true">Sí</option><option value="false">No</option></select>
+          <select id="v-listed"><option value="">—</option><option value="true" data-i18n="sell.yes">Sí</option><option value="false" data-i18n="sell.no">No</option></select>
         </div>
       </div>
 

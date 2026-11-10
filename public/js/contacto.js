@@ -67,9 +67,18 @@ document.getElementById('generic-contact').addEventListener('submit', (event) =>
     '',
     text,
   ].filter((line) => line !== '').join('\n');
-  window.location.href = `mailto:${branch.email}`
-    + `?subject=${encodeURIComponent(t('contact.mailSubject', { name }))}`
-    + `&body=${encodeURIComponent(body)}`;
+  // 🔴 El email se arma con `URL`, no concatenando. `mailto:` fija el esquema, asi que no hay XSS
+  // -- pero una direccion con la forma `ventas@x.com?cc=tercero@evil.com` inyecta DESTINATARIOS en
+  // el borrador que abre el programa de correo del visitante, y la consulta sale con copia a un
+  // tercero sin que nadie lo vea. El dato es de la propia inmobiliaria, asi que el caso realista es
+  // un alta mal tipeada o una cuenta comprometida; igual no cuesta nada cerrarlo.
+  const mail = new URL(`mailto:${encodeURIComponent(branch.email)}`);
+  mail.searchParams.set('subject', t('contact.mailSubject', { name }));
+  mail.searchParams.set('body', body);
+  // url-ok: el esquema es literal (`mailto:`) y lo arma `new URL` dos lineas arriba, asi que el
+  // dato de la API no puede elegirlo; lo que si podia inyectar -- destinatarios -- lo cierra el
+  // encodeURIComponent del constructor.
+  window.location.href = mail.toString();
 });
 
 layout();

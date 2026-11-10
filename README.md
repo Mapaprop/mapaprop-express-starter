@@ -83,6 +83,33 @@ Apache como cualquier otra aplicación.
 MAPAPROP_API_TOKEN=tu-token PORT=3000 node dev-local.mjs
 ```
 
+🔴 **Si va detrás de un reverse proxy, mandale `X-Real-IP`.** El kit usa la IP del visitante para
+dos cosas: la manda a Mapaprop en la consulta (su antispam la puntúa) y limita cuántos envíos acepta
+por minuto. Sin esa cabecera tiene que deducirla del `X-Forwarded-For`, **que el visitante también
+puede mandar** — nginx agrega la real al final en vez de reemplazar, así que el kit lee el último
+salto. Funciona, pero `X-Real-IP` es explícito y no depende de cómo esté armada la cadena:
+
+```nginx
+location / {
+    proxy_pass         http://127.0.0.1:3000;
+    proxy_set_header   Host $host;
+    proxy_set_header   X-Real-IP $remote_addr;
+    proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header   X-Forwarded-Proto $scheme;
+    client_max_body_size 8m;   # el formulario de captación manda adjuntos
+}
+```
+
+Con ese bloque puesto, arrancá el kit con **`TRUST_X_REAL_IP=1`**. Es opt-in a propósito: el código
+no puede saber si esa cabecera la escribió tu proxy o el visitante, así que **por defecto la
+ignora** y usa el último salto del `X-Forwarded-For`, que lo agrega siempre tu propio borde. Si la
+prefiriera sin preguntar, alcanzaría con que alguien mandara un `X-Real-IP` inventado en cada
+pedido para volver al problema que esto resuelve.
+
+**El tamaño del cuerpo tiene un techo**, porque sin él un solo envío puede ocupar toda la memoria
+del proceso: 6 MB por defecto, configurable con `MAX_BODY_BYTES`. Si lo subís, subí también el
+`client_max_body_size` de nginx — y al revés: el más chico de los dos es el que manda.
+
 ### Otras plataformas
 
 **Netlify**, **Cloudflare Pages**, **AWS** y las demás también sirven, pero cada una tiene su propia
@@ -125,11 +152,31 @@ función además:
 
 - **sólo deja pasar las acciones que el sitio usa** (hay una lista explícita adentro). Esto no es
   prolijidad: sin esa lista, una ruta armada a mano podría llegar a otra API con tu token;
+- **filtra el cuerpo de los dos formularios** contra la lista de campos que cada endpoint
+  documenta. Lo que el visitante manda viaja a Mapaprop **con el token de tu cuenta**, así que vale
+  el mismo argumento que la lista de rutas: una clave que no esté en la lista no sale;
+- **recorta `settings-v2` a lo que el sitio usa.** Ese endpoint trae, además de tu nombre y tus
+  datos de contacto, **tus datos fiscales** (el CUIT, la razón social, el domicilio fiscal) y las
+  claves de Mapbox y reCAPTCHA de tu cuenta. Todo lo que la función devuelve lo puede leer
+  cualquiera —se abre con `curl`, sin token— así que lo que el sitio no usa no sale;
 - **completa la IP, el navegador y el referer** de cada consulta, tres datos que el endpoint de
   consultas necesita y que el navegador no puede saber de sí mismo;
 - **cachea los catálogos** para no gastar llamadas de más.
 
-Si vas a sumar un endpoint nuevo, agregá su fila en la lista `ROUTES` de esa función.
+Si vas a sumar un endpoint nuevo, agregá su fila en la lista `ROUTES` de esa función. Y si necesitás
+un campo de `settings-v2` que hoy no sale, agregalo a `CUSTOMER_FIELDS`, a propósito: **pensá si ese
+campo puede quedar publicado**, porque es exactamente lo que va a pasar.
+
+
+### Las cabeceras de seguridad
+
+`vercel.json` declara una **Content-Security-Policy** y tres cabeceras más, y el servidor Node las
+lee **de ese mismo archivo** para servir las mismas: si vivieran sólo en `vercel.json`, la defensa
+dependería de en qué plataforma desplegaste.
+
+La CSP permite scripts **sólo del propio sitio** y enmarcar **sólo** YouTube, Vimeo, Matterport y
+OpenStreetMap, que es lo que las fichas usan. Si sumás un proveedor de video o un mapa con clave,
+agregalo a `frame-src`. Está verificada contra las 6 páginas: cero violaciones en consola.
 
 ---
 
@@ -268,7 +315,7 @@ Si traducís a un idioma nuevo: agregá su mapa en `i18n.js` con **las mismas cl
 │       ├── brand.js       aplica el diseño de tu cuenta
 │       ├── layout.js      menú y pie compartidos
 │       └── …              un archivo por página
-├── tests/                 77 tests, sin dependencias
+├── tests/                 116 tests, sin dependencias
 ├── LICENSE
 ├── SECURITY.md
 ├── vercel.json
@@ -288,7 +335,7 @@ Si traducís a un idioma nuevo: agregá su mapa en `i18n.js` con **las mismas cl
 | **Las vendidas y alquiladas sí vienen** | Con su estado, y el sitio las muestra con su etiqueta. Si no las querés mostrar, filtralas en `listado.js`. |
 | **El token no vence** | Pero si lo regenerás, el anterior deja de funcionar al instante: actualizá la variable de entorno y volvé a desplegar. |
 | **Si das de baja el plan** | El token se desactiva y el sitio deja de traer propiedades. |
-| **Adjuntos de "Vender"** | 2 MB por archivo, 10 envíos por hora. Lo impone la API. |
+| **Adjuntos de "Vender"** | 2 MB por archivo y 10 MB de bandwidth por hora, de la API. ⚠️ **El límite que de verdad corta es el del total**: los adjuntos viajan en base64, que infla ~33%, así que dos archivos de 2 MB son ~5,3 MB de cuerpo. El kit los rechaza antes de enviarlos si juntos superan el techo del runtime más chico (`MAX_PAYLOAD_CHARS` en `vender.js`), con un mensaje que dice que el problema es el total. Y por el mismo motivo, **los 10 envíos por hora son inalcanzables si llevan adjuntos**: el cuello es el bandwidth, no la cantidad. |
 | **"Vender" necesita un sitio atado al token** | Si te da un aviso, atalo en **Configuración → Token de API**, tarjeta **Función Sitio Web**. |
 
 ---

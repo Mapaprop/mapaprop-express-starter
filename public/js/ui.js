@@ -27,6 +27,26 @@ export function escapeHtml(value) {
   }[c]));
 }
 
+// 🔴 escapeHtml is NOT enough for an href. It stops you from breaking OUT of the attribute, but
+// `javascript:alert(1)` contains none of the five characters it replaces, so it survives intact and
+// becomes a clickable script. Every URL that comes from the API goes through here first: anything
+// that is not http(s) is dropped, and a dropped link is better than a link that runs code.
+export function safeUrl(value) {
+  const url = String(value ?? '').trim();
+  // Empty first: resolving "" against the base returns the CURRENT page, which would turn a social
+  // link the agency never configured into a link back to itself.
+  if (!url) return '';
+  // The scheme check is done on the PARSED url, not with a regex on the raw string: leading
+  // control characters and whitespace are legal in an href and browsers strip them before deciding
+  // the scheme, so `\njavascript:` is a javascript URL to the browser and not to a naive regex.
+  try {
+    const parsed = new URL(url, globalThis.location?.href || 'https://example.invalid');
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:' ? parsed.href : '';
+  } catch {
+    return '';
+  }
+}
+
 // Text the agency typed with line breaks (descriptionFormatted, design slide titles).
 export function multiline(value) {
   return escapeHtml(value).replace(/\n/g, '<br>');
@@ -110,7 +130,7 @@ export function card(property) {
     <a class="card" href="${propertyUrl(property)}">
       <div class="card__media">
         ${image
-          ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(property.title || t('card.property'))}" loading="lazy">`
+          ? `<img src="${escapeHtml(safeUrl(image))}" alt="${escapeHtml(property.title || t('card.property'))}" loading="lazy">`
           : `<div class="card__media--empty">${escapeHtml(t('card.noPhotos'))}</div>`}
         ${badge ? `<span class="badge badge--status">${badge}</span>` : ''}
         ${property.development === true ? `<span class="badge badge--dev">${escapeHtml(t('card.development'))}</span>` : ''}
@@ -134,6 +154,8 @@ export function message(container, text, kind = 'info') {
 }
 
 // Pagination over `from`/`total`. The API caps `size` at 20, so a long list is always paged.
+let pagerSeq = 0;
+
 export function pager(total, from, size, onGo) {
   if (total <= size) return '';
   const pages = Math.ceil(total / size);
@@ -142,12 +164,17 @@ export function pager(total, from, size, onGo) {
   for (let p = Math.max(1, current - 2); p <= Math.min(pages, current + 2); p += 1) window.push(p);
   const button = (page, label = page, disabled = false) =>
     `<button class="pager__item${page === current ? ' is-current' : ''}" ${disabled ? 'disabled' : ''} data-page="${page}">${label}</button>`;
+  // Los botones se cablean POR INSTANCIA, con una marca propia: un `querySelectorAll` global
+  // engancha los botones de cualquier otro pager del documento al `onGo` del ultimo renderizado.
+  // Hoy hay uno solo por pagina y funciona igual; con un paginado arriba y otro abajo -- que es lo
+  // primero que va a hacer quien copie este helper -- el de arriba pasa a mover el de abajo.
+  const id = `pager-${(pagerSeq += 1)}`;
   setTimeout(() => {
-    document.querySelectorAll('.pager__item[data-page]').forEach((el) => {
+    document.querySelectorAll(`[data-pager="${id}"] .pager__item[data-page]`).forEach((el) => {
       el.addEventListener('click', () => onGo((Number(el.dataset.page) - 1) * size));
     });
   }, 0);
-  return `<nav class="pager">
+  return `<nav class="pager" data-pager="${id}">
     ${button(current - 1, '‹', current === 1)}
     ${window.map((p) => button(p)).join('')}
     ${button(current + 1, '›', current === pages)}
@@ -183,25 +210,42 @@ export function videoEmbed(source) {
   if (youtubeId) return `https://www.youtube.com/embed/${youtubeId}`;
 
   if (/vimeo\.com\/(\d+)/.test(url)) return `https://player.vimeo.com/video/${url.match(/vimeo\.com\/(\d+)/)[1]}`;
-  if (/matterport\.com\/show/.test(url)) return url;
+
+  // 🔴 Matterport es el unico caso que devuelve la URL CRUDA, asi que es el unico donde el chequeo
+  // tiene que mirar el HOST y no el string: un regex suelto como /matterport\.com\/show/ matchea
+  // `https://evil.example/x?r=matterport.com/show`, y eso termina dentro de un <iframe> en la
+  // ficha. No es ejecucion en nuestro origen, pero es contenido ajeno enmarcado con el sitio del
+  // cliente alrededor, que es el material de un phishing.
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    if ((host === 'matterport.com' || host.endsWith('.matterport.com'))
+        && new URL(url).pathname.startsWith('/show')) {
+      return url;
+    }
+  } catch {
+    return '';
+  }
   return '';
 }
 
 // The zone tree is states -> counties -> cities, and every node carries a `count` of published
 // properties (the levels accumulate, and a zone with none is simply absent). The counts are what
 // make the pills useful, so they are kept and used for ordering.
+// `id` and `count` are interpolated straight into an href and into the markup, so they are coerced
+// to numbers HERE rather than escaped at each of the places that print them: they are numbers in
+// the API, and a value that is not one has no business reaching a template.
 export function collectZones(payload) {
   const out = [];
   (payload?.states || []).forEach((state) => {
-    out.push({ level: 'stateId', id: state.id, name: state.description, count: state.count || 0 });
+    out.push({ level: 'stateId', id: Number(state.id), name: state.description, count: Number(state.count) || 0 });
     (state.counties || []).forEach((county) => {
       out.push({
-        level: 'countyId', id: county.id, count: county.count || 0,
+        level: 'countyId', id: Number(county.id), count: Number(county.count) || 0,
         name: `${county.description}, ${state.description}`,
       });
       (county.cities || []).forEach((city) => {
         out.push({
-          level: 'cityId', id: city.id, count: city.count || 0,
+          level: 'cityId', id: Number(city.id), count: Number(city.count) || 0,
           name: `${city.description}, ${county.description}`,
         });
       });

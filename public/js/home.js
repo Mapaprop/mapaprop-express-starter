@@ -1,6 +1,6 @@
 import { api } from './api.js';
 import { layout } from './layout.js';
-import { card, skeletons, escapeHtml, multiline, message, collectZones } from './ui.js';
+import { card, skeletons, escapeHtml, multiline, message, collectZones, safeUrl } from './ui.js';
 import { t } from './i18n.js';
 
 const featured = document.getElementById('featured');
@@ -16,7 +16,12 @@ function hero(data) {
     slides.forEach((slide, index) => {
       const el = document.createElement('div');
       el.className = `hero__slide${index === 0 ? ' is-active' : ''}`;
-      el.style.backgroundImage = `url("${slide.image}")`;
+      // `safeUrl` ACA, aunque brand.js ya filtre las slides con usableImage(): esa defensa vive
+      // arriba y `hero()` no la puede ver. Y no es teorica -- usableImage sólo mira que empiece con
+      // "http", asi que una url con `")` adentro cierra este url() y mete un segundo url() en la
+      // misma declaracion: un pedido a un tercero en cada carga de la home. safeUrl lo normaliza
+      // con `new URL`, que percent-codifica las comillas.
+      el.style.backgroundImage = `url("${safeUrl(slide.image)}")`;
       host.prepend(el);
     });
     // The title the agency typed can hold line breaks: its own site uses them to split the
@@ -50,7 +55,7 @@ function callToActions(data) {
     host.innerHTML = `
       <h2>${escapeHtml(block.title)}</h2>
       ${block.description ? `<p>${escapeHtml(block.description)}</p>` : ''}
-      ${block.buttonText ? `<a class="btn" href="${escapeHtml(block.buttonLink || 'contacto.html')}">${escapeHtml(block.buttonText)}</a>` : ''}`;
+      ${block.buttonText ? `<a class="btn" href="${escapeHtml(safeUrl(block.buttonLink) || 'contacto.html')}">${escapeHtml(block.buttonText)}</a>` : ''}`;
     wrap.hidden = false;
   });
 }
@@ -61,7 +66,7 @@ async function fillSearcher() {
   if (operations.status === 'fulfilled') {
     const select = document.getElementById('s-operation');
     (operations.value.operations || []).forEach((o) => {
-      select.insertAdjacentHTML('beforeend', `<option value="${o.id}">${escapeHtml(o.description)}</option>`);
+      select.insertAdjacentHTML('beforeend', `<option value="${Number(o.id)}">${escapeHtml(o.description)}</option>`);
     });
     const preset = new URLSearchParams(window.location.search).get('operation');
     if (preset) select.value = preset;
@@ -70,7 +75,8 @@ async function fillSearcher() {
   if (types.status === 'fulfilled') {
     const select = document.getElementById('s-type');
     (types.value.types || []).forEach((type) => {
-      select.insertAdjacentHTML('beforeend', `<option value="${t.id}">${escapeHtml(t.description)}</option>`);
+      select.insertAdjacentHTML('beforeend',
+        `<option value="${Number(type.id)}">${escapeHtml(type.description)}</option>`);
     });
   }
 
