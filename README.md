@@ -83,6 +83,10 @@ Apache como cualquier otra aplicación.
 MAPAPROP_API_TOKEN=tu-token PORT=3000 node dev-local.mjs
 ```
 
+**Necesita Node 18 o más nuevo** — es el primero que trae `fetch`, que es con lo que el proxy le
+habla a Mapaprop. El servidor lo chequea al arrancar y te lo dice; si el Node del sistema es viejo,
+`nvm install 20 && nvm use 20` suele ser la salida más corta.
+
 🔴 **Si va detrás de un reverse proxy, mandale `X-Real-IP`.** El kit usa la IP del visitante para
 dos cosas: la manda a Mapaprop en la consulta (su antispam la puntúa) y limita cuántos envíos acepta
 por minuto. Sin esa cabecera tiene que deducirla del `X-Forwarded-For`, **que el visitante también

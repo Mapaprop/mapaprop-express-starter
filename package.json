@@ -4,6 +4,9 @@
   "private": true,
   "description": "Sitio inmobiliario listo para publicar que lee la cartera desde Mapaprop Express API",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev:mock": "node dev-local.mjs --mock",
     "dev": "node dev-local.mjs",

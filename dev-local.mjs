@@ -12,6 +12,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+// 🔴 Node 18 o más nuevo, y se chequea acá en vez de confiar en el `engines` del package.json:
+// `engines` sólo avisa al instalar, y este kit no tiene dependencias, así que mucha gente nunca
+// corre un `npm install`. Sin el chequeo, el proxy falla con `fetch is not defined` -- un mensaje
+// que no dice qué hacer. Medido: la caja donde vamos a desplegar el demo trae Node 10.19.
+const MAJOR = Number(process.versions.node.split('.')[0]);
+if (MAJOR < 18) {
+  console.error(`\n  Este kit necesita Node 18 o más nuevo, y estás corriendo ${process.versions.node}.`);
+  console.error('  Node 18 es el primero que trae `fetch`, que es con lo que el proxy le habla a Mapaprop.');
+  console.error('  Si no podés actualizar el Node del sistema, nvm es la salida más corta:');
+  console.error('    nvm install 20 && nvm use 20\n');
+  process.exit(1);
+}
+
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = path.join(ROOT, 'public');
 const PORT = Number(process.env.PORT || 3000);
