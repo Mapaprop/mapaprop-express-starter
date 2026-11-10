@@ -3,69 +3,69 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Quiero vender o alquilar</title>
+  <title data-i18n="sell.docTitle">Quiero vender o alquilar</title>
   <meta name="description" content="Contanos sobre tu propiedad y te ayudamos a venderla o alquilarla.">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/config.js"></script>
 </head>
 <body>
   <main class="wrap section">
-    <h1>Quiero vender o alquilar mi propiedad</h1>
+    <h1 data-i18n="sell.title">Quiero vender o alquilar mi propiedad</h1>
     <p>Contanos los datos principales y nos ponemos en contacto. Si querés, podés adjuntar una foto
        y la documentación.</p>
 
     <form class="form" id="seller" style="max-width:760px;margin-top:1.5rem">
-      <h3>Tus datos</h3>
+      <h3 data-i18n="sell.yourData">Tus datos</h3>
       <div class="form__row">
-        <div><label for="v-name">Nombre y apellido *</label><input id="v-name" required minlength="3" maxlength="100"></div>
-        <div><label for="v-phone">Teléfono *</label><input id="v-phone" type="tel" required maxlength="20"></div>
+        <div><label for="v-name" data-i18n="sell.name">Nombre y apellido *</label><input id="v-name" required minlength="3" maxlength="100"></div>
+        <div><label for="v-phone" data-i18n="sell.phone">Teléfono *</label><input id="v-phone" type="tel" required maxlength="20"></div>
       </div>
       <div class="form__row">
-        <div><label for="v-email">Email *</label><input id="v-email" type="email" required maxlength="100"></div>
-        <div><label for="v-hours">Horario de contacto</label><input id="v-hours" placeholder="Lunes a viernes de 9 a 18"></div>
+        <div><label for="v-email" data-i18n="sell.email">Email *</label><input id="v-email" type="email" required maxlength="100"></div>
+        <div><label for="v-hours" data-i18n="sell.hours">Horario de contacto</label><input id="v-hours" data-i18n-placeholder="sell.hoursPlaceholder" placeholder="Lunes a viernes de 9 a 18"></div>
       </div>
 
-      <h3>La propiedad</h3>
+      <h3 data-i18n="sell.theProperty">La propiedad</h3>
       <div class="form__row">
-        <div><label for="v-type">Tipo *</label><select id="v-type" required></select></div>
-        <div><label for="v-operation">Operación *</label><select id="v-operation" required></select></div>
+        <div><label for="v-type" data-i18n="sell.type">Tipo *</label><select id="v-type" required></select></div>
+        <div><label for="v-operation" data-i18n="sell.operation">Operación *</label><select id="v-operation" required></select></div>
       </div>
-      <div><label for="v-address">Dirección *</label><input id="v-address" required maxlength="200"></div>
+      <div><label for="v-address" data-i18n="sell.address">Dirección *</label><input id="v-address" required maxlength="200"></div>
       <div class="form__row">
-        <div><label for="v-zone">Zona o barrio</label><input id="v-zone" maxlength="200"></div>
-        <div><label for="v-zip">Código postal</label><input id="v-zip" maxlength="10"></div>
+        <div><label for="v-zone" data-i18n="sell.zone">Zona o barrio</label><input id="v-zone" maxlength="200"></div>
+        <div><label for="v-zip" data-i18n="sell.zip">Código postal</label><input id="v-zip" maxlength="10"></div>
       </div>
       <div class="form__row">
-        <div><label for="v-currency">Moneda</label>
+        <div><label for="v-currency" data-i18n="sell.currency">Moneda</label>
           <select id="v-currency"><option value="">—</option><option>USD</option><option>ARS</option><option>EUR</option></select>
         </div>
-        <div><label for="v-price">Precio pretendido</label><input id="v-price" type="number" min="0"></div>
+        <div><label for="v-price" data-i18n="sell.price">Precio pretendido</label><input id="v-price" type="number" min="0"></div>
       </div>
       <div class="form__row">
-        <div><label for="v-building">Superficie cubierta (m²)</label><input id="v-building" type="number" min="0"></div>
-        <div><label for="v-land">Superficie del terreno (m²)</label><input id="v-land" type="number" min="0"></div>
+        <div><label for="v-building" data-i18n="sell.builtArea">Superficie cubierta (m²)</label><input id="v-building" type="number" min="0"></div>
+        <div><label for="v-land" data-i18n="sell.landArea">Superficie del terreno (m²)</label><input id="v-land" type="number" min="0"></div>
       </div>
       <div class="form__row">
-        <div><label for="v-rooms">Dormitorios</label><input id="v-rooms" type="number" min="0"></div>
-        <div><label for="v-bathrooms">Baños</label><input id="v-bathrooms" type="number" min="0"></div>
+        <div><label for="v-rooms" data-i18n="sell.bedrooms">Dormitorios</label><input id="v-rooms" type="number" min="0"></div>
+        <div><label for="v-bathrooms" data-i18n="sell.bathrooms">Baños</label><input id="v-bathrooms" type="number" min="0"></div>
       </div>
-      <div><label for="v-description">Contanos más (máx. 4000 caracteres)</label><textarea id="v-description" maxlength="4000"></textarea></div>
+      <div><label for="v-description" data-i18n="sell.description">Contanos más (máx. 4000 caracteres)</label><textarea id="v-description" maxlength="4000"></textarea></div>
       <div class="form__row">
-        <div><label for="v-valuation">¿Querés una tasación?</label>
+        <div><label for="v-valuation" data-i18n="sell.valuation">¿Querés una tasación?</label>
           <select id="v-valuation"><option value="">—</option><option value="true">Sí</option><option value="false">No</option></select>
         </div>
-        <div><label for="v-listed">¿Está publicada hoy?</label>
+        <div><label for="v-listed" data-i18n="sell.listed">¿Está publicada hoy?</label>
           <select id="v-listed"><option value="">—</option><option value="true">Sí</option><option value="false">No</option></select>
         </div>
       </div>
 
-      <h3>Adjuntos (opcional)</h3>
+      <h3 data-i18n="sell.attachments">Adjuntos (opcional)</h3>
       <div class="form__row">
-        <div><label for="v-image">Una foto (JPG, PNG, GIF o WebP · máx. 2 MB)</label><input id="v-image" type="file" accept="image/jpeg,image/png,image/gif,image/webp"></div>
-        <div><label for="v-pdf">Documentación (PDF · máx. 2 MB)</label><input id="v-pdf" type="file" accept="application/pdf"></div>
+        <div><label for="v-image" data-i18n="sell.photo">Una foto (JPG, PNG, GIF o WebP · máx. 2 MB)</label><input id="v-image" type="file" accept="image/jpeg,image/png,image/gif,image/webp"></div>
+        <div><label for="v-pdf" data-i18n="sell.pdf">Documentación (PDF · máx. 2 MB)</label><input id="v-pdf" type="file" accept="application/pdf"></div>
       </div>
 
-      <button class="btn btn--primary" type="submit">Enviar</button>
+      <button class="btn btn--primary" type="submit" data-i18n="sell.submit">Enviar</button>
       <div id="seller-feedback"></div>
     </form>
   </main>

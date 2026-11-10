@@ -1,0 +1,76 @@
+{
+  "types": [
+    {
+      "description": "Departamento",
+      "id": 1
+    },
+    {
+      "description": "Terreno",
+      "id": 4
+    },
+    {
+      "description": "Casa",
+      "id": 2
+    },
+    {
+      "description": "Triplex",
+      "id": 18
+    },
+    {
+      "description": "Chacra",
+      "id": 16
+    },
+    {
+      "description": "Quinta",
+      "id": 3
+    },
+    {
+      "description": "Isla",
+      "id": 13
+    },
+    {
+      "description": "Hotel",
+      "id": 14
+    },
+    {
+      "description": "Complejo Turístico",
+      "id": 17
+    },
+    {
+      "description": "Desarrollo Inmobiliario",
+      "id": 220
+    },
+    {
+      "description": "Campo",
+      "id": 5
+    },
+    {
+      "description": "Local Comercial",
+      "id": 9
+    },
+    {
+      "description": "Cabaña",
+      "id": 21
+    },
+    {
+      "description": "Galpón",
+      "id": 8
+    },
+    {
+      "description": "Piso",
+      "id": 23
+    },
+    {
+      "description": "PH",
+      "id": 10
+    },
+    {
+      "description": "Oficina",
+      "id": 7
+    },
+    {
+      "description": "Duplex",
+      "id": 11
+    }
+  ]
+}

@@ -1,0 +1,815 @@
+{
+  "total": 5,
+  "properties": [
+    {
+      "zipCode": "1446",
+      "country": "Argentina",
+      "branchSeoUrl": "casa-central",
+      "developmentProperties": [
+        2605702,
+        2605705,
+        2606020,
+        2606546,
+        2607533,
+        2612556
+      ],
+      "occupancy": 0,
+      "landArea": 18000,
+      "county": "Flores",
+      "buildingArea": 15000,
+      "videos": [],
+      "type": 220,
+      "apartmentsPerFloor": 4,
+      "ambiences": 2,
+      "zone": "Flores, Capital Federal, Argentina",
+      "price": 38000,
+      "publication": [
+        {
+          "argenprop": false
+        },
+        {
+          "mercadolibre": false,
+          "plan": "no-plan"
+        },
+        {
+          "cabaprop": false,
+          "plan": "no-plan"
+        },
+        {
+          "zonaprop": false,
+          "plan": "no-plan"
+        },
+        {
+          "navent": false,
+          "plan": "no-plan"
+        }
+      ],
+      "embeddingVersion": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+      "tempOccupied": false,
+      "state": "Capital Federal",
+      "branchId": 761,
+      "images": [
+        {
+          "image": "/img/placeholder-1.svg",
+          "thumbnail": "/img/placeholder-2.svg",
+          "orientation": 2,
+          "imageId": 3209269,
+          "main": true,
+          "type": 1,
+          "contentType": "image/jpeg",
+          "order": 0,
+          "timestamp": "2026-04-30T14:49:52Z"
+        },
+        {
+          "image": "/img/placeholder-3.svg",
+          "thumbnail": "/img/placeholder-4.svg",
+          "orientation": 2,
+          "imageId": 3209270,
+          "main": false,
+          "type": 1,
+          "contentType": "image/jpeg",
+          "order": 1,
+          "timestamp": "2026-04-30T14:49:53Z"
+        },
+        {
+          "image": "/img/placeholder-1.svg",
+          "thumbnail": "/img/placeholder-2.svg",
+          "orientation": 2,
+          "imageId": 3209271,
+          "main": false,
+          "type": 1,
+          "contentType": "image/jpeg",
+          "order": 2,
+          "timestamp": "2026-04-30T14:49:57Z"
+        },
+        {
+          "image": "/img/placeholder-3.svg",
+          "thumbnail": "/img/placeholder-4.svg",
+          "orientation": 2,
+          "imageId": 3209272,
+          "main": false,
+          "type": 1,
+          "contentType": "image/jpeg",
+          "order": 3,
+          "timestamp": "2026-04-30T14:50:02Z"
+        }
+      ],
+      "development": true,
+      "vectorizedAt": "2026-10-20T17:19:56.059Z",
+      "publishedAt": "2026-04-30T12:14:46.000-03:00",
+      "descriptionFormatted": "Descubra un oasis de exclusividad y comodidad en el corazón de Flores con este impresionante edificio inmobiliario, ubicado en la céntrica Calcena 521, entre las calles Avellaneda y Mendez de Andes. Este desarrollo, de apenas unos meses de antigüedad, ofrece un lujoso y funcional diseño que garantiza modernidad y sofisticación en cada detalle. Con una superficie cubierta de 15.000 m², este proyecto cuenta con una superficie total de terreno de 18.000 m², proporcionando un entorno amplio y tranquilo para sus residentes.\n\nDistribuido en 10 pisos, el edificio cuenta con una planta baja que alberga 4 departamentos por piso, ofreciendo así una selecta variedad de opciones para cada gusto y estilo de vida. Cada departamento se presenta con 2 dormitorios, 1 baño y 2 ambientes que se adaptan a las necesidades de los más exigentes compradores. Además, el edificio cuenta con un total de 50 cocheras, garantizando suficiente espacio para los autos de sus residentes.\n\nEntre las características más destacadas de este desarrollo, se encuentran sus modernos amenities que incluyen un coqueto lavarropas, un jardín al frente que invita a la relajación, un acogedor playroom para los más pequeños y un quincho para disfrutar de momentos en familia o con amigos. Para la seguridad y comodidad de todos, el edificio ofrece servicios como portero, seguridad, electricidad, agua corriente y WIFI, asegurando una vida sin preocupaciones.\n\nLa propiedad cuenta con condiciones de pago flexibles, apto para crédito y profesionales, además de ser un barrio cerrado que garantiza privacidad y exclusividad. Además, el edificio es apto para mascotas, atendiendo a las necesidades de los residentes más exigentes. Si busca una propiedad que combine funcionalidad, lujo y un entorno privilegiado, esta es una oportunidad única que no debe dejar pasar. ¡Contáctese ahora para agendar una visita y descubra el futuro hogar de sus sueños",
+      "bathrooms": 1,
+      "suspended": false,
+      "dependencies": 0,
+      "labels": [
+        "mortgage-ready",
+        "professional-available"
+      ],
+      "propertyOperation": "Venta",
+      "bedrooms": 2,
+      "garages": 50,
+      "yearsOld": 0,
+      "reserved": false,
+      "lastUpdate": "2026-06-11T01:05:26.000-03:00",
+      "status": "En Construcción",
+      "customerCountryDesc": "Argentina",
+      "configs": [],
+      "typeDesc": "Desarrollo Inmobiliario",
+      "code": "1-Emprendi01",
+      "description": "Descubra un oasis de exclusividad y comodidad en el corazón de Flores con este impresionante edificio inmobiliario, ubicado en la céntrica Calcena 521, entre las calles Avellaneda y Mendez de Andes. Este desarrollo, de apenas unos meses de antigüedad, ofrece un lujoso y funcional diseño que garantiza modernidad y sofisticación en cada detalle. Con una superficie cubierta de 15.000 m², este proyecto cuenta con una superficie total de terreno de 18.000 m², proporcionando un entorno amplio y tranquilo para sus residentes. Distribuido en 10 pisos, el edificio cuenta con una planta baja que alberga 4 departamentos por piso, ofreciendo así una selecta variedad de opciones para cada gusto y estilo de vida. Cada departamento se presenta con 2 dormitorios, 1 baño y 2 ambientes que se adaptan a las necesidades de los más exigentes compradores. Además, el edificio cuenta con un total de 50 cocheras, garantizando suficiente espacio para los autos de sus residentes. Entre las características más destacadas de este desarrollo, se encuentran sus modernos amenities que incluyen un coqueto lavarropas, un jardín al frente que invita a la relajación, un acogedor playroom para los más pequeños y un quincho para disfrutar de momentos en familia o con amigos. Para la seguridad y comodidad de todos, el edificio ofrece servicios como portero, seguridad, electricidad, agua corriente y WIFI, asegurando una vida sin preocupaciones. La propiedad cuenta con condiciones de pago flexibles, apto para crédito y profesionales, además de ser un barrio cerrado que garantiza privacidad y exclusividad. Además, el edificio es apto para mascotas, atendiendo a las necesidades de los residentes más exigentes. Si busca una propiedad que combine funcionalidad, lujo y un entorno privilegiado, esta es una oportunidad única que no debe dejar pasar. ¡Contáctese ahora para agendar una visita y descubra el futuro hogar de sus sueños",
+      "moderationStatus": "not_required",
+      "alternativePrices": [],
+      "networks": [
+        "8",
+        "13"
+      ],
+      "title": "Edificio con amenities en Flores",
+      "totalFloors": 10,
+      "customerCountry": 1,
+      "countryId": 1,
+      "toilettes": 0,
+      "seoUrl": "sucursal-15",
+      "rented": false,
+      "floors": 1,
+      "expensesPrice": 0,
+      "countyId": 36,
+      "propertyType": "Desarrollo Inmobiliario",
+      "currency": "USD",
+      "timestamp": "2026-04-30T00:00:00.000-03:00",
+      "sold": false,
+      "address": "Calle Demo 1988",
+      "stateId": 1,
+      "garage": 50,
+      "operationDesc": "Venta",
+      "propertyHash": "1d548becb8bf217c6ae7ad963b825c0f",
+      "mainImage": "/img/placeholder-1.svg",
+      "reservations": [],
+      "garageType": "Espacio Guarda Coche",
+      "taxPrice": 0,
+      "attributes": [
+        {
+          "group_sub": "label",
+          "country": "ar",
+          "key_legacy": "laundryMachine",
+          "group_subtype": "ammenities",
+          "id": "laundry-machine",
+          "label": "Lavarropas",
+          "locale": "es_AR",
+          "type": "bool",
+          "selected": false,
+          "group": "propertyAttribute",
+          "status": true
+        },
+        {
+          "group_sub": "label",
+          "country": "ar",
+          "key_legacy": "frontGarden",
+          "group_subtype": "spaces",
+          "id": "front-garden",
+          "label": "Jardín al frente",
+          "locale": "es_AR",
+          "type": "bool",
+          "selected": false,
+          "group": "propertyAttribute",
+          "status": true
+        },
+        {
+          "group_sub": "label",
+          "country": "ar",
+          "key_legacy": "playroom",
+          "group_subtype": "spaces",
+          "id": "playroom",
+          "label": "Playroom",
+          "locale": "es_AR",
+          "type": "bool",
+          "selected": false,
+          "group": "propertyAttribute",
+          "status": true
+        },
+        {
+          "group_sub": "label",
+          "country": "ar",
+          "key_legacy": "janitor",
+          "group_subtype": "services",
+          "id": "janitor",
+          "label": "Portero",
+          "locale": "es_AR",
+          "type": "bool",
+          "selected": false,
+          "group": "propertyAttribute",
+          "status": true
+        },
+        {
+          "group_sub": "label",
+          "country": "ar",
+          "key_legacy": "hasSecurity",
+          "group_subtype": "services",
+          "id": "security",
+          "label": "Seguridad",
+          "locale": "es_AR",
+          "type": "bool",
+          "selected": false,
+          "group": "propertyAttribute",
+          "status": true
+        },
+        {
+          "group_sub": "label",
+          "country": "ar",
+          "key_legacy": "electricity",
+          "group_subtype": "services",
+          "id": "electricity",
+          "label": "Electricidad",
+          "locale": "es_AR",
+          "type": "bool",
+          "selected": false,
+          "group": "propertyAttribute",
+          "status": true
+        },
+        {
+          "group_sub": "label",
+          "country": "ar",
+          "key_legacy": "pipedWater",
+          "group_subtype": "services",
+          "id": "pipedWater",
+          "label": "Agua Corriente",
+          "locale": "es_AR",
+          "type": "bool",
+          "selected": false,
+          "group": "propertyAttribute",
+          "status": true
+        },
+        {
+          "group_sub": "label",
+          "country": "ar",
+          "key_legacy": "wifi",
+          "group_subtype": "services",
+          "id": "wifi",
+          "label": "WIFI",
+          "locale": "es_AR",
+          "type": "bool",
+          "selected": false,
+          "group": "propertyAttribute",
+          "status": true
+        },
+        {
+          "group_sub": "label",
+          "country": "ar",
+          "key_legacy": "gatedCommunity",
+          "group_subtype": "extras",
+          "id": "gated-community",
+          "label": "Barrio cerrado",
+          "locale": "es_AR",
+          "type": "bool",
+          "selected": false,
+          "group": "propertyAttribute",
+          "status": true
+        },
+        {
+          "group_sub": "label",
+          "country": "ar",
+          "key_legacy": "mortgageReady",
+          "group_subtype": "extras",
+          "id": "mortgage-ready",
+          "label": "Apto crédito",
+          "locale": "es_AR",
+          "type": "bool",
+          "selected": false,
+          "group": "propertyAttribute",
+          "status": true
+        },
+        {
+          "group_sub": "label",
+          "country": "ar",
+          "key_legacy": "petsReady",
+          "group_subtype": "extras",
+          "id": "petsReady",
+          "label": "Apto mascotas",
+          "locale": "es_AR",
+          "type": "bool",
+          "selected": false,
+          "group": "propertyAttribute",
+          "status": true
+        },
+        {
+          "group_sub": "label",
+          "country": "ar",
+          "key_legacy": "barbecueArea",
+          "group_subtype": "spaces",
+          "id": "barbecue-area",
+          "label": "Quincho",
+          "locale": "es_AR",
+          "type": "bool",
+          "selected": false,
+          "group": "propertyAttribute",
+          "status": true
+        }
+      ],
+      "location": {
+        "lon": "-58.46",
+        "lat": "-34.62"
+      },
+      "operation": 1
+    },
+    {
+      "zipCode": "1661",
+      "country": "Argentina",
+      "branchSeoUrl": "casa-central",
+      "developmentProperties": [
+        257092,
+        257093,
+        257094,
+        257095
+      ],
+      "occupancy": 0,
+      "landArea": 150,
+      "county": "Adolfo Alsina",
+      "buildingArea": 6000,
+      "videos": [],
+      "cityId": 1138,
+      "type": 220,
+      "apartmentsPerFloor": 4,
+      "ambiences": 2,
+      "zone": "Arano, Adolfo Alsina, Buenos Aires, Argentina",
+      "price": 150000,
+      "publication": [
+        {
+          "argenprop": false
+        },
+        {
+          "mercadolibre": false,
+          "plan": "no-plan"
+        },
+        {
+          "cabaprop": false,
+          "plan": "no-plan"
+        },
+        {
+          "zonaprop": false,
+          "plan": "no-plan"
+        },
+        {
+          "navent": false,
+          "plan": "no-plan"
+        }
+      ],
+      "embeddingVersion": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+      "tempOccupied": false,
+      "state": "Buenos Aires",
+      "branchId": 1,
+      "images": [
+        {
+          "image": "/img/placeholder-2.svg",
+          "thumbnail": "/img/placeholder-3.svg",
+          "orientation": 2,
+          "imageId": 2880674,
+          "main": false,
+          "type": 2,
+          "contentType": "image/jpeg",
+          "order": 0,
+          "timestamp": "2024-11-04T16:27:00Z"
+        },
+        {
+          "image": "/img/placeholder-4.svg",
+          "thumbnail": "/img/placeholder-1.svg",
+          "orientation": 1,
+          "imageId": 2880673,
+          "main": true,
+          "type": 1,
+          "contentType": "image/jpeg",
+          "order": 0,
+          "timestamp": "2024-11-04T16:26:49Z"
+        }
+      ],
+      "development": true,
+      "vectorizedAt": "2026-10-20T17:16:00.623Z",
+      "publishedAt": "2024-11-04T14:23:59.000-03:00",
+      "descriptionFormatted": "development de test\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+      "bathrooms": 2,
+      "suspended": false,
+      "dependencies": 1,
+      "labels": [],
+      "propertyOperation": "Venta",
+      "bedrooms": 2,
+      "garages": 2,
+      "balconyType": "Corrido",
+      "yearsOld": 2,
+      "reserved": false,
+      "lastUpdate": "2024-11-04T14:23:59.000-03:00",
+      "conditions": "Desarrollo compra en pozo",
+      "status": "Proyecto",
+      "customerCountryDesc": "Argentina",
+      "configs": [],
+      "typeDesc": "Desarrollo Inmobiliario",
+      "code": "1-desarrollo3",
+      "city": "Arano",
+      "description": "development de test Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+      "moderationStatus": "not_required",
+      "alternativePrices": [],
+      "networks": [
+        "8",
+        "13"
+      ],
+      "title": "Torre en Zona Centrica con Amenities",
+      "totalFloors": 22,
+      "customerCountry": 1,
+      "countryId": 1,
+      "toilettes": 1,
+      "seoUrl": "sucursal-16",
+      "rented": false,
+      "floors": 1,
+      "expensesPrice": 0,
+      "countyId": 137,
+      "propertyType": "Desarrollo Inmobiliario",
+      "currency": "USD",
+      "timestamp": "2024-10-14T00:00:00.000-03:00",
+      "sold": false,
+      "orientation": "1",
+      "address": "Calle Demo 2303",
+      "stateId": 2,
+      "garage": 2,
+      "operationDesc": "Venta",
+      "propertyHash": "729538028fad65dcee75528c0eff2d71",
+      "mainImage": "/img/placeholder-2.svg",
+      "reservations": [],
+      "taxPrice": 0,
+      "attributes": [],
+      "location": {
+        "lon": "-58.4",
+        "lat": "-34.61"
+      },
+      "operation": 1
+    },
+    {
+      "zipCode": "1661",
+      "country": "Argentina",
+      "branchSeoUrl": "casa-central",
+      "developmentProperties": [],
+      "occupancy": 0,
+      "landArea": 700,
+      "county": "Belgrano",
+      "buildingArea": 16000,
+      "videos": [],
+      "type": 220,
+      "apartmentsPerFloor": 2,
+      "ambiences": 4,
+      "zone": "Belgrano, Capital Federal, Argentina",
+      "price": 235000,
+      "publication": [
+        {
+          "argenprop": false
+        },
+        {
+          "mercadolibre": false,
+          "plan": "no-plan"
+        },
+        {
+          "cabaprop": false,
+          "plan": "no-plan"
+        },
+        {
+          "zonaprop": false,
+          "plan": "no-plan"
+        },
+        {
+          "navent": false,
+          "plan": "no-plan"
+        }
+      ],
+      "embeddingVersion": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+      "tempOccupied": false,
+      "state": "Capital Federal",
+      "branchId": 761,
+      "images": [
+        {
+          "image": "/img/placeholder-3.svg",
+          "thumbnail": "/img/placeholder-4.svg",
+          "orientation": 2,
+          "imageId": 2880689,
+          "main": true,
+          "type": 1,
+          "contentType": "image/jpeg",
+          "order": 0,
+          "timestamp": "2024-11-04T16:39:59Z"
+        }
+      ],
+      "development": true,
+      "vectorizedAt": "2026-10-20T17:16:03.201Z",
+      "publishedAt": "2024-11-04T13:40:22.000-03:00",
+      "descriptionFormatted": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+      "bathrooms": 2,
+      "suspended": false,
+      "dependencies": 0,
+      "labels": [],
+      "propertyOperation": "Venta",
+      "bedrooms": 4,
+      "garages": 50,
+      "reserved": false,
+      "lastUpdate": "2024-11-04T13:40:22.000-03:00",
+      "status": "A Estrenar",
+      "customerCountryDesc": "Argentina",
+      "configs": [],
+      "typeDesc": "Desarrollo Inmobiliario",
+      "code": "1-desarrollo4",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+      "moderationStatus": "not_required",
+      "alternativePrices": [],
+      "networks": [
+        "8",
+        "13"
+      ],
+      "title": "Semipisos en Duplex con piscina y gimnasio",
+      "totalFloors": 12,
+      "customerCountry": 1,
+      "countryId": 1,
+      "toilettes": 0,
+      "seoUrl": "sucursal-17",
+      "rented": false,
+      "floors": 2,
+      "expensesPrice": 0,
+      "countyId": 93,
+      "propertyType": "Desarrollo Inmobiliario",
+      "currency": "USD",
+      "timestamp": "2024-11-04T00:00:00.000-03:00",
+      "sold": false,
+      "address": "Pasaje Muestra 7397",
+      "stateId": 1,
+      "garage": 50,
+      "operationDesc": "Venta",
+      "propertyHash": "e23abdff98512564761f460defb5347f",
+      "mainImage": "/img/placeholder-1.svg",
+      "reservations": [],
+      "garageType": "Garage Cubierto",
+      "taxPrice": 0,
+      "attributes": [],
+      "location": {
+        "lon": "-58.46",
+        "lat": "-34.56"
+      },
+      "operation": 1
+    },
+    {
+      "zipCode": "8353",
+      "country": "Argentina",
+      "branchSeoUrl": "casa-central",
+      "developmentProperties": [
+        218437
+      ],
+      "occupancy": 0,
+      "landArea": 12,
+      "county": "Baradero",
+      "buildingArea": 12,
+      "videos": [],
+      "cityId": 1220,
+      "type": 220,
+      "apartmentsPerFloor": 123,
+      "ambiences": 121,
+      "zone": "Baradero, Baradero, Buenos Aires, Argentina",
+      "price": 12333,
+      "publication": [
+        {
+          "argenprop": false
+        },
+        {
+          "mercadolibre": false,
+          "plan": "no-plan"
+        },
+        {
+          "cabaprop": false,
+          "plan": "no-plan"
+        },
+        {
+          "zonaprop": false,
+          "plan": "no-plan"
+        },
+        {
+          "navent": false,
+          "plan": "no-plan"
+        }
+      ],
+      "embeddingVersion": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+      "tempOccupied": false,
+      "state": "Buenos Aires",
+      "branchId": 761,
+      "images": [
+        {
+          "image": "/img/placeholder-2.svg",
+          "thumbnail": "/img/placeholder-3.svg",
+          "orientation": 2,
+          "imageId": 2880671,
+          "main": false,
+          "type": 2,
+          "contentType": "image/jpeg",
+          "order": 0,
+          "timestamp": "2024-11-04T16:17:16Z"
+        },
+        {
+          "image": "/img/placeholder-4.svg",
+          "thumbnail": "/img/placeholder-1.svg",
+          "orientation": 2,
+          "imageId": 2880670,
+          "main": true,
+          "type": 1,
+          "contentType": "image/jpeg",
+          "order": 0,
+          "timestamp": "2024-11-04T16:14:38Z"
+        }
+      ],
+      "development": true,
+      "vectorizedAt": "2026-10-20T17:16:02.176Z",
+      "publishedAt": "2024-11-04T13:23:00.000-03:00",
+      "descriptionFormatted": "description de la propiedad de desarrrollo\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+      "bathrooms": 123,
+      "suspended": false,
+      "dependencies": 2,
+      "labels": [],
+      "propertyOperation": "Venta",
+      "bedrooms": 123,
+      "garages": 2,
+      "balconyType": "Francés",
+      "yearsOld": 123,
+      "reserved": false,
+      "lastUpdate": "2024-11-04T13:23:00.000-03:00",
+      "status": "Proyecto",
+      "customerCountryDesc": "Argentina",
+      "configs": [
+        {
+          "configId": 2305,
+          "custId": 1,
+          "category": "share",
+          "propertyId": 257007,
+          "value": "{\"networkShareCommission\":\"true\"}",
+          "key": "network-mapaprop"
+        }
+      ],
+      "typeDesc": "Desarrollo Inmobiliario",
+      "code": "1-desarrollo1",
+      "city": "Baradero",
+      "description": "description de la propiedad de desarrrollo Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+      "moderationStatus": "not_required",
+      "alternativePrices": [],
+      "title": "Edificio de Categoria semipisos de 6 ambientes",
+      "totalFloors": 23,
+      "customerCountry": 1,
+      "countryId": 1,
+      "toilettes": 2,
+      "seoUrl": "sucursal-18",
+      "rented": false,
+      "floors": 123,
+      "expensesPrice": 0,
+      "countyId": 147,
+      "propertyType": "Desarrollo Inmobiliario",
+      "currency": "ARS",
+      "timestamp": "2024-10-31T00:00:00.000-03:00",
+      "sold": true,
+      "address": "Calle Demo 188",
+      "stateId": 2,
+      "garage": 2,
+      "operationDesc": "Venta",
+      "propertyHash": "53bf6081fc82f5ca3a035ccba5da085f",
+      "mainImage": "/img/placeholder-2.svg",
+      "reservations": [],
+      "taxPrice": 0,
+      "attributes": [],
+      "location": {
+        "lon": "-59.5",
+        "lat": "-33.81"
+      },
+      "operation": 1
+    },
+    {
+      "zipCode": "8353",
+      "country": "Argentina",
+      "branchSeoUrl": "casa-central",
+      "developmentProperties": [
+        196831
+      ],
+      "occupancy": 0,
+      "landArea": 1,
+      "county": "Berazategui",
+      "buildingArea": 1,
+      "videos": [],
+      "cityId": 909,
+      "type": 220,
+      "apartmentsPerFloor": 1,
+      "ambiences": 1,
+      "zone": "Berazategui, Berazategui, Buenos Aires, Argentina",
+      "price": 123,
+      "publication": [
+        {
+          "argenprop": false
+        },
+        {
+          "mercadolibre": false,
+          "plan": "no-plan"
+        },
+        {
+          "cabaprop": false,
+          "plan": "no-plan"
+        },
+        {
+          "zonaprop": false,
+          "plan": "no-plan"
+        },
+        {
+          "navent": false,
+          "plan": "no-plan"
+        }
+      ],
+      "embeddingVersion": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+      "tempOccupied": false,
+      "state": "Buenos Aires",
+      "branchId": 1,
+      "images": [
+        {
+          "image": "/img/placeholder-3.svg",
+          "thumbnail": "/img/placeholder-4.svg",
+          "orientation": 2,
+          "imageId": 2880672,
+          "main": true,
+          "type": 1,
+          "contentType": "image/jpeg",
+          "order": 0,
+          "timestamp": "2024-11-04T16:20:16Z"
+        },
+        {
+          "image": "/img/placeholder-1.svg",
+          "thumbnail": "/img/placeholder-2.svg",
+          "orientation": 2,
+          "imageId": 2879416,
+          "main": false,
+          "type": 1,
+          "contentType": "image/png",
+          "order": 1,
+          "timestamp": "2024-10-31T19:10:33Z"
+        },
+        {
+          "image": "/img/placeholder-3.svg",
+          "thumbnail": "/img/placeholder-4.svg",
+          "orientation": 2,
+          "imageId": 2879417,
+          "main": false,
+          "type": 2,
+          "contentType": "image/png",
+          "order": 1,
+          "timestamp": "2024-10-31T19:10:45Z"
+        }
+      ],
+      "development": true,
+      "vectorizedAt": "2026-10-20T17:16:01.563Z",
+      "publishedAt": "2024-11-04T13:21:07.000-03:00",
+      "descriptionFormatted": "Descripcion de desarrollooooo\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+      "bathrooms": 1,
+      "suspended": false,
+      "dependencies": 0,
+      "labels": [],
+      "propertyOperation": "Venta",
+      "bedrooms": 1,
+      "garages": 1,
+      "yearsOld": 1,
+      "reserved": false,
+      "lastUpdate": "2024-11-04T13:21:07.000-03:00",
+      "status": "En Construcción",
+      "customerCountryDesc": "Argentina",
+      "configs": [],
+      "typeDesc": "Desarrollo Inmobiliario",
+      "code": "1-desarrollo2",
+      "city": "Berazategui",
+      "description": "Descripcion de desarrollooooo Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+      "moderationStatus": "not_required",
+      "alternativePrices": [],
+      "networks": [
+        "8",
+        "13"
+      ],
+      "title": "Torre de categoria, Entrega 2025 - Semipisos de Lujo",
+      "totalFloors": 1,
+      "customerCountry": 1,
+      "countryId": 1,
+      "toilettes": 0,
+      "seoUrl": "sucursal-19",
+      "rented": false,
+      "floors": 1,
+      "expensesPrice": 0,
+      "countyId": 149,
+      "propertyType": "Desarrollo Inmobiliario",
+      "currency": "ARS",
+      "timestamp": "2024-10-31T00:00:00.000-03:00",
+      "sold": false,
+      "address": "Pasaje Muestra 4202",
+      "stateId": 2,
+      "garage": 1,
+      "operationDesc": "Venta",
+      "propertyHash": "fccdb45a47b847bff19ee9e1fd4872f1",
+      "mainImage": "/img/placeholder-1.svg",
+      "reservations": [],
+      "garageType": "Garage Descubierto",
+      "taxPrice": 0,
+      "attributes": [],
+      "location": {
+        "lon": "-58.21",
+        "lat": "-34.76"
+      },
+      "operation": 1
+    }
+  ]
+}

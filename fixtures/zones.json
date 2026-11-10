@@ -1,0 +1,848 @@
+{
+  "states": [
+    {
+      "count": 32,
+      "description": "Capital Federal",
+      "id": 1,
+      "counties": [
+        {
+          "count": 2,
+          "description": "Caballito",
+          "id": 18
+        },
+        {
+          "count": 1,
+          "description": "Monserrat",
+          "id": 25
+        },
+        {
+          "count": 1,
+          "description": "San Nicolás",
+          "id": 28
+        },
+        {
+          "count": 1,
+          "description": "Coghlan",
+          "id": 31
+        },
+        {
+          "count": 1,
+          "description": "Congreso",
+          "id": 33
+        },
+        {
+          "count": 2,
+          "description": "Flores",
+          "id": 36
+        },
+        {
+          "count": 1,
+          "description": "Monte Castro",
+          "id": 39
+        },
+        {
+          "count": 1,
+          "description": "Mataderos",
+          "id": 42
+        },
+        {
+          "count": 1,
+          "description": "Palermo",
+          "id": 46
+        },
+        {
+          "count": 1,
+          "description": "Botanico",
+          "id": 47
+        },
+        {
+          "count": 1,
+          "description": "Parque Chacabuco",
+          "id": 53
+        },
+        {
+          "count": 1,
+          "description": "Saavedra",
+          "id": 57
+        },
+        {
+          "count": 1,
+          "description": "San Telmo",
+          "id": 59
+        },
+        {
+          "count": 1,
+          "description": "Vélez Sarsfield",
+          "id": 60
+        },
+        {
+          "count": 1,
+          "description": "Villa Devoto",
+          "id": 63
+        },
+        {
+          "count": 1,
+          "description": "Villa Luro",
+          "id": 66
+        },
+        {
+          "count": 1,
+          "description": "Villa Real",
+          "id": 69
+        },
+        {
+          "count": 1,
+          "description": "Villa Urquiza",
+          "id": 72
+        },
+        {
+          "count": 1,
+          "description": "Villa del Parque",
+          "id": 76
+        },
+        {
+          "count": 2,
+          "description": "Agronomía",
+          "id": 89
+        },
+        {
+          "count": 1,
+          "description": "Almagro",
+          "id": 90
+        },
+        {
+          "count": 1,
+          "description": "Balvanera",
+          "id": 91
+        },
+        {
+          "count": 1,
+          "description": "Belgrano",
+          "id": 93
+        },
+        {
+          "count": 1,
+          "description": "Floresta",
+          "id": 101
+        },
+        {
+          "count": 1,
+          "description": "Recoleta",
+          "id": 116
+        },
+        {
+          "count": 1,
+          "description": "Villa Santa Rita",
+          "id": 134
+        },
+        {
+          "count": 1,
+          "description": "Once",
+          "id": 653
+        },
+        {
+          "count": 1,
+          "description": "Barrio Norte",
+          "id": 654
+        }
+      ]
+    },
+    {
+      "count": 31,
+      "description": "Buenos Aires",
+      "id": 2,
+      "counties": [
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Arano",
+              "id": 1138
+            },
+            {
+              "count": 1,
+              "description": "Colonia Lapin",
+              "id": 1143
+            }
+          ],
+          "count": 2,
+          "description": "Adolfo Alsina",
+          "id": 137
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "De la Garma",
+              "id": 1165
+            },
+            {
+              "count": 1,
+              "description": "Paraje Pedro Próspero Lasalle",
+              "id": 1169
+            }
+          ],
+          "count": 2,
+          "description": "Adolfo Gonzales Chaves",
+          "id": 138
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Villa Grisolía (Est. Achupallas)",
+              "id": 1175
+            }
+          ],
+          "count": 1,
+          "description": "Alberti",
+          "id": 139
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Piñeyro",
+              "id": 905
+            },
+            {
+              "count": 1,
+              "description": "Sarandí",
+              "id": 906
+            }
+          ],
+          "count": 2,
+          "description": "Avellaneda",
+          "id": 142
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Baradero",
+              "id": 1220
+            }
+          ],
+          "count": 1,
+          "description": "Baradero",
+          "id": 147
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Berazategui",
+              "id": 909
+            },
+            {
+              "count": 1,
+              "description": "Barrio Privado Los Ombúes de Hudson",
+              "id": 5973
+            },
+            {
+              "count": 1,
+              "description": "Barrio Privado Las Acacias",
+              "id": 10272
+            },
+            {
+              "count": 1,
+              "description": "Barrio Privado Los Troncos",
+              "id": 22491
+            }
+          ],
+          "count": 4,
+          "description": "Berazategui",
+          "id": 149
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Bosques",
+              "id": 957
+            }
+          ],
+          "count": 1,
+          "description": "Florencio Varela",
+          "id": 176
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Santa Teresita",
+              "id": 11
+            }
+          ],
+          "count": 1,
+          "description": "La Costa",
+          "id": 200
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Las Flores",
+              "id": 1539
+            }
+          ],
+          "count": 1,
+          "description": "Las Flores",
+          "id": 205
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Country Club La Concepción",
+              "id": 5806
+            },
+            {
+              "count": 1,
+              "description": "Centro",
+              "id": 22421
+            },
+            {
+              "count": 1,
+              "description": "Villa del Parque",
+              "id": 22459
+            }
+          ],
+          "count": 3,
+          "description": "Luján",
+          "id": 211
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Pilar",
+              "id": 104
+            }
+          ],
+          "count": 1,
+          "description": "Pilar",
+          "id": 232
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Ostende",
+              "id": 1091
+            }
+          ],
+          "count": 1,
+          "description": "Pinamar",
+          "id": 233
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "San Francisco Solano",
+              "id": 1099
+            },
+            {
+              "count": 1,
+              "description": "Quilmes Oeste",
+              "id": 22483
+            }
+          ],
+          "count": 2,
+          "description": "Quilmes",
+          "id": 237
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Bella Vista",
+              "id": 12
+            },
+            {
+              "count": 1,
+              "description": "San Miguel",
+              "id": 15
+            },
+            {
+              "count": 1,
+              "description": "Barrio Privado Las Acacias",
+              "id": 5750
+            }
+          ],
+          "count": 3,
+          "description": "San Miguel",
+          "id": 252
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Rincon de Milberg",
+              "id": 153
+            }
+          ],
+          "count": 1,
+          "description": "Tigre",
+          "id": 259
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Caseros",
+              "id": 54
+            },
+            {
+              "count": 1,
+              "description": "Ciudad Jardín Lomas del Palomar",
+              "id": 56
+            },
+            {
+              "count": 1,
+              "description": "Ciudadela",
+              "id": 57
+            }
+          ],
+          "count": 3,
+          "description": "Tres De Febrero",
+          "id": 264
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Saavedra",
+              "id": 1771
+            }
+          ],
+          "count": 1,
+          "description": "Saavedra",
+          "id": 300
+        }
+      ]
+    },
+    {
+      "count": 1,
+      "description": "Chaco",
+      "id": 4,
+      "counties": [
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Taco Pozo",
+              "id": 2810
+            }
+          ],
+          "count": 1,
+          "description": "Almirante Brown",
+          "id": 469
+        }
+      ]
+    },
+    {
+      "count": 2,
+      "description": "Chubut",
+      "id": 5,
+      "counties": [
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Acceso Norte",
+              "id": 5348
+            }
+          ],
+          "count": 1,
+          "description": "Escalante",
+          "id": 628
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Sarmiento",
+              "id": 5465
+            }
+          ],
+          "count": 1,
+          "description": "Sarmiento",
+          "id": 638
+        }
+      ]
+    },
+    {
+      "count": 9,
+      "description": "Córdoba",
+      "id": 6,
+      "counties": [
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Colinas de Vélez Sarsfield",
+              "id": 722
+            },
+            {
+              "count": 1,
+              "description": "Centro",
+              "id": 727
+            },
+            {
+              "count": 1,
+              "description": "Parque Chacabuco",
+              "id": 808
+            },
+            {
+              "count": 1,
+              "description": "Villa Belgrano",
+              "id": 876
+            }
+          ],
+          "count": 5,
+          "description": "Córdoba Capital",
+          "id": 272
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Candelaria",
+              "id": 193
+            }
+          ],
+          "count": 1,
+          "description": "Cruz del Eje",
+          "id": 274
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "La Falda",
+              "id": 391
+            }
+          ],
+          "count": 1,
+          "description": "Punilla",
+          "id": 282
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Oncativo",
+              "id": 497
+            }
+          ],
+          "count": 1,
+          "description": "Río Segundo",
+          "id": 286
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Concepción",
+              "id": 571
+            }
+          ],
+          "count": 1,
+          "description": "San Justo",
+          "id": 289
+        }
+      ]
+    },
+    {
+      "count": 14,
+      "description": "Entre Ríos",
+      "id": 8,
+      "counties": [
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Villa Elisa",
+              "id": 4263
+            }
+          ],
+          "count": 1,
+          "description": "Colón",
+          "id": 320
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Gualeguaychú",
+              "id": 1962
+            },
+            {
+              "count": 1,
+              "description": "Distrito Talitas",
+              "id": 4337
+            }
+          ],
+          "count": 3,
+          "description": "Gualeguaychú",
+          "id": 326
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Villa Concepción del Tío",
+              "id": 569
+            },
+            {
+              "count": 1,
+              "description": "Concepción del Uruguay",
+              "id": 1970
+            },
+            {
+              "count": 1,
+              "description": "Monte Caseros",
+              "id": 2022
+            },
+            {
+              "count": 1,
+              "description": "Bonpland",
+              "id": 2041
+            },
+            {
+              "count": 1,
+              "description": "Caseros",
+              "id": 4473
+            },
+            {
+              "count": 1,
+              "description": "Colonia Elía",
+              "id": 4474
+            },
+            {
+              "count": 1,
+              "description": "Herrera",
+              "id": 4476
+            },
+            {
+              "count": 1,
+              "description": "Las Moscas",
+              "id": 4477
+            },
+            {
+              "count": 1,
+              "description": "San Cipriano",
+              "id": 4482
+            },
+            {
+              "count": 1,
+              "description": "Villa Mantero",
+              "id": 4487
+            }
+          ],
+          "count": 10,
+          "description": "Uruguay",
+          "id": 334
+        }
+      ]
+    },
+    {
+      "count": 5,
+      "description": "Misiones",
+      "id": 14,
+      "counties": [
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "1º de Mayo",
+              "id": 22191
+            }
+          ],
+          "count": 1,
+          "description": "Cainguás",
+          "id": 398
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Posadas, 30 de Octubre",
+              "id": 22514
+            },
+            {
+              "count": 1,
+              "description": "Posadas, Parque 2 de Abril",
+              "id": 22601
+            },
+            {
+              "count": 1,
+              "description": "Posadas, Villa Industrial",
+              "id": 22684
+            }
+          ],
+          "count": 3,
+          "description": "Capital",
+          "id": 400
+        },
+        {
+          "count": 1,
+          "description": "Concepción",
+          "id": 401
+        }
+      ]
+    },
+    {
+      "count": 1,
+      "description": "Neuquén",
+      "id": 15,
+      "counties": [
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Fortin 1º de Mayo",
+              "id": 5200
+            }
+          ],
+          "count": 1,
+          "description": "Catán Lil",
+          "id": 613
+        }
+      ]
+    },
+    {
+      "count": 1,
+      "description": "Rio Negro",
+      "id": 16,
+      "counties": [
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Colonia E. Frias",
+              "id": 5079
+            }
+          ],
+          "count": 1,
+          "description": "Conesa",
+          "id": 601
+        }
+      ]
+    },
+    {
+      "count": 2,
+      "description": "San Juan",
+      "id": 18,
+      "counties": [
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Barreal",
+              "id": 3518
+            }
+          ],
+          "count": 1,
+          "description": "Calingasta",
+          "id": 532
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Pje. Gualilán",
+              "id": 3644
+            }
+          ],
+          "count": 1,
+          "description": "Ullum",
+          "id": 545
+        }
+      ]
+    },
+    {
+      "count": 1,
+      "description": "Santa Cruz",
+      "id": 20,
+      "counties": [
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Puerto Santa Cruz",
+              "id": 5501
+            }
+          ],
+          "count": 1,
+          "description": "Corpen Aike",
+          "id": 642
+        }
+      ]
+    },
+    {
+      "count": 2,
+      "description": "Santa Fe",
+      "id": 21,
+      "counties": [
+        {
+          "count": 1,
+          "description": "Las Colonias",
+          "id": 310
+        },
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Pichincha",
+              "id": 22400
+            }
+          ],
+          "count": 1,
+          "description": "Rosario",
+          "id": 312
+        }
+      ]
+    },
+    {
+      "count": 1,
+      "description": "Tierra del Fuego",
+      "id": 23,
+      "counties": [
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Islas Malvinas, Bougainville",
+              "id": 6089
+            }
+          ],
+          "count": 1,
+          "description": "Islas del Atlántico Sur",
+          "id": 658
+        }
+      ]
+    },
+    {
+      "count": 1,
+      "description": "Antofagasta",
+      "id": 100,
+      "counties": [
+        {
+          "cities": [
+            {
+              "count": 1,
+              "description": "Antofagasta",
+              "id": 18451
+            }
+          ],
+          "count": 1,
+          "description": "Antofagasta",
+          "id": 1345
+        }
+      ]
+    }
+  ]
+}

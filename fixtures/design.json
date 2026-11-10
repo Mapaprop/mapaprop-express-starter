@@ -1,0 +1,43 @@
+{
+  "typography": {},
+  "images": {
+    "slides": [
+      {
+        "image": "/img/hero-1.svg",
+        "url": "/contacto"
+      },
+      {
+        "image": "/img/hero-2.svg",
+        "url": "/contacto"
+      },
+      {
+        "image": "/img/hero-3.svg",
+        "url": "/destacados"
+      }
+    ],
+    "logo": "/img/logo-sample.svg"
+  },
+  "footer": {},
+  "social": {
+    "instagram": "https://www.example.com/instagram"
+  },
+  "callToActions": [
+    {
+      "index": 1,
+      "enabled": false
+    },
+    {
+      "index": 2,
+      "enabled": false
+    },
+    {
+      "index": 3,
+      "enabled": false
+    }
+  ],
+  "colors": {
+    "secondary": "#0061e0",
+    "primary": "#ededed",
+    "secondaryText": "#fff0f0"
+  }
+}

@@ -1,6 +1,7 @@
 import { api } from './api.js';
 import { layout } from './layout.js';
 import { card, skeletons, escapeHtml, multiline, message, collectZones } from './ui.js';
+import { t } from './i18n.js';
 
 const featured = document.getElementById('featured');
 featured.innerHTML = skeletons(6);
@@ -33,6 +34,8 @@ function hero(data) {
       }, 6000);
     }
   } else {
+    // The agency's own copy wins; the translated default is the fallback (applyI18n already put it
+    // there), so there is nothing to do when config.js leaves these empty.
     if (fallback.title) document.getElementById('hero-title').textContent = fallback.title;
     if (fallback.subtitle) document.getElementById('hero-subtitle').textContent = fallback.subtitle;
   }
@@ -66,7 +69,7 @@ async function fillSearcher() {
 
   if (types.status === 'fulfilled') {
     const select = document.getElementById('s-type');
-    (types.value.types || []).forEach((t) => {
+    (types.value.types || []).forEach((type) => {
       select.insertAdjacentHTML('beforeend', `<option value="${t.id}">${escapeHtml(t.description)}</option>`);
     });
   }
@@ -97,12 +100,12 @@ async function loadFeatured() {
   try {
     const { properties = [] } = await api.properties({ size: 6 });
     if (!properties.length) {
-      message(featured, 'Todavía no hay propiedades publicadas en esta cuenta.');
+      message(featured, t('home.empty'));
       return;
     }
     featured.innerHTML = properties.map(card).join('');
   } catch (error) {
-    message(featured, `No pudimos cargar las propiedades: ${error.message}`, 'error');
+    message(featured, t('listing.loadError', { message: error.message }), 'error');
   }
 }
 
@@ -123,7 +126,7 @@ async function loadBranches() {
     if (branches.length < 1) return;
     document.getElementById('branches').innerHTML = branches
       .map((b) => `<div class="branch">
-          <h3>${escapeHtml(b.name || 'Sucursal')}</h3>
+          <h3>${escapeHtml(b.name || t('contact.branchFallback'))}</h3>
           <p>${escapeHtml([b.address, b.zone2Description, b.zone1Description].filter(Boolean).join(', '))}</p>
           ${b.phone1 ? `<p><a href="tel:${escapeHtml(String(b.phone1).replace(/[^\d+]/g, ''))}">${escapeHtml(b.phone1)}</a></p>` : ''}
           ${b.email ? `<p><a href="mailto:${escapeHtml(b.email)}">${escapeHtml(b.email)}</a></p>` : ''}

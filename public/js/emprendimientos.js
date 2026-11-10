@@ -1,6 +1,7 @@
 import { api, PAGE_SIZE } from './api.js';
 import { layout } from './layout.js';
 import { escapeHtml, message, money, num, pager, propertyUrl, skeletons, cover, statusBadge } from './ui.js';
+import { t, formatNumber } from './i18n.js';
 
 const host = document.getElementById('developments');
 const pagination = document.getElementById('pagination');
@@ -12,18 +13,17 @@ function stats(property) {
   const s = property.developmentStats;
   if (!s) return '';
   const bits = [];
-  if (s.units?.total) bits.push(`${s.units.total} ${s.units.total === 1 ? 'unidad' : 'unidades'}`);
-  if (s.units?.available) bits.push(`${s.units.available} disponibles`);
+  if (s.units?.total) bits.push(t('developments.units', { n: s.units.total }));
+  if (s.units?.available) bits.push(t('developments.available', { n: s.units.available }));
   const currencies = Object.entries(s.prices?.byCurrency || {});
   if (currencies.length === 1) {
     const [currency, range] = currencies[0];
     if (range.from) {
-      bits.push(range.from === range.to
-        ? `${currency} ${Number(range.from).toLocaleString('es-AR')}`
-        : `desde ${currency} ${Number(range.from).toLocaleString('es-AR')}`);
+      const price = `${currency} ${formatNumber(range.from)}`;
+      bits.push(range.from === range.to ? price : t('developments.priceFrom', { price }));
     }
   } else if (currencies.length > 1) {
-    bits.push('precios en varias monedas');
+    bits.push(t('developments.manyCurrencies'));
   }
   return bits.join(' · ');
 }
@@ -33,20 +33,20 @@ function developmentCard(property) {
   const badge = statusBadge(property);
   const measured = stats(property);
   const declared = num(property.totalApartments)
-    ? `Proyecto de ${num(property.totalApartments)} unidades`
+    ? t('developments.declared', { n: num(property.totalApartments) })
     : '';
   return `
     <a class="card" href="${propertyUrl(property)}">
       <div class="card__media">
         ${image
-          ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(property.title || 'Emprendimiento')}" loading="lazy">`
-          : '<div class="card__media--empty">Sin fotos</div>'}
+          ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(property.title || t('card.development'))}" loading="lazy">`
+          : `<div class="card__media--empty">${escapeHtml(t('card.noPhotos'))}</div>`}
         ${badge ? `<span class="badge badge--status">${badge}</span>` : ''}
-        <span class="badge badge--dev">Emprendimiento</span>
+        <span class="badge badge--dev">${escapeHtml(t('card.development'))}</span>
       </div>
       <div class="card__body">
         <p class="card__kicker">${escapeHtml(property.propertyOperation || '')}</p>
-        <h3 class="card__title">${escapeHtml(property.title || 'Sin título')}</h3>
+        <h3 class="card__title">${escapeHtml(property.title || t('card.noTitle'))}</h3>
         <p class="card__zone">${escapeHtml(property.zone || property.address || '')}</p>
         ${declared ? `<p class="card__specs">${escapeHtml(declared)}</p>` : ''}
         ${measured ? `<p class="card__specs">${escapeHtml(measured)}</p>` : ''}
@@ -61,11 +61,10 @@ async function load(from = 0) {
   try {
     // `type` is forced to 23 by the API: whatever is sent is overwritten.
     const { properties = [], total = 0 } = await api.developments({ from, size: PAGE_SIZE });
-    document.getElementById('dev-count').textContent =
-      total === 1 ? '1 emprendimiento' : `${total} emprendimientos`;
+    document.getElementById('dev-count').textContent = t('developments.count', { n: total });
 
     if (!properties.length) {
-      message(host, 'Todavía no hay emprendimientos publicados.');
+      message(host, t('developments.empty'));
       return;
     }
     host.innerHTML = properties.map(developmentCard).join('');
@@ -74,7 +73,7 @@ async function load(from = 0) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   } catch (error) {
-    message(host, `No pudimos cargar los emprendimientos: ${error.message}`, 'error');
+    message(host, t('developments.loadError', { message: error.message }), 'error');
   }
 }
 

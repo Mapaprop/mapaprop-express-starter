@@ -1,0 +1,144 @@
+{
+  "settings": [
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "config",
+      "value": "all.branches"
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "desing",
+      "value": "#ededed"
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "desing",
+      "value": "#0061e0"
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "desing",
+      "value": "#fff0f0"
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "mapbox",
+      "value": "pk.poné-acá-tu-token-de-mapbox"
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "reCaptchaV3",
+      "value": "poné-acá-tu-site-key-de-recaptcha"
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "resource",
+      "value": "."
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "resource",
+      "value": "/img/placeholder-3.svg"
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "resource",
+      "value": "1"
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "resource",
+      "value": "/img/placeholder-4.svg"
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "resource",
+      "value": "/contacto"
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "resource",
+      "value": "/img/placeholder-1.svg"
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "resource",
+      "value": "/contacto"
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "resource",
+      "value": "/img/placeholder-2.svg"
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "resource",
+      "value": "/destacados"
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "resource",
+      "value": "/img/placeholder-3.svg"
+    },
+    {
+      "name": "Inmobiliaria Modelo",
+      "custId": 1,
+      "websiteId": 329,
+      "category": "social",
+      "value": "https://www.example.com/instagram"
+    }
+  ],
+  "customer": {
+    "phone2": "+54 11 5555-0102",
+    "tempRental": false,
+    "bio": "Atendemos la zona desde 1998.",
+    "zone0Description": "Argentina",
+    "websiteActive": true,
+    "taxName": "Inmobiliaria Modelo S.R.L.",
+    "phone1": "+54 11 5555-0101",
+    "seoUrl": "inmobiliaria-modelo",
+    "taxAddress": "Av. del Ejemplo 1234",
+    "zone3Description": "Olivos",
+    "email": "contacto@inmobiliaria-modelo.example",
+    "taxCondition": "consumidor-final",
+    "zip": "1661",
+    "zone2Description": "Vicente López",
+    "address": "Av. del Ejemplo 1234",
+    "zone1Description": "Buenos Aires",
+    "taxId": "20000000001",
+    "name": "Inmobiliaria Modelo",
+    "taxIdType": "cuit"
+  }
+}

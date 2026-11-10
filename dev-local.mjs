@@ -1,10 +1,12 @@
-// Local preview server. It exists so the kit can be opened without installing the Vercel CLI, and
-// it dispatches to the SAME proxy handler that runs in production -- there is no second
-// implementation of the token logic to drift.
+// Node server for the kit. It dispatches to the SAME proxy handler that runs on Vercel -- there is
+// no second implementation of the token logic to drift. Three uses:
 //
-//   npm run dev        ->  http://localhost:3000
+//   npm run dev:mock                                       -> fixtures, NO token and NO backend
+//   npm run dev                                            -> local preview, http://localhost:3000
+//   MAPAPROP_API_TOKEN=... PORT=3000 node dev-local.mjs     -> self-hosting, behind nginx/Apache
 //
-// Reads the token from .env.local (same file name the Vercel CLI uses) and never prints it.
+// The token comes from the environment, or from .env.local when the environment does not set it
+// (same file name the Vercel CLI uses). It is never printed. In mock mode no token is read at all.
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,7 +25,11 @@ for (const file of ['.env.local', '.env']) {
   }
 }
 
-const { default: handler } = await import('./api/mp/[...path].js');
+// `--mock` is a flag and not an env var so the npm script works the same on Windows.
+const MOCK = process.argv.includes('--mock') || process.env.MAPAPROP_MOCK === '1';
+const { default: handler } = MOCK
+  ? await import('./fixtures/mock-handler.mjs')
+  : await import('./api/mp/[...path].js');
 
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
@@ -94,8 +100,13 @@ server.on('error', (error) => {
 });
 
 server.listen(PORT, () => {
-  const configured = Boolean(process.env.MAPAPROP_API_TOKEN);
   console.log(`\n  Sitio en  http://localhost:${PORT}`);
+  if (MOCK) {
+    console.log('  Datos    fixtures de ./fixtures (modo mock: sin token y sin backend)');
+    console.log('  Ojo      los formularios NO envían nada a ningún CRM\n');
+    return;
+  }
+  const configured = Boolean(process.env.MAPAPROP_API_TOKEN);
   console.log(`  API       ${process.env.MAPAPROP_API_BASE || 'https://mapaprop.app/api/action/express-v1'}`);
-  console.log(`  Token     ${configured ? 'cargado desde .env.local' : '⚠️  FALTA: cargá MAPAPROP_API_TOKEN en .env.local'}\n`);
+  console.log(`  Token     ${configured ? 'cargado' : '⚠️  FALTA: cargá MAPAPROP_API_TOKEN en .env.local o en el entorno, o probá sin token con npm run dev:mock'}\n`);
 });

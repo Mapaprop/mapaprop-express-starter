@@ -1,6 +1,7 @@
 import { api, PAGE_SIZE } from './api.js';
 import { layout } from './layout.js';
 import { card, skeletons, escapeHtml, message, pager, collectZones } from './ui.js';
+import { t } from './i18n.js';
 
 const results = document.getElementById('results');
 const pagination = document.getElementById('pagination');
@@ -57,8 +58,8 @@ async function fillCatalogs(params) {
   }
   if (types.status === 'fulfilled') {
     const select = document.getElementById('f-type');
-    (types.value.types || []).forEach((t) =>
-      select.insertAdjacentHTML('beforeend', `<option value="${t.id}">${escapeHtml(t.description)}</option>`));
+    (types.value.types || []).forEach((type) =>
+      select.insertAdjacentHTML('beforeend', `<option value="${type.id}">${escapeHtml(type.description)}</option>`));
   }
   if (zones.status === 'fulfilled') {
     const select = document.getElementById('f-zone');
@@ -76,13 +77,10 @@ async function load(params) {
 
   try {
     const { properties = [], total = 0 } = await api.properties(params);
-    document.getElementById('listing-count').textContent =
-      total === 1 ? '1 propiedad' : `${total} propiedades`;
+    document.getElementById('listing-count').textContent = t('pager.total', { n: total });
 
     if (!properties.length) {
-      message(results, total === 0
-        ? 'No encontramos propiedades con esos filtros. Probá quitando alguno.'
-        : 'Esta página quedó vacía. Volvé a la primera.');
+      message(results, total === 0 ? t('listing.emptyFiltered') : t('listing.emptyPage'));
       return;
     }
 
@@ -92,7 +90,7 @@ async function load(params) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   } catch (error) {
-    message(results, `No pudimos cargar las propiedades: ${error.message}`, 'error');
+    message(results, t('listing.loadError', { message: error.message }), 'error');
   }
 }
 

@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Inicio</title>
-  <meta name="description" content="Propiedades en venta y alquiler. Cartera actualizada al día.">
+  <title data-i18n="home.docTitle">Inicio</title>
+  <meta name="description" data-i18n-content="home.docDescription" content="Propiedades en venta y alquiler. Cartera actualizada al día.">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/config.js"></script>
 </head>
 <body>
   <section class="hero" id="hero">
     <div class="hero__inner">
-      <h1 id="hero-title">Encontrá tu próxima propiedad</h1>
-      <p id="hero-subtitle">Toda nuestra cartera, actualizada al día.</p>
+      <h1 id="hero-title" data-i18n="home.heroTitle">Encontrá tu próxima propiedad</h1>
+      <p id="hero-subtitle" data-i18n="home.heroSubtitle">Toda nuestra cartera, actualizada al día.</p>
     </div>
   </section>
 
@@ -20,22 +20,22 @@
     <form class="searcher" id="searcher">
       <div class="searcher__grid">
         <div>
-          <label for="s-operation">Operación</label>
-          <select id="s-operation" name="operation"><option value="">Todas</option></select>
+          <label for="s-operation" data-i18n="search.operation">Operación</label>
+          <select id="s-operation" name="operation"><option value="" data-i18n="search.allFeminine">Todas</option></select>
         </div>
         <div>
-          <label for="s-type">Tipo</label>
-          <select id="s-type" name="type"><option value="">Todos</option></select>
+          <label for="s-type" data-i18n="search.type">Tipo</label>
+          <select id="s-type" name="type"><option value="" data-i18n="search.allMasculine">Todos</option></select>
         </div>
         <div>
-          <label for="s-zone">Zona</label>
-          <select id="s-zone" name="zone"><option value="">Todas</option></select>
+          <label for="s-zone" data-i18n="search.zone">Zona</label>
+          <select id="s-zone" name="zone"><option value="" data-i18n="search.allFeminine">Todas</option></select>
         </div>
         <div>
-          <label for="s-term">Buscar</label>
-          <input id="s-term" name="term" type="search" placeholder="Código, dirección, zona…">
+          <label for="s-term" data-i18n="search.term">Buscar</label>
+          <input id="s-term" name="term" type="search" data-i18n-placeholder="search.termPlaceholder" placeholder="Código, dirección, zona…">
         </div>
-        <button class="btn btn--primary" type="submit">Buscar</button>
+        <button class="btn btn--primary" type="submit" data-i18n="search.submit">Buscar</button>
       </div>
     </form>
   </div>
@@ -47,8 +47,8 @@
   <section class="section" id="developments-section" hidden>
     <div class="wrap">
       <div class="section__head">
-        <h2>Emprendimientos</h2>
-        <a href="emprendimientos.html">Ver todos →</a>
+        <h2 data-i18n="home.developments">Emprendimientos</h2>
+        <a href="emprendimientos.html" data-i18n="home.seeAllDevelopments">Ver todos →</a>
       </div>
       <div class="grid" id="developments"></div>
     </div>
@@ -57,8 +57,8 @@
   <section class="section section--alt">
     <div class="wrap">
       <div class="section__head">
-        <h2>Propiedades destacadas</h2>
-        <a href="propiedades.html">Ver toda la cartera →</a>
+        <h2 data-i18n="home.featured">Propiedades destacadas</h2>
+        <a href="propiedades.html" data-i18n="home.seeAllProperties">Ver toda la cartera →</a>
       </div>
       <div class="grid" id="featured"></div>
     </div>
@@ -66,14 +66,14 @@
 
   <section class="section" id="zones-section" hidden>
     <div class="wrap">
-      <div class="section__head"><h2>Buscá por zona</h2></div>
+      <div class="section__head"><h2 data-i18n="home.byZone">Buscá por zona</h2></div>
       <ul class="pills" id="zones"></ul>
     </div>
   </section>
 
   <section class="section section--alt" id="branches-section" hidden>
     <div class="wrap">
-      <div class="section__head"><h2>Nuestras sucursales</h2></div>
+      <div class="section__head"><h2 data-i18n="home.branches">Nuestras sucursales</h2></div>
       <div class="branches" id="branches"></div>
     </div>
   </section>

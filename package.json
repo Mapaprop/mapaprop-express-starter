@@ -5,6 +5,7 @@
   "description": "Sitio inmobiliario listo para publicar que lee la cartera desde Mapaprop Express API",
   "type": "module",
   "scripts": {
+    "dev:mock": "node dev-local.mjs --mock",
     "dev": "node dev-local.mjs",
     "dev:vercel": "vercel dev",
     "test": "node --test tests/*.test.mjs",

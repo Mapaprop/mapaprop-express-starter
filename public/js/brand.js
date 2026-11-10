@@ -2,11 +2,14 @@
 // links and footer. Everything degrades: an account with no active website gets 400 from `design`
 // and `settings-v2`, and the site must still render (that is the normal case for someone building
 // their own site here).
-import { api } from './api.js';
+import { api, servedByMock } from './api.js';
 import { escapeHtml, readableOn } from './ui.js';
+import { t, lang } from './i18n.js';
 
 const FALLBACK = window.SITE_CONFIG || {};
-const CACHE_KEY = 'mp-brand-v1';
+// The language is part of the key: the cached brand holds translated fallbacks, so a site served
+// in two languages must not hand the Spanish one to the English page.
+const CACHE_KEY = `mp-brand-v1-${lang}`;
 const CACHE_TTL_MS = 60 * 60 * 1000; // design is cached upstream for an hour; match it
 
 function readCache() {
@@ -22,6 +25,11 @@ function readCache() {
 }
 
 function writeCache(value) {
+  // Not in mock mode. There the fixtures are precisely what you are editing, and an hour of cache
+  // fights you: you change design.json, reload, and the tab keeps showing the previous answer --
+  // which reads exactly like the change did not work. Measured: an open tab kept a logo-less brand
+  // after the fixture already had one.
+  if (servedByMock()) return;
   try {
     sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), value }));
   } catch {
@@ -30,8 +38,13 @@ function writeCache(value) {
 }
 
 // An image value that starts with "/" is a legacy file living inside the Mapaprop-hosted template
-// and will not resolve from another domain. The fix is one click for the agency (Sitio Web >
-// Diseño); until then, ignore it instead of rendering a broken image.
+// and will not resolve from another domain -- there is no base to resolve it against, because no
+// Express action returns the site's own domain. Read in the backend: `resolveImageUrl` builds an
+// absolute CDN URL only when the account has S3 uploads enabled AND that image has an uploaded
+// extension; otherwise it returns the stored value verbatim, which for most sites is this relative
+// path. So re-uploading the image from Sitio Web > Diseño does fix it for that account, but the
+// general case is ours to fix -- see the task `el-carrusel-del-inicio-llega-con-rutas-que-el-
+// cliente-no-puede-resolver`. Until then, ignore it instead of rendering a broken image.
 function usableImage(value) {
   return typeof value === 'string' && value.startsWith('http') ? value : '';
 }
@@ -41,8 +54,8 @@ async function load() {
   if (cached) return cached;
 
   const brand = {
-    name: FALLBACK.name || '',
-    tagline: FALLBACK.tagline || '',
+    name: FALLBACK.name || t('brand.fallbackName'),
+    tagline: FALLBACK.tagline || t('brand.fallbackTagline'),
     responsible: FALLBACK.responsible || '',
     whatsapp: FALLBACK.whatsapp || '',
     colors: { ...FALLBACK.colors },
@@ -96,10 +109,17 @@ async function load() {
 
 function paint(brand) {
   const root = document.documentElement.style;
-  root.setProperty('--primary', brand.colors.primary || '#195fa9');
-  root.setProperty('--primary-text', brand.colors.primaryText || '#ffffff');
-  root.setProperty('--secondary', brand.colors.secondary || '#4a7fe8');
-  root.setProperty('--secondary-text', brand.colors.secondaryText || '#ffffff');
+  const primary = brand.colors.primary || '#195fa9';
+  const secondary = brand.colors.secondary || '#4a7fe8';
+  root.setProperty('--primary', primary);
+  root.setProperty('--secondary', secondary);
+
+  // The foreground of a filled surface is DERIVED, not trusted. Measured on a real account: the
+  // `design` endpoint returned `primary: #ededed` and no `primaryText`, so the fallback white left
+  // "Buscar" and "Enviar consulta" as white on near-white -- a 1.07 ratio. What the agency
+  // configured still wins whenever it is readable; it is only overridden when it is not.
+  root.setProperty('--primary-text', readableOn(primary, [brand.colors.primaryText, '#ffffff', '#16202b']));
+  root.setProperty('--secondary-text', readableOn(secondary, [brand.colors.secondaryText, '#ffffff', '#16202b']));
 
   // Accents used as TEXT on the white surface. The palette is the agency's and may be pale, so the
   // first readable candidate wins instead of trusting `primary` to be dark.

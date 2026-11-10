@@ -144,3 +144,20 @@ test('a pale palette does not become unreadable text', () => {
   assert.equal(contrast('nope', '#ffffff'), 0);
   assert.equal(readableOn('#ffffff', [null, undefined, '#16202b']), '#16202b');
 });
+
+// --- Contraste de superficies llenas ----------------------------------------------------------
+// Regresion medida el 2026-11-10 mirando el demo renderizado: `design` devolvio `primary: #ededed`
+// y NINGUN `primaryText`, asi que el default blanco dejo los botones "Buscar" y "Enviar consulta"
+// en blanco sobre casi-blanco. El contraste ya se derivaba para el TEXTO sobre fondo blanco
+// (--accent-ink) pero no para el texto SOBRE una superficie llena.
+test('el texto de un boton es legible aunque la paleta de la cuenta sea palida', () => {
+  const derive = (bg, configured) => readableOn(bg, [configured, '#ffffff', '#16202b']);
+
+  const pale = derive('#ededed', undefined);
+  assert.ok(contrast(pale, '#ededed') >= 4.5, `un boton palido quedo en ${contrast(pale, '#ededed')}`);
+
+  // Lo que la inmobiliaria configuro gana cuando se lee.
+  assert.equal(derive('#195fa9', '#ffffff'), '#ffffff');
+  // Y pierde cuando no.
+  assert.notEqual(derive('#ededed', '#ffffff'), '#ffffff');
+});

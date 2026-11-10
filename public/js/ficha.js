@@ -4,29 +4,32 @@ import {
   amenities, blueprints, escapeHtml, message, money, multiline, num, photos, qs, specs,
   statusBadge, videoEmbed, card, skeletons,
 } from './ui.js';
+import { t, formatNumber } from './i18n.js';
 
 const root = document.getElementById('detail-root');
 const hash = qs('hash');
 
 function facts(property) {
+  // The LABEL is ours and gets translated; the VALUE comes from the API already in the account's
+  // language (`propertyType`, `ubication`, `heatingType`) and is passed through untouched.
   const rows = [
-    ['Tipo', property.propertyType || property.typeDesc],
-    ['Operación', property.propertyOperation || property.operationDesc],
-    ['Ambientes', num(property.ambiences)],
-    ['Dormitorios', num(property.bedrooms)],
-    ['Baños', num(property.bathrooms)],
+    [t('facts.type'), property.propertyType || property.typeDesc],
+    [t('facts.operation'), property.propertyOperation || property.operationDesc],
+    [t('facts.ambiences'), num(property.ambiences)],
+    [t('facts.bedrooms'), num(property.bedrooms)],
+    [t('facts.bathrooms'), num(property.bathrooms)],
     // 0 means "not informed" on these, so num() drops them instead of claiming there are none.
-    ['Toilettes', num(property.toilettes)],
-    ['Cocheras', num(property.garages ?? property.garage)],
-    ['Superficie cubierta', num(property.buildingArea) ? `${num(property.buildingArea)} m²` : null],
-    ['Superficie del terreno', num(property.landArea) ? `${num(property.landArea)} m²` : null],
-    ['Antigüedad', num(property.yearsOld) ? `${num(property.yearsOld)} años` : null],
-    ['Pisos del edificio', num(property.totalFloors)],
-    ['Departamentos por piso', num(property.apartmentsPerFloor)],
-    ['Orientación', property.ubication],
-    ['Calefacción', property.heatingType],
-    ['Aire acondicionado', property.airConditionerType],
-    ['Código', property.code],
+    [t('facts.toilettes'), num(property.toilettes)],
+    [t('facts.garages'), num(property.garages ?? property.garage)],
+    [t('facts.builtArea'), num(property.buildingArea) ? `${num(property.buildingArea)} m²` : null],
+    [t('facts.landArea'), num(property.landArea) ? `${num(property.landArea)} m²` : null],
+    [t('facts.age'), num(property.yearsOld) ? t('facts.ageValue', { n: num(property.yearsOld) }) : null],
+    [t('facts.totalFloors'), num(property.totalFloors)],
+    [t('facts.apartmentsPerFloor'), num(property.apartmentsPerFloor)],
+    [t('facts.ubication'), property.ubication],
+    [t('facts.heating'), property.heatingType],
+    [t('facts.airConditioning'), property.airConditionerType],
+    [t('facts.code'), property.code],
   ].filter(([, value]) => value !== null && value !== undefined && value !== '');
 
   return `<ul class="facts">${rows
@@ -38,29 +41,33 @@ function gallery(property) {
   const pics = photos(property);
   const plans = blueprints(property);
   const all = [...pics, ...plans];
-  if (!all.length) return '<div class="gallery__main"><div class="card__media--empty">Sin fotos</div></div>';
+  if (!all.length) return `<div class="gallery__main"><div class="card__media--empty">${escapeHtml(t('card.noPhotos'))}</div></div>`;
 
   return `
     <div class="gallery">
       <div class="gallery__main">
-        <img id="gallery-main" src="${escapeHtml(all[0].image)}" alt="${escapeHtml(property.title || 'Propiedad')}">
+        <img id="gallery-main" src="${escapeHtml(all[0].image)}" alt="${escapeHtml(property.title || t('card.property'))}">
       </div>
       ${all.length > 1
         ? `<div class="gallery__thumbs">${all
             .map((img, index) => `<img data-full="${escapeHtml(img.image)}" src="${escapeHtml(img.thumbnail || img.image)}"
-                 class="${index === 0 ? 'is-active' : ''}" alt="Foto ${index + 1}" loading="lazy">`)
+                 class="${index === 0 ? 'is-active' : ''}" alt="${escapeHtml(t('detail.photoAlt', { n: index + 1 }))}" loading="lazy">`)
             .join('')}</div>`
         : ''}
-      ${plans.length ? `<p class="form__hint">Incluye ${plans.length} ${plans.length === 1 ? 'plano' : 'planos'}.</p>` : ''}
+      ${plans.length ? `<p class="form__hint">${escapeHtml(t('detail.blueprints', { n: plans.length }))}</p>` : ''}
     </div>`;
 }
 
 function priceBox(property) {
   const extras = [];
   const expenses = num(property.expensesPrice);
-  if (expenses) extras.push(`Expensas: ${property.expensesCurrency || ''} ${expenses.toLocaleString('es-AR')}`);
+  if (expenses) {
+    extras.push(t('detail.expenses', { amount: `${property.expensesCurrency || ''} ${formatNumber(expenses)}`.trim() }));
+  }
   const tax = num(property.taxPrice);
-  if (tax) extras.push(`Impuestos: ${property.taxCurrency || ''} ${tax.toLocaleString('es-AR')}`);
+  if (tax) {
+    extras.push(t('detail.taxes', { amount: `${property.taxCurrency || ''} ${formatNumber(tax)}`.trim() }));
+  }
 
   const alternatives = (property.alternativePrices || []).filter((p) => Number(p.price) > 1);
 
@@ -69,7 +76,7 @@ function priceBox(property) {
       ${extras.length ? `<p class="price-box__extra">${escapeHtml(extras.join(' · '))}</p>` : ''}
       ${alternatives.length
         ? `<p class="price-box__extra">${alternatives
-            .map((p) => escapeHtml(`${p.description}: ${p.currency || ''} ${Number(p.price).toLocaleString('es-AR')}`))
+            .map((p) => escapeHtml(`${p.description}: ${p.currency || ''} ${formatNumber(p.price)}`))
             .join('<br>')}</p>`
         : ''}
     </div>`;
@@ -81,18 +88,20 @@ function priceBox(property) {
 // into Mapaprop and answering clients outside of it.
 function contactForm(property) {
   return `<form class="form" id="enquiry">
-      <h3>Consultar por esta propiedad</h3>
+      <h3>${escapeHtml(t('enquiry.title'))}</h3>
       <div class="form__row">
-        <div><label for="q-name">Nombre</label><input id="q-name" name="name" required minlength="3"></div>
-        <div><label for="q-phone">Teléfono</label><input id="q-phone" name="phone" type="tel"></div>
+        <div><label for="q-name">${escapeHtml(t('enquiry.name'))}</label><input id="q-name" name="name" required minlength="3"></div>
+        <div><label for="q-phone">${escapeHtml(t('enquiry.phone'))}</label><input id="q-phone" name="phone" type="tel"></div>
       </div>
-      <div><label for="q-email">Email</label><input id="q-email" name="email" type="email"></div>
+      <div><label for="q-email">${escapeHtml(t('enquiry.email'))}</label><input id="q-email" name="email" type="email"></div>
       <div>
-        <label for="q-message">Mensaje</label>
-        <textarea id="q-message" name="message" required>Hola, quiero más información sobre ${escapeHtml(property.code || property.title || 'esta propiedad')}.</textarea>
+        <label for="q-message">${escapeHtml(t('enquiry.message'))}</label>
+        <textarea id="q-message" name="message" required>${escapeHtml(t('enquiry.draft', {
+          subject: property.code || property.title || t('enquiry.thisProperty'),
+        }))}</textarea>
       </div>
-      <p class="form__hint">Dejá al menos un teléfono o un email para que podamos responderte.</p>
-      <button class="btn btn--primary" type="submit">Enviar consulta</button>
+      <p class="form__hint">${escapeHtml(t('enquiry.hint'))}</p>
+      <button class="btn btn--primary" type="submit">${escapeHtml(t('enquiry.submit'))}</button>
       <div id="enquiry-feedback"></div>
     </form>`;
 }
@@ -105,8 +114,8 @@ function map(property) {
   // provider. Swap in Google Maps or Mapbox here if you have a key.
   const bbox = [lon - 0.004, lat - 0.003, lon + 0.004, lat + 0.003].join(',');
   return `<section class="section">
-      <h2>Ubicación</h2>
-      <iframe class="map" loading="lazy" title="Mapa de la propiedad"
+      <h2>${escapeHtml(t('detail.location'))}</h2>
+      <iframe class="map" loading="lazy" title="${escapeHtml(t('detail.mapTitle'))}"
         src="https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}"></iframe>
     </section>`;
 }
@@ -115,9 +124,9 @@ function videos(property) {
   const embeds = (property.videos || []).map((v) => videoEmbed(v.source)).filter(Boolean);
   if (!embeds.length) return '';
   return `<section class="section">
-      <h2>Videos y recorridos</h2>
+      <h2>${escapeHtml(t('detail.videos'))}</h2>
       <div class="videos">${embeds
-        .map((src) => `<iframe src="${escapeHtml(src)}" title="Video de la propiedad" loading="lazy"
+        .map((src) => `<iframe src="${escapeHtml(src)}" title="${escapeHtml(t('detail.videoTitle'))}" loading="lazy"
              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
              allowfullscreen></iframe>`)
         .join('')}</div>
@@ -131,23 +140,23 @@ function render(property) {
 
   root.innerHTML = `
     <nav class="form__hint" style="margin-bottom:1rem">
-      <a href="propiedades.html">← Volver a las propiedades</a>
+      <a href="propiedades.html">${escapeHtml(t('detail.back'))}</a>
     </nav>
     <div class="detail">
       <div>
         ${gallery(property)}
-        <h1 style="margin-top:1.2rem">${escapeHtml(property.title || 'Propiedad')}</h1>
+        <h1 style="margin-top:1.2rem">${escapeHtml(property.title || t('card.property'))}</h1>
         <p class="card__zone">${escapeHtml(property.address || '')}${property.zone ? ` · ${escapeHtml(property.zone)}` : ''}</p>
         ${badge ? `<p><span class="badge badge--status" style="position:static;display:inline-block">${badge}</span></p>` : ''}
         <p class="card__specs">${escapeHtml(specs(property).join(' · '))}</p>
         ${facts(property)}
-        <h2>Descripción</h2>
+        <h2>${escapeHtml(t('detail.description'))}</h2>
         <div class="prose">${multiline(property.descriptionFormatted || property.description || '')}</div>
-        ${property.conditions ? `<h2>Condiciones</h2><div class="prose">${multiline(property.conditions)}</div>` : ''}
-        ${tags.length ? `<h2>Características</h2><ul class="chips">${tags.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>` : ''}
+        ${property.conditions ? `<h2>${escapeHtml(t('detail.conditions'))}</h2><div class="prose">${multiline(property.conditions)}</div>` : ''}
+        ${tags.length ? `<h2>${escapeHtml(t('detail.amenities'))}</h2><ul class="chips">${tags.map((tag) => `<li>${escapeHtml(tag)}</li>`).join('')}</ul>` : ''}
         ${videos(property)}
         ${map(property)}
-        ${isDevelopment ? '<section class="section" id="units-section"><h2>Unidades del emprendimiento</h2><div class="grid" id="units"></div></section>' : ''}
+        ${isDevelopment ? `<section class="section" id="units-section"><h2>${escapeHtml(t('detail.units'))}</h2><div class="grid" id="units"></div></section>` : ''}
       </div>
       <aside class="aside">
         ${priceBox(property)}
@@ -155,12 +164,12 @@ function render(property) {
       </aside>
     </div>`;
 
-  document.title = `${property.title || 'Propiedad'}`;
+  document.title = property.title || t('card.property');
 
   document.querySelectorAll('.gallery__thumbs img').forEach((thumb) => {
     thumb.addEventListener('click', () => {
       document.getElementById('gallery-main').src = thumb.dataset.full;
-      document.querySelectorAll('.gallery__thumbs img').forEach((t) => t.classList.remove('is-active'));
+      document.querySelectorAll('.gallery__thumbs img').forEach((other) => other.classList.remove('is-active'));
       thumb.classList.add('is-active');
     });
   });
@@ -178,13 +187,13 @@ function wireEnquiry(property) {
     const email = document.getElementById('q-email').value.trim();
     const phone = document.getElementById('q-phone').value.trim();
     if (!email && !phone) {
-      message(feedback, 'Dejanos un email o un teléfono para poder responderte.', 'error');
+      message(feedback, t('enquiry.needContact'), 'error');
       return;
     }
 
     const button = form.querySelector('button[type="submit"]');
     button.disabled = true;
-    button.textContent = 'Enviando…';
+    button.textContent = t('enquiry.sending');
 
     try {
       // ip, userAgent and referer are added by the proxy: the browser cannot know its own IP, and
@@ -199,16 +208,16 @@ function wireEnquiry(property) {
       });
 
       if (response.success === false) {
-        message(feedback, `No pudimos enviar la consulta (${response.error || 'error'}).`, 'error');
+        message(feedback, t('enquiry.failed', { code: response.error || 'error' }), 'error');
       } else {
         form.querySelectorAll('input, textarea').forEach((field) => { field.value = ''; });
-        message(feedback, '¡Listo! Recibimos tu consulta y te vamos a responder a la brevedad.', 'ok');
+        message(feedback, t('enquiry.sent'), 'ok');
       }
     } catch (error) {
-      message(feedback, `No pudimos enviar la consulta: ${error.message}`, 'error');
+      message(feedback, t('enquiry.error', { message: error.message }), 'error');
     } finally {
       button.disabled = false;
-      button.textContent = 'Enviar consulta';
+      button.textContent = t('enquiry.submit');
     }
   });
 }
@@ -228,30 +237,30 @@ async function loadUnits(property) {
     const { properties = [] } = await api.developmentUnits(ids, { size: 20 });
     host.innerHTML = properties.length
       ? properties.map(card).join('')
-      : '<p class="notice">Todavía no hay unidades publicadas.</p>';
+      : `<p class="notice">${t('detail.unitsEmpty')}</p>`;
   } catch (error) {
-    message(host, `No pudimos cargar las unidades: ${error.message}`, 'error');
+    message(host, t('detail.unitsError', { message: error.message }), 'error');
   }
 }
 
 async function start() {
   layout();
   if (!hash) {
-    message(root, 'No indicaste qué propiedad querés ver.', 'error');
+    message(root, t('detail.noHash'), 'error');
     return;
   }
   try {
     // The detail response comes at the root of the document, not wrapped in { property: ... }.
     const property = await api.property(hash);
     if (!property || !property.propertyHash) {
-      message(root, 'No encontramos esta propiedad. Puede que ya no esté publicada.', 'error');
+      message(root, t('detail.notFound'), 'error');
       return;
     }
     render(property);
   } catch (error) {
     message(root, error.status === 404
-      ? 'No encontramos esta propiedad. Puede que ya no esté publicada.'
-      : `No pudimos cargar la propiedad: ${error.message}`, 'error');
+      ? t('detail.notFound')
+      : t('detail.loadError', { message: error.message }), 'error');
   }
 }
 

@@ -1,6 +1,7 @@
 import { api } from './api.js';
 import { layout } from './layout.js';
 import { escapeHtml, message } from './ui.js';
+import { t } from './i18n.js';
 
 // This form posts to `POST express-v1/seller-submissions`, which files the owner as a CONTACT in
 // the agency's Mapaprop CRM and emails them with the attachments.
@@ -24,19 +25,22 @@ async function fillCatalogs() {
   // descriptions are sent through as-is.
   if (types.status === 'fulfilled') {
     typeSelect.innerHTML = (types.value.types || [])
-      .map((t) => `<option>${escapeHtml(t.description)}</option>`).join('');
+      .map((type) => `<option>${escapeHtml(type.description)}</option>`).join('');
   }
+  // These fallbacks are NOT translated on purpose: the endpoint takes the type and the operation as
+  // free text and the agency's CRM reads them in its own language, so translating them would file a
+  // lead the agency cannot match against its catalog.
   if (!typeSelect.innerHTML) {
     typeSelect.innerHTML = ['Casa', 'Departamento', 'PH', 'Local', 'Oficina', 'Terreno', 'Galpón', 'Campo']
-      .map((t) => `<option>${t}</option>`).join('');
+      .map((option) => `<option>${option}</option>`).join('');
   }
   if (operations.status === 'fulfilled') {
     operationSelect.innerHTML = (operations.value.operations || [])
-      .map((o) => `<option>${escapeHtml(o.description)}</option>`).join('');
+      .map((operation) => `<option>${escapeHtml(operation.description)}</option>`).join('');
   }
   if (!operationSelect.innerHTML) {
     operationSelect.innerHTML = ['Venta', 'Alquiler', 'Alquiler Temporario']
-      .map((o) => `<option>${o}</option>`).join('');
+      .map((option) => `<option>${option}</option>`).join('');
   }
 }
 
@@ -45,12 +49,12 @@ function readAsDataUrl(input) {
   const file = input.files?.[0];
   if (!file) return Promise.resolve(null);
   if (file.size > MAX_FILE_BYTES) {
-    return Promise.reject(new Error(`"${file.name}" pesa más de 2 MB. Subí un archivo más chico.`));
+    return Promise.reject(new Error(t('sell.fileTooBig', { name: file.name })));
   }
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error(`No pudimos leer "${file.name}".`));
+    reader.onerror = () => reject(new Error(t('sell.fileUnreadable', { name: file.name })));
     reader.readAsDataURL(file);
   });
 }
@@ -64,7 +68,7 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const button = form.querySelector('button[type="submit"]');
   button.disabled = true;
-  button.textContent = 'Enviando…';
+  button.textContent = t('sell.sending');
   feedback.innerHTML = '';
 
   try {
@@ -103,25 +107,22 @@ form.addEventListener('submit', async (event) => {
       message(feedback, explain(response.code, response.message), 'error');
     } else {
       form.reset();
-      message(feedback, '¡Gracias! Recibimos los datos de tu propiedad y te vamos a contactar.', 'ok');
+      message(feedback, t('sell.sent'), 'ok');
     }
   } catch (error) {
     message(feedback, explain(error.code, error.message), 'error');
   } finally {
     button.disabled = false;
-    button.textContent = 'Enviar';
+    button.textContent = t('sell.submit');
   }
 });
 
+// The CODE decides the message, not the text the backend sent: the code is the stable contract.
 function explain(code, fallback) {
-  if (code === 'NOT_FOUND') {
-    return 'Este formulario todavía no está disponible. (Para el administrador del sitio: el envío '
-      + 'de propietarios necesita un sitio web atado al Token de API, en Configuración > Token de API, '
-      + 'tarjeta "Función Sitio Web".)';
-  }
-  if (code === 'RATE_LIMIT_EXCEEDED') return 'Recibimos muchos envíos seguidos. Probá de nuevo en un rato.';
-  if (code === 'INVALID_FILE') return 'Alguno de los archivos no es válido. Se aceptan JPG, PNG, GIF, WebP y PDF.';
-  return `No pudimos enviar el formulario: ${fallback || 'error desconocido'}`;
+  if (code === 'NOT_FOUND') return t('sell.errNoWebsite');
+  if (code === 'RATE_LIMIT_EXCEEDED') return t('sell.errRateLimit');
+  if (code === 'INVALID_FILE') return t('sell.errInvalidFile');
+  return t('sell.errGeneric', { message: fallback || t('sell.errUnknown') });
 }
 
 layout();

@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 560" width="1600" height="560">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fbf7f1"/><stop offset="1" stop-color="#ebdfcf"/>
+  </linearGradient></defs>
+  <rect width="1600" height="560" fill="url(#g)"/>
+  <g stroke="#b9a88f" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <circle cx="1448" cy="118" r="50"/>
+    <g fill="#ffffff" fill-opacity=".55">
+      <rect x="120" y="290" width="150" height="180"/>
+      <rect x="290" y="208" width="112" height="262"/>
+      <rect x="424" y="320" width="180" height="150"/>
+      <rect x="626" y="150" width="130" height="320"/>
+      <rect x="778" y="258" width="162" height="212"/>
+      <rect x="962" y="188" width="120" height="282"/>
+      <rect x="1104" y="308" width="190" height="162"/>
+      <rect x="1316" y="274" width="176" height="196"/>
+      <path d="M1296 278 l92-72 92 72"/>
+    </g>
+    <g fill="#b9a88f" fill-opacity=".18">
+      <rect x="138" y="324" width="50" height="48"/>
+      <rect x="138" y="388" width="50" height="48"/>
+      <rect x="202" y="324" width="50" height="48"/>
+      <rect x="202" y="388" width="50" height="48"/>
+      <rect x="308" y="242" width="31" height="36"/>
+      <rect x="308" y="294" width="31" height="36"/>
+      <rect x="308" y="347" width="31" height="36"/>
+      <rect x="308" y="400" width="31" height="36"/>
+      <rect x="353" y="242" width="31" height="36"/>
+      <rect x="353" y="294" width="31" height="36"/>
+      <rect x="353" y="347" width="31" height="36"/>
+      <rect x="353" y="400" width="31" height="36"/>
+      <rect x="442" y="354" width="39" height="33"/>
+      <rect x="442" y="403" width="39" height="33"/>
+      <rect x="495" y="354" width="39" height="33"/>
+      <rect x="495" y="403" width="39" height="33"/>
+      <rect x="547" y="354" width="39" height="33"/>
+      <rect x="547" y="403" width="39" height="33"/>
+      <rect x="644" y="184" width="40" height="38"/>
+      <rect x="644" y="238" width="40" height="38"/>
+      <rect x="644" y="291" width="40" height="38"/>
+      <rect x="644" y="345" width="40" height="38"/>
+      <rect x="644" y="398" width="40" height="38"/>
+      <rect x="698" y="184" width="40" height="38"/>
+      <rect x="698" y="238" width="40" height="38"/>
+      <rect x="698" y="291" width="40" height="38"/>
+      <rect x="698" y="345" width="40" height="38"/>
+      <rect x="698" y="398" width="40" height="38"/>
+      <rect x="796" y="292" width="33" height="37"/>
+      <rect x="796" y="345" width="33" height="37"/>
+      <rect x="796" y="399" width="33" height="37"/>
+      <rect x="843" y="292" width="33" height="37"/>
+      <rect x="843" y="345" width="33" height="37"/>
+      <rect x="843" y="399" width="33" height="37"/>
+      <rect x="889" y="292" width="33" height="37"/>
+      <rect x="889" y="345" width="33" height="37"/>
+      <rect x="889" y="399" width="33" height="37"/>
+      <rect x="980" y="222" width="35" height="42"/>
+      <rect x="980" y="280" width="35" height="42"/>
+      <rect x="980" y="337" width="35" height="42"/>
+      <rect x="980" y="394" width="35" height="42"/>
+      <rect x="1029" y="222" width="35" height="42"/>
+      <rect x="1029" y="280" width="35" height="42"/>
+      <rect x="1029" y="337" width="35" height="42"/>
+      <rect x="1029" y="394" width="35" height="42"/>
+      <rect x="1122" y="342" width="42" height="39"/>
+      <rect x="1122" y="397" width="42" height="39"/>
+      <rect x="1178" y="342" width="42" height="39"/>
+      <rect x="1178" y="397" width="42" height="39"/>
+      <rect x="1234" y="342" width="42" height="39"/>
+      <rect x="1234" y="397" width="42" height="39"/>
+      <rect x="1348" y="310" width="52" height="48"/>
+      <rect x="1420" y="310" width="52" height="48"/>
+      <rect x="1376" y="400" width="56" height="70"/>
+    </g>
+    <path d="M70 470v-78"/><circle cx="70" cy="356" r="46" fill="#ffffff" fill-opacity=".45"/>
+    <path d="M40 470h1520"/>
+  </g>
+</svg>

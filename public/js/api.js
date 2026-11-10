@@ -1,6 +1,11 @@
 // Thin client over the proxy. Every call goes to our own origin: the token lives server-side.
 const BASE = '/api/mp';
 
+// Set once the proxy answers as the mock. It starts false, so a caller that asks before the first
+// response gets the production answer -- which is the safe default: it caches.
+let isMock = false;
+export const servedByMock = () => isMock;
+
 async function call(action, { params = {}, method = 'GET', body = null } = {}) {
   const url = new URL(`${BASE}/${action}`, window.location.origin);
   Object.entries(params).forEach(([key, value]) => {
@@ -14,6 +19,10 @@ async function call(action, { params = {}, method = 'GET', body = null } = {}) {
   }
 
   const response = await fetch(url, init);
+  // The mock answers with `X-Mapaprop-Mock: 1`. Nothing in the kit BEHAVES differently because of
+  // it -- that would make the demo stop being a demo. The one thing it is used for is not CACHING
+  // a fixture for an hour while you are editing it (see brand.js).
+  if (response.headers.get('X-Mapaprop-Mock') === '1') isMock = true;
   const text = await response.text();
   let payload;
   try {

@@ -1,0 +1,28 @@
+{
+  "operations": [
+    {
+      "description": "Venta",
+      "id": 1
+    },
+    {
+      "description": "Alquiler",
+      "id": 2
+    },
+    {
+      "description": "Alquiler Temporario",
+      "id": 3
+    },
+    {
+      "description": "Permuta",
+      "id": 4
+    },
+    {
+      "description": "Remate",
+      "id": 7
+    },
+    {
+      "description": "Compartir",
+      "id": 6
+    }
+  ]
+}

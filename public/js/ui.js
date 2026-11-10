@@ -1,5 +1,10 @@
 // Render helpers shared by every page. The gotchas of the property object live here, in one place,
 // so no page has to remember them.
+//
+// Every text comes from i18n.js. What the API sends (propertyType, propertyOperation,
+// attributes[].label, the zone names) is NOT translated here: it already arrives in the account's
+// own language.
+import { t, formatNumber } from './i18n.js';
 
 // On these optional integers the API returns 0 to mean "the agency did not inform it", not "zero":
 // totalFloors, floors, apartmentsPerFloor, toilettes, dependencies, expensesPrice, taxPrice. The
@@ -31,8 +36,9 @@ export function multiline(value) {
 // of publishing a number.
 export function money(price, currency) {
   const value = Number(price);
-  if (!Number.isFinite(value) || value <= 1) return 'Consultar precio';
-  return `${currency || ''} ${value.toLocaleString('es-AR')}`.trim();
+  if (!Number.isFinite(value) || value <= 1) return t('card.askPrice');
+  // The currency is the property's and the grouping is the language's: the two never swap.
+  return `${currency || ''} ${formatNumber(value)}`.trim();
 }
 
 // Images: `image.type` is 1 = PHOTO, 2 = BLUEPRINT, so plans must not land in the photo gallery.
@@ -57,10 +63,10 @@ export function cover(property) {
 // Commercial state. These are not filtered out by the API: a sold property still comes back, with
 // its flag on, and it is the site's job to label it.
 export function statusBadge(property) {
-  if (property.sold) return 'Vendida';
-  if (property.rented) return 'Alquilada';
-  if (property.reserved) return 'Reservada';
-  if (property.suspended) return 'Suspendida';
+  if (property.sold) return t('status.sold');
+  if (property.rented) return t('status.rented');
+  if (property.reserved) return t('status.reserved');
+  if (property.suspended) return t('status.suspended');
   return '';
 }
 
@@ -77,18 +83,18 @@ export function amenities(property) {
 // The handful of figures that fit under a card or next to a title.
 export function specs(property) {
   const out = [];
-  const add = (value, singular, plural) => {
+  const add = (value, key) => {
     const n = num(value);
-    if (n) out.push(`${n} ${n === 1 ? singular : plural}`);
+    if (n) out.push(t(`specs.${key}`, { n }));
   };
-  add(property.ambiences, 'ambiente', 'ambientes');
-  add(property.bedrooms, 'dormitorio', 'dormitorios');
-  add(property.bathrooms, 'baño', 'baños');
-  add(property.garages ?? property.garage, 'cochera', 'cocheras');
+  add(property.ambiences, 'ambiences');
+  add(property.bedrooms, 'bedrooms');
+  add(property.bathrooms, 'bathrooms');
+  add(property.garages ?? property.garage, 'garages');
   const built = num(property.buildingArea);
-  if (built) out.push(`${built} m² cubiertos`);
+  if (built) out.push(t('specs.builtArea', { n: built }));
   const land = num(property.landArea);
-  if (land) out.push(`${land} m² de terreno`);
+  if (land) out.push(t('specs.landArea', { n: land }));
   return out;
 }
 
@@ -104,14 +110,14 @@ export function card(property) {
     <a class="card" href="${propertyUrl(property)}">
       <div class="card__media">
         ${image
-          ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(property.title || 'Propiedad')}" loading="lazy">`
-          : '<div class="card__media--empty">Sin fotos</div>'}
+          ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(property.title || t('card.property'))}" loading="lazy">`
+          : `<div class="card__media--empty">${escapeHtml(t('card.noPhotos'))}</div>`}
         ${badge ? `<span class="badge badge--status">${badge}</span>` : ''}
-        ${property.development === true ? '<span class="badge badge--dev">Emprendimiento</span>' : ''}
+        ${property.development === true ? `<span class="badge badge--dev">${escapeHtml(t('card.development'))}</span>` : ''}
       </div>
       <div class="card__body">
         <p class="card__kicker">${escapeHtml(property.propertyOperation || property.operationDesc || '')} · ${escapeHtml(property.propertyType || property.typeDesc || '')}</p>
-        <h3 class="card__title">${escapeHtml(property.title || 'Sin título')}</h3>
+        <h3 class="card__title">${escapeHtml(property.title || t('card.noTitle'))}</h3>
         <p class="card__zone">${escapeHtml(property.zone || property.address || '')}</p>
         ${detail ? `<p class="card__specs">${escapeHtml(detail)}</p>` : ''}
         <p class="card__price">${escapeHtml(money(property.price, property.currency))}</p>
@@ -145,7 +151,7 @@ export function pager(total, from, size, onGo) {
     ${button(current - 1, '‹', current === 1)}
     ${window.map((p) => button(p)).join('')}
     ${button(current + 1, '›', current === pages)}
-    <span class="pager__total">${total} propiedades</span>
+    <span class="pager__total">${escapeHtml(t('pager.total', { n: total }))}</span>
   </nav>`;
 }
 
@@ -255,7 +261,7 @@ export function installImageFallback() {
     img.dataset.fallbackDone = '1';
     const media = img.closest('.card__media, .gallery__main');
     if (media) {
-      media.innerHTML = '<div class="card__media--empty">Sin fotos</div>';
+      media.innerHTML = `<div class="card__media--empty">${escapeHtml(t('card.noPhotos'))}</div>`;
       return;
     }
     img.remove();
