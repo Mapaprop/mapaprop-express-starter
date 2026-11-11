@@ -21,6 +21,13 @@ rompió algo.
 | Cuenta | la cuenta de pruebas de Mapaprop, sitio 329 |
 | Cómo | una llamada HTTP por acción, guardando el cuerpo entero |
 
+🔴 **`posts.json` y `post-detail.json` se capturaron el 2026-11-11 del sitio 891**, por el proxy
+del demo público, en cuanto la ruta quedó habilitada: antes de eso no había forma de pedirlos. El
+texto de las cuatro notas es de fantasía —lo escribe la inmobiliaria, igual que su nombre— pero la
+**forma del cuerpo se conserva entera**, y es lo que importa: el HTML viene con `style=` inline en
+cada párrafo, pegado desde un editor, así que el post no hereda la tipografía del sitio. Un cuerpo
+de muestra escrito "limpio" habría escondido justo eso.
+
 🔴 **`design.json` se recapturó el 2026-11-11, y del sitio 891, no del 329.** El 329 no tiene
 configurado nada de la marca —los tres `callToActions` vienen `enabled: false` y sin texto, y
 `typography`, `footer` y la mitad de `social` llegan vacíos—, así que el mock retrataba fielmente
@@ -41,6 +48,8 @@ que la API cambie, la escrita a mano sigue diciendo lo que creíamos y la captur
 | `developments.json` | `GET developments` | 5 emprendimientos con sus `developmentProperties` |
 | `development-detail.json` | `GET properties/{hash}` | el detalle de un emprendimiento |
 | `development-properties.json` | `GET development/properties` | las 6 unidades de uno |
+| `posts.json` | `GET posts` | 4 notas del blog, **sin el cuerpo**: la API lo saca antes de responder |
+| `post-detail.json` | `GET posts/{url}` | una nota con su `html` |
 | `types.json` · `operations.json` · `zones.json` · `branches.json` · `features.json` | catálogos | sólo lo que **esa cuenta** usa, no el catálogo del país |
 | `settings-v2.json` · `design.json` | identidad y diseño | lo que pinta la marca |
 
@@ -87,6 +96,7 @@ Es un servidor de **formas**, no una segunda implementación de la API:
 |---|---|
 | `term` | matchea por substring. La relevancia, los acentos y el stemming son del backend |
 | `cityId` | **se ignora**. Medido: la fila del listado trae `stateId` y `countyId` pero **no** `cityId`, así que no hay contra qué comparar. Ignorarlo es mejor que devolver una lista vacía, que se leería como un filtro roto |
+| el cuerpo de un post | hay **una** sola nota con `html`, y se sirve para cualquier slug. La metadata —título, portada, fecha, autor— **sí** es la del post pedido, así que la página se lee bien y lo único que se repite es la prosa. Misma convención que `property-detail` |
 | `propertyIds` | se sirve el juego capturado. Medido: las filas de `development/properties` **no traen `propertyId`** —los ids sólo existen en el `developmentProperties` del padre—, así que no se pueden correlacionar |
 | `total` | se recalcula sobre la fixture en vez de repetir el 818 capturado: un paginador que ofrece 41 páginas con datos en una sola es peor que una lista corta y honesta |
 | los POST | no salen de tu máquina. **No llegan a ningún CRM** |

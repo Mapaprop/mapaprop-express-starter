@@ -468,7 +468,8 @@ test('siteUrl traduce las rutas del sitio Mapaprop a las paginas del kit', () =>
   // produccion el 2026-11-11: `/pagina/creditos.` y `/contacto` daban 404 en el demo porque el
   // buttonLink viajaba crudo al href.
   assert.equal(siteUrl('/pagina/creditos.'), '');
-  assert.equal(siteUrl('/blog'), '');
+  // `/blog` SI tiene contraparte desde que el kit trae su pagina de blog.
+  assert.equal(siteUrl('/blog'), 'blog.html');
 });
 
 test('🔴 todas las paginas declaran el favicon, y el archivo existe', () => {
@@ -484,4 +485,43 @@ test('🔴 todas las paginas declaran el favicon, y el archivo existe', () => {
   assert.deepEqual(sinIcono, [], 'estas paginas no declaran favicon');
   assert.ok(fs.existsSync(path.join(PUBLIC, 'favicon.svg')),
     'el link apunta a favicon.svg y el archivo no esta en el repo');
+});
+
+test('🔴 el blog esta completo de punta a punta, no a medias', () => {
+  // Son CINCO piezas y una sola que falte deja el blog mudo sin error: la ruta en el proxy (sin
+  // ella la API contesta NOT_ALLOWED), la accion en el cliente, las dos paginas, el link del menu
+  // y el mapeo de `/blog`, que es a donde apunta el sitio Mapaprop de la cuenta. El bug original
+  // fue exactamente esto: habia datos y no habia por donde leerlos.
+  const proxy = fs.readFileSync(path.join(PUBLIC, '..', 'api', 'mp', '[...path].js'), 'utf8');
+  assert.match(proxy, /match: \/\^posts\$\//, 'el proxy no habilita el listado del blog');
+  assert.match(proxy, /match: \/\^posts\\\/\[/, 'el proxy no habilita el detalle de un post');
+
+  const api = fs.readFileSync(path.join(PUBLIC, 'js', 'api.js'), 'utf8');
+  assert.match(api, /posts: \(\) => call\('posts'\)/, 'el cliente no expone el listado');
+  assert.match(api, /post: \(url\) =>/, 'el cliente no expone el detalle');
+
+  for (const page of ['blog.html', 'post.html']) {
+    assert.ok(fs.existsSync(path.join(PUBLIC, page)), `falta ${page}`);
+  }
+
+  const layout = fs.readFileSync(path.join(PUBLIC, 'js', 'layout.js'), 'utf8');
+  assert.match(layout, /href: 'blog\.html'/, 'el blog no esta en el menu: nadie lo encuentra');
+});
+
+test('🔴 el cuerpo del post se inyecta crudo A PROPOSITO, y dice por que', () => {
+  // `post.html` ES html: lo escribe la inmobiliaria en el editor de su panel, y el sitio de
+  // Mapaprop lo imprime igual de crudo (`echo $posts->html` en customer-posts.php). Escaparlo
+  // mostraria las etiquetas en pantalla en vez del texto -- o sea que el "arreglo" obvio rompe la
+  // pagina sin que ningun test lo note.
+  //
+  // ⚠️ Lo que este test NO hace: barrer el kit buscando OTRAS inyecciones crudas. Se intento y el
+  // heuristico no distingue esto de `innerHTML = brand.logo`, donde la variable ya trae html
+  // armado con escapeHtml. Marcarlas a todas daba cuatro falsos positivos, asi que el test cubre
+  // la decision deliberada y no promete una garantia que no puede dar.
+  const codigo = fs.readFileSync(path.join(PUBLIC, 'js', 'post.js'), 'utf8');
+  assert.match(codigo, /innerHTML = post\.html \|\| ''/,
+    'el cuerpo del post dejo de inyectarse crudo: escapado se ven las etiquetas');
+  const antes = codigo.slice(0, codigo.indexOf('innerHTML = post.html'));
+  assert.ok(/🔴[^]{0,900}$/.test(antes),
+    'la inyeccion cruda perdio el comentario que explica por que es deliberada');
 });

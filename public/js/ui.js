@@ -55,7 +55,7 @@ export function safeUrl(value) {
 // demo's buttons pointed at `/contacto` and `/pagina/creditos.` and both answered 404.
 //
 // The left column is not invented: it is the href vocabulary of the `express-basic-1` template, the
-// one these accounts render with. A path with no counterpart here -- `/blog`, `/pagina/<slug>`, a
+// one these accounts render with. A path with no counterpart here -- `/pagina/<slug>`, a
 // property by seoUrl -- returns empty on purpose, so the caller decides what to do instead of
 // linking somewhere that does not exist.
 const SITE_ROUTES = new Map([
@@ -63,6 +63,7 @@ const SITE_ROUTES = new Map([
   ['/contacto', 'contacto.html'],
   ['/vender', 'vender.html'],
   ['/destacados', 'index.html'],
+  ['/blog', 'blog.html'],
   ['/desarrollos-inmobiliarios', 'emprendimientos.html'],
   ['/buscar/ventas', 'propiedades.html?operation=1'],
   ['/buscar/alquileres', 'propiedades.html?operation=2'],

@@ -1,0 +1,45 @@
+{
+  "posts": [
+    {
+      "editor": "Equipo Modelo",
+      "mainImage": "/img/placeholder-1.svg",
+      "keywords": "",
+      "lastUpdate": "2026-05-17T15:48:40Z",
+      "postId": 1,
+      "title": "Que mirar antes de firmar un alquiler",
+      "url": "antes-de-firmar-un-alquiler",
+      "timestamp": "2024-04-12T19:41:59Z"
+    },
+    {
+      "editor": "Equipo Modelo",
+      "mainImage": "/img/placeholder-2.svg",
+      "lastUpdate": "2024-04-16T13:48:43Z",
+      "postId": 2,
+      "title": "Como preparamos una propiedad para la primera visita",
+      "url": "preparar-una-propiedad-para-la-primera-visita",
+      "timestamp": "2024-04-12T19:51:00Z",
+      "keywords": ""
+    },
+    {
+      "editor": "Equipo Modelo",
+      "mainImage": "/img/placeholder-3.svg",
+      "lastUpdate": "2024-04-16T13:52:23Z",
+      "postId": 3,
+      "title": "Tasar no es poner un precio",
+      "url": "tasar-no-es-poner-un-precio",
+      "timestamp": "2024-04-15T18:39:52Z",
+      "keywords": ""
+    },
+    {
+      "editor": "Equipo Modelo",
+      "mainImage": "/img/placeholder-4.svg",
+      "keywords": "",
+      "lastUpdate": "2025-03-05T17:38:48Z",
+      "description": "Prueba 2",
+      "postId": 4,
+      "title": "Que documentacion hace falta para vender",
+      "url": "documentacion-para-vender",
+      "timestamp": "2025-03-05T17:37:45Z"
+    }
+  ]
+}

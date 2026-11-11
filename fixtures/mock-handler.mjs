@@ -189,6 +189,17 @@ export default async function handler(req, res) {
       return res.status(200).json(page(fixture('development-properties').properties || [], { ...req.query, from: 0 }));
     }
 
+    if (action.startsWith('posts/')) {
+      const url = decodeURIComponent(action.slice('posts/'.length));
+      const meta = (fixture('posts').posts || []).find((p) => p.url === url);
+      if (!meta) return res.status(404).json({ error: 'NOT_FOUND', message: 'Ese post no está en las fixtures.' });
+      // Same convention as `property-detail`: the fixtures carry ONE detail per action, so every
+      // post is served with the same body. The METADATA is the requested post's own -- title,
+      // cover, date and author -- so the page reads correctly and only the prose repeats.
+      console.log(`  [mock] el cuerpo del post sale de post-detail.json; la metadata es la de "${url}".`);
+      return res.status(200).json({ post: { ...meta, html: fixture('post-detail').post.html } });
+    }
+
     if (action === 'design') {
       return res.status(200).json(absoluteImages(fixture('design'), req));
     }

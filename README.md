@@ -1,6 +1,6 @@
 # Sitio inmobiliario con Mapaprop Express API
 
-Un sitio web completo —inicio, buscador, fichas, emprendimientos, contacto y captación de
+Un sitio web completo —inicio, buscador, fichas, emprendimientos, blog, contacto y captación de
 propietarios— que lee tu cartera directamente de tu cuenta de Mapaprop. Es HTML y JavaScript, sin
 framework y sin paso de compilación: lo abrís, lo editás y se ve el cambio.
 
@@ -221,8 +221,20 @@ tus redes sociales** — lo que ya configuraste en **Sitio Web → Diseño**. No
 `cta-2` y `cta-3` en `public/index.html`, y si configuraste menos, los que sobran no se dibujan.
 El botón de cada uno apunta a donde lo mandaste desde Mapaprop (`/contacto`, `/destacados`, …);
 como acá las páginas son archivos `.html`, `siteUrl()` en `public/js/ui.js` traduce esas rutas. Una
-ruta sin equivalente en el kit —`/blog`, `/pagina/…`— manda al formulario de contacto: querés un
-botón que lleve a algún lado, no uno que dé 404.
+ruta sin equivalente en el kit —`/pagina/…`, que es una página estática que el kit no tiene— manda
+al formulario de contacto: querés un botón que lleve a algún lado, no uno que dé 404.
+
+### El blog sale del mismo lugar que el resto
+
+Las notas son las que cargás en **Sitio Web → Blog** de Mapaprop: el sitio pide `GET
+express-v1/posts` y `posts/{url}`. No hay un segundo lugar donde escribir.
+
+El listado llega **sin el cuerpo** —la API lo saca a propósito— así que la tarjeta muestra la
+portada, el título y la fecha; el texto completo viaja sólo al abrir la nota. Y ese texto se inserta
+**tal cual viene**: es HTML que escribiste vos en el editor, igual que lo imprime tu sitio de
+Mapaprop. ⚠️ Si lo pegaste desde Word o desde otra página, suele traer sus propias fuentes y colores
+en el `style=` de cada párrafo, así que esa nota no va a heredar la tipografía del sitio. Pasa lo
+mismo en tu sitio de Mapaprop; se deja igual para no reescribir lo que publicaste.
 
 **Si tu cuenta no tiene un sitio web activo de Mapaprop**, ese endpoint responde con un error y el
 sitio usa lo que haya en `public/js/config.js`. Editá ese archivo con tu nombre, tus colores y tu
@@ -315,6 +327,8 @@ Si traducís a un idioma nuevo: agregá su mapa en `i18n.js` con **las mismas cl
 │   ├── propiedades.html   listado con filtros y paginado
 │   ├── propiedad.html     ficha: galería, planos, videos, mapa y el formulario de consulta
 │   ├── emprendimientos.html
+│   ├── blog.html          las notas de tu blog de Mapaprop
+│   ├── post.html          una nota
 │   ├── contacto.html
 │   ├── vender.html        captación de propietarios, con adjuntos
 │   ├── css/style.css

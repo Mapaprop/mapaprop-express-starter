@@ -67,6 +67,9 @@ export const api = {
   branches: () => call('branches'),
 
   // Identity and design. Both need an active website on the account; callers must tolerate a 400.
+  posts: () => call('posts'),
+  post: (url) => call(`posts/${encodeURIComponent(url)}`),
+
   settings: () => call('settings-v2'),
   design: () => call('design'),
 

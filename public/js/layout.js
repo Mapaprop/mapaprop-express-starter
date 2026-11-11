@@ -10,6 +10,7 @@ const LINKS = [
   { href: 'propiedades.html?operation=2', key: 'nav.rentals' },
   { href: 'propiedades.html?operation=3', key: 'nav.temporary', onlyTempRental: true },
   { href: 'emprendimientos.html', key: 'nav.developments' },
+  { href: 'blog.html', key: 'nav.blog' },
   { href: 'vender.html', key: 'nav.sell' },
   { href: 'contacto.html', key: 'nav.contact' },
 ];
