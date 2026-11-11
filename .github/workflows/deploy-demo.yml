@@ -1,0 +1,32 @@
+# Dispara el pipeline que reconstruye el demo publico (express.mapaprop.com) con la punta de `main`.
+#
+# El demo NO vive en este repo: su Dockerfile y sus hooks de deploy estan en el monorepo privado de
+# Mapaprop, y el build clona ESTE repo. Por eso un push aca no se despliega solo, y por eso existe
+# este workflow.
+#
+# Para cualquiera que clone el kit, el `if` de abajo lo apaga: no falla, no manda mails, no hace
+# nada. Y el ARN del rol y el nombre del pipeline viven en Secrets, no en este archivo.
+name: Deploy demo
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  id-token: write      # lo unico que habilita: pedir el token OIDC. NO da acceso al repo.
+  contents: read
+
+jobs:
+  trigger:
+    if: github.repository == 'Mapaprop/mapaprop-express-starter'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: us-east-1
+      - name: Disparar el pipeline del demo
+        run: |
+          aws codepipeline start-pipeline-execution \
+            --name "${{ secrets.DEMO_PIPELINE_NAME }}" \
+            --query pipelineExecutionId --output text
