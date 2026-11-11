@@ -21,6 +21,14 @@ rompió algo.
 | Cuenta | la cuenta de pruebas de Mapaprop, sitio 329 |
 | Cómo | una llamada HTTP por acción, guardando el cuerpo entero |
 
+🔴 **`design.json` se recapturó el 2026-11-11, y del sitio 891, no del 329.** El 329 no tiene
+configurado nada de la marca —los tres `callToActions` vienen `enabled: false` y sin texto, y
+`typography`, `footer` y la mitad de `social` llegan vacíos—, así que el mock retrataba fielmente
+**una cuenta recién creada**. Y eso choca con para qué existe: el que clona el repo tiene que ver el
+sitio COMPLETO, y lo que no se dibuja en el mock no se puede estilar ni se descubre roto. El 891 es
+la misma cuenta con la marca cargada, que es el sitio modelo de `express-basic-1`. La regla de acá
+abajo no cambia: la forma sigue siendo capturada, lo que se reemplaza es el contenido.
+
 No están escritas a mano. Una fixture inventada tiene el aspecto de una medición y no lo es: el día
 que la API cambie, la escrita a mano sigue diciendo lo que creíamos y la capturada no.
 
@@ -40,6 +48,11 @@ que la API cambie, la escrita a mano sigue diciendo lo que creíamos y la captur
 
 **Se reemplazó** por datos de fantasía: nombre y razón social de la inmobiliaria, emails, teléfonos,
 direcciones de sucursal, dirección de calle de cada propiedad, CUIT, redes sociales y las imágenes.
+Del `design` recapturado: el **texto de los tres call-to-action** (es copy que tipea la inmobiliaria,
+igual que su nombre), el **número de WhatsApp** del tercero, la **matrícula del martillero** del pie
+y las cuatro redes. Los `buttonLink` conservan el **vocabulario real** del sitio Mapaprop
+(`/contacto`, `/destacados`) y NO se tradujeron a los `.html` del kit: traducirlos acá escondería que
+la API manda rutas de otro sitio, que es justo lo que `siteUrl()` existe para resolver.
 Las imágenes apuntan a `public/img/`, que vive en el repo —el modo mock no necesita internet—: las
 fotos de las propiedades son `placeholder-1..4.svg`, el carrusel del inicio usa `hero-1..3.svg` (van
 aparte porque la banda del hero no es 4:3 y recortar una foto de ficha ahí la amplía hasta que no se
@@ -87,14 +100,29 @@ que la proyección cierra. Un solo borde, no dos.
 
 ### 🔴 El carrusel: la única licencia que se tomó el mock, y por qué
 
-`design` devuelve las slides y el logo como **rutas relativas** (`/styles/…`), relativas al sitio
-Mapaprop de esa cuenta. Y **ninguna acción de Express devuelve ese dominio** —`settings-v2` incluido—,
-así que no hay contra qué resolverlas: desde el sitio del cliente esas rutas apuntan al sitio del
-cliente y dan 404. Por eso `brand.js` sólo acepta URLs absolutas (`usableImage`), que es lo correcto:
-mejor sin hero que con una imagen rota.
+Las imágenes del mock apuntan a `public/img/`, que vive en el repo, y el mock las reescribe contra su
+propio host antes de responder. Es deliberado y por una razón sola: **el modo mock no necesita
+internet**. La fixture guarda rutas locales, no las absolutas que devolvió la cuenta capturada.
 
-⇒ **Con datos reales el carrusel del inicio hoy no se puede usar**, y eso es una limitación medida de
-la API, no del kit.
+⚠️ **Y acá había una afirmación equivocada, corregida el 2026-11-11.** Este README decía que `design`
+devuelve las imágenes como rutas relativas y que por eso *"con datos reales el carrusel hoy no se
+puede usar"*. **Es verdad sólo a veces, y depende de la cuenta** —medido en `website_config` de
+producción—:
+
+| | sitio 329 | sitio 891 |
+|---|---|---|
+| `slide1.image` | `/styles/customers/1/slide1.jpg` | **la misma ruta relativa** |
+| `slide1.s3.ext` | no existe | `.webp` |
+| lo que devuelve `design` | la ruta cruda, inservible desde afuera | `https://images.mapaprop.app/website-images/1/891/slide1.webp` |
+
+Los marcadores `*.s3.ext` son los que hacen que la API arme la URL absoluta. ⇒ en una cuenta con las
+imágenes migradas a S3 **el carrusel anda con datos reales**, y se puede ver: el demo público corre
+con el token del 891 y muestra el hero y el logo. En una cuenta sin migrar, no hay dominio contra el
+cual resolver la ruta y `usableImage()` la descarta — que sigue siendo lo correcto: mejor sin hero
+que con una imagen rota.
+
+La lección de método, que es por lo que esto queda escrito: la limitación se dio por universal
+habiendo medido **una sola cuenta**.
 
 El mock reescribe esas rutas contra **su propio host** antes de responder, así que el demo muestra el
 hero que el kit pintaría el día que la API devuelva una URL utilizable desde afuera. Es la única
