@@ -53,6 +53,12 @@ const ROUTES = [
   { method: 'GET', match: /^zones$/, sMaxAge: 86400 },
   { method: 'GET', match: /^branches$/, sMaxAge: 86400 },
   { method: 'GET', match: /^features$/, sMaxAge: 3600 },
+  // the blog. `posts` already comes WITHOUT the body -- ExpressLogic#getPosts clears HTML, custId
+  // and websiteId before answering -- so the list needs no projection here. The body travels only
+  // in the detail. An hour of cache and not a day: an agency that publishes a post expects to see
+  // it, and the upstream day-long cache is theirs to keep, not ours to extend.
+  { method: 'GET', match: /^posts$/, sMaxAge: 3600 },
+  { method: 'GET', match: /^posts\/[A-Za-z0-9_-]+$/, sMaxAge: 3600 },
   // identity and site design
   // 🔴 `settings-v2` is PROJECTED, not forwarded whole. See `pickSettings` below.
   { method: 'GET', match: /^settings-v2$/, sMaxAge: 3600, pick: pickSettings },
