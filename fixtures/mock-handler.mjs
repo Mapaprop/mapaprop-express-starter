@@ -101,7 +101,18 @@ function propertyByHash(hash) {
 // deliberately MORE capable than the API: it shows the hero the kit would paint the day the API
 // returns a URL that can be used from outside. Documented in fixtures/README.md.
 function absoluteImages(design, req) {
-  const origin = `http://${req.headers?.host || 'localhost:3000'}`;
+  // The scheme comes from `x-forwarded-proto`, not from a hardcoded "http". This server runs BEHIND
+  // a TLS terminator in any real deployment (an ALB, nginx, Vercel), so its own socket is always
+  // plain http even while the site is served over HTTPS -- sniffing the socket would get it wrong
+  // in exactly the case that matters.
+  //
+  // Why it matters: an `http://` image inside an https page is MIXED CONTENT. The browser drops it
+  // with no network error and no server-side trace, so the logo and the entire hero vanish while
+  // every endpoint still answers 200. Measured in production on 2026-11-11 (express.mapaprop.com):
+  // four blocked URLs, and the page looked broken with nothing in the logs to explain it.
+  const forwarded = String(req.headers?.['x-forwarded-proto'] || '').split(',')[0].trim();
+  const proto = forwarded === 'https' || forwarded === 'http' ? forwarded : 'http';
+  const origin = `${proto}://${req.headers?.host || 'localhost:3000'}`;
   const toUrl = (value) => (typeof value === 'string' && value.startsWith('/') ? origin + value : value);
   const images = design.images || {};
   return {

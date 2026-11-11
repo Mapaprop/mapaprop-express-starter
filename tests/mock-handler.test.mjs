@@ -20,9 +20,9 @@ function fakeRes() {
   return res;
 }
 
-async function get(pathSegments, query = {}) {
+async function get(pathSegments, query = {}, headers = {}) {
   const res = fakeRes();
-  await handler({ method: 'GET', query: { path: pathSegments, ...query }, headers: {} }, res);
+  await handler({ method: 'GET', query: { path: pathSegments, ...query }, headers }, res);
   return res;
 }
 
@@ -147,6 +147,22 @@ test('settings-v2 y design alcanzan para pintar la marca', async () => {
   assert.ok(settings.body.customer.email.endsWith('.example'), 'el email tiene que ser de fantasia');
   const design = await get(['design']);
   assert.ok(design.body.colors.primary);
+});
+
+test('detras de un terminador TLS el logo y el hero salen en https, no en http', async () => {
+  // An `http://` image inside an https page is mixed content: the browser drops it silently and the
+  // whole brand disappears while every endpoint still answers 200. Production, 2026-11-11.
+  const res = await get(['design'], {}, { host: 'demo.example', 'x-forwarded-proto': 'https' });
+  assert.equal(res.body.images.logo, 'https://demo.example/img/logo-sample.svg');
+  assert.ok(res.body.images.slides.length > 0, 'sin slides el test no asevera nada');
+  for (const slide of res.body.images.slides) {
+    assert.ok(slide.image.startsWith('https://'), `slide servida en http: ${slide.image}`);
+  }
+});
+
+test('sin x-forwarded-proto sigue siendo http, que es el caso de localhost', async () => {
+  const res = await get(['design'], {}, { host: 'localhost:3000' });
+  assert.ok(res.body.images.logo.startsWith('http://localhost:3000/'));
 });
 
 test('el mock respeta la MISMA allowlist del proxy: una accion no habilitada da 404', async () => {
