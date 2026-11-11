@@ -217,6 +217,13 @@ El sitio pide `GET express-v1/design` y toma de ahí **los colores, la tipograf�
 favicon, las imágenes del carrusel, los bloques de llamado a la acción, el responsable del pie y
 tus redes sociales** — lo que ya configuraste en **Sitio Web → Diseño**. No hay que copiar nada.
 
+**Los tres bloques de llamado a la acción** se reparten a lo largo del inicio: están como `cta-1`,
+`cta-2` y `cta-3` en `public/index.html`, y si configuraste menos, los que sobran no se dibujan.
+El botón de cada uno apunta a donde lo mandaste desde Mapaprop (`/contacto`, `/destacados`, …);
+como acá las páginas son archivos `.html`, `siteUrl()` en `public/js/ui.js` traduce esas rutas. Una
+ruta sin equivalente en el kit —`/blog`, `/pagina/…`— manda al formulario de contacto: querés un
+botón que lleve a algún lado, no uno que dé 404.
+
 **Si tu cuenta no tiene un sitio web activo de Mapaprop**, ese endpoint responde con un error y el
 sitio usa lo que haya en `public/js/config.js`. Editá ese archivo con tu nombre, tus colores y tu
 logo. Todo lo demás —propiedades, catálogos, sucursales, consultas— funciona igual, porque el
@@ -303,7 +310,8 @@ Si traducís a un idioma nuevo: agregá su mapa en `i18n.js` con **las mismas cl
 ├── dev-local.mjs          servidor Node que despacha a esa misma función
 ├── fixtures/              respuestas reales anonimizadas + el servidor del modo mock
 ├── public/
-│   ├── index.html         inicio: carrusel, buscador, emprendimientos, destacadas, zonas, sucursales
+│   ├── index.html         inicio: carrusel, buscador, emprendimientos, destacadas, zonas,
+│   │                      sucursales y los tres llamados a la acción
 │   ├── propiedades.html   listado con filtros y paginado
 │   ├── propiedad.html     ficha: galería, planos, videos, mapa y el formulario de consulta
 │   ├── emprendimientos.html

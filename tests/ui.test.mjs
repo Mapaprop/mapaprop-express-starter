@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   amenities, blueprints, collectZones, cover, escapeHtml, money, multiline, num, photos, specs,
-  statusBadge, videoEmbed, isActive, contrast, luminance, readableOn, safeUrl,
+  statusBadge, videoEmbed, isActive, contrast, luminance, readableOn, safeUrl, siteUrl,
 } from '../public/js/ui.js';
 
 const PUBLIC = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -213,6 +213,11 @@ const HREF_PERMITIDOS = [
   // Helpers que ya garantizan la forma.
   /^\$\{safeUrl\(/,
   /^\$\{escapeHtml\(safeUrl\(/,
+  // `siteUrl` traduce las rutas del sitio Mapaprop a las paginas del kit. Entra aca porque sus
+  // TRES salidas son seguras y estan probadas abajo: un literal de SITE_ROUTES escrito por
+  // nosotros, lo que devuelva safeUrl, o vacio. Si alguna vez deja de cumplirlo, el test de
+  // "siteUrl nunca devuelve un esquema peligroso" se pone en rojo antes que este.
+  /^\$\{escapeHtml\(siteUrl\(/,
   /^\$\{propertyUrl\(/,
   // Rutas literales del propio kit: el dato entra por query, no elige el destino.
   /^`?[a-z0-9._-]+\.html/i,
@@ -415,4 +420,53 @@ test('🔴 applyBrand aguanta una respuesta con forma inesperada', () => {
     'se accede a brand.colors.* sin el default: un `colors` nulo tumba el pintado');
   assert.match(codigo, /String\(brand\.whatsapp\)\.replace/,
     'un `mobile` numerico rompe el .replace');
+});
+
+test('🔴 la home declara un hueco por cada call-to-action que manda la API, y el renderer no los recorta', () => {
+  // Medido en produccion el 2026-11-11: el sitio PHP del MISMO website (basic.mapaprop.com, website
+  // 891) mostraba TRES call-to-action y el kit dos. La API manda tres en `design.callToActions`,
+  // los tres con `enabled: true`, y el kit los perdia por DOS topes simultaneos: `blocks.slice(0, 2)`
+  // en home.js y solo dos `cta-N` en el HTML. Arreglar uno solo no cambia nada visible, por eso el
+  // test mira los dos: es la unica forma de que falle si alguien revierte cualquiera de los dos.
+  const html = fs.readFileSync(path.join(PUBLIC, 'index.html'), 'utf8');
+  const huecos = [...html.matchAll(/id="cta-(\d+)"/g)].map((m) => Number(m[1])).sort();
+  assert.deepEqual(huecos, [1, 2, 3], 'la home tiene que declarar cta-1, cta-2 y cta-3');
+  for (const n of huecos) {
+    assert.ok(html.includes(`id="cta-${n}-wrap"`), `cta-${n} no tiene su wrap: wrap.hidden revienta`);
+  }
+
+  const home = fs.readFileSync(path.join(PUBLIC, 'js', 'home.js'), 'utf8');
+  const cuerpo = home.slice(home.indexOf('function callToActions('), home.indexOf('async function fillSearcher'));
+  assert.doesNotMatch(cuerpo, /\.slice\(/,
+    'el renderer no puede recortar: cuantos entran lo decide el HTML, que es donde se ve');
+});
+
+test('🔴 siteUrl nunca devuelve un esquema peligroso, venga como venga el buttonLink', () => {
+  // Es lo que le da derecho a estar en HREF_PERMITIDOS: el dato de la API no puede elegir el
+  // protocolo. Mismos vectores que safeUrl, porque el sink es el mismo <a href>.
+  for (const peligroso of [
+    'javascript:alert(1)', 'JaVaScRiPt:alert(1)', '  javascript:alert(1)', '\njavascript:alert(1)',
+    'data:text/html,<script>alert(1)</script>', 'vbscript:msgbox(1)', 'file:///etc/passwd',
+  ]) {
+    assert.equal(siteUrl(peligroso), '', `siteUrl dejo pasar ${JSON.stringify(peligroso)}`);
+  }
+  for (const vacio of ['', '   ', null, undefined]) {
+    assert.equal(siteUrl(vacio), '', 'siteUrl invento un destino');
+  }
+});
+
+test('siteUrl traduce las rutas del sitio Mapaprop a las paginas del kit', () => {
+  // El vocabulario sale del template express-basic-1, que es con el que renderizan estas cuentas.
+  assert.equal(siteUrl('/contacto'), 'contacto.html');
+  assert.equal(siteUrl('/contacto/'), 'contacto.html', 'la barra final es la misma ruta');
+  assert.equal(siteUrl('/destacados'), 'index.html');
+  assert.equal(siteUrl('/desarrollos-inmobiliarios'), 'emprendimientos.html');
+  assert.equal(siteUrl('/buscar/ventas/'), 'propiedades.html?operation=1');
+  // Externa: viaja tal cual, validada.
+  assert.equal(siteUrl('https://wa.me/5491155550101'), 'https://wa.me/5491155550101');
+  // 🔴 Sin contraparte en el kit: vacio, NUNCA un link a una pagina que no existe. Medido en
+  // produccion el 2026-11-11: `/pagina/creditos.` y `/contacto` daban 404 en el demo porque el
+  // buttonLink viajaba crudo al href.
+  assert.equal(siteUrl('/pagina/creditos.'), '');
+  assert.equal(siteUrl('/blog'), '');
 });

@@ -1,6 +1,6 @@
 import { api } from './api.js';
 import { layout } from './layout.js';
-import { card, skeletons, escapeHtml, multiline, message, collectZones, safeUrl } from './ui.js';
+import { card, skeletons, escapeHtml, multiline, message, collectZones, safeUrl, siteUrl } from './ui.js';
 import { t } from './i18n.js';
 
 const featured = document.getElementById('featured');
@@ -47,15 +47,20 @@ function hero(data) {
 }
 
 function callToActions(data) {
+  // `data.callToActions` arrives already filtered by `enabled` (see brand.js), so the blocks are
+  // contiguous and the Nth one belongs in the Nth slot. No cap here: the page declares the slots it
+  // has and the `!host` guard below skips a block with nowhere to go, so an account configured with
+  // more of them degrades instead of being silently truncated -- which is what a `slice(0, 2)` did
+  // while the API was sending three.
   const blocks = data.callToActions || [];
-  blocks.slice(0, 2).forEach((block, index) => {
+  blocks.forEach((block, index) => {
     const host = document.getElementById(`cta-${index + 1}`);
     const wrap = document.getElementById(`cta-${index + 1}-wrap`);
-    if (!host || !block.title) return;
+    if (!host || !wrap || !block.title) return;
     host.innerHTML = `
       <h2>${escapeHtml(block.title)}</h2>
       ${block.description ? `<p>${escapeHtml(block.description)}</p>` : ''}
-      ${block.buttonText ? `<a class="btn" href="${escapeHtml(safeUrl(block.buttonLink) || 'contacto.html')}">${escapeHtml(block.buttonText)}</a>` : ''}`;
+      ${block.buttonText ? `<a class="btn" href="${escapeHtml(siteUrl(block.buttonLink) || 'contacto.html')}">${escapeHtml(block.buttonText)}</a>` : ''}`;
     wrap.hidden = false;
   });
 }

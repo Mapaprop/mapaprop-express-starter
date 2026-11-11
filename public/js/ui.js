@@ -47,6 +47,39 @@ export function safeUrl(value) {
   }
 }
 
+// The routes a Mapaprop website uses, mapped onto the pages THIS kit ships.
+//
+// Why it is needed: `design.callToActions[].buttonLink` is configured against the agency's Mapaprop
+// site, so it arrives as `/contacto`, `/destacados`, `/buscar/ventas/` -- paths that exist there and
+// not here, where the pages are files ending in `.html`. Measured in production on 2026-11-11: the
+// demo's buttons pointed at `/contacto` and `/pagina/creditos.` and both answered 404.
+//
+// The left column is not invented: it is the href vocabulary of the `express-basic-1` template, the
+// one these accounts render with. A path with no counterpart here -- `/blog`, `/pagina/<slug>`, a
+// property by seoUrl -- returns empty on purpose, so the caller decides what to do instead of
+// linking somewhere that does not exist.
+const SITE_ROUTES = new Map([
+  ['/', 'index.html'],
+  ['/contacto', 'contacto.html'],
+  ['/vender', 'vender.html'],
+  ['/destacados', 'index.html'],
+  ['/desarrollos-inmobiliarios', 'emprendimientos.html'],
+  ['/buscar/ventas', 'propiedades.html?operation=1'],
+  ['/buscar/alquileres', 'propiedades.html?operation=2'],
+  ['/buscar/alquileres-temporarios', 'propiedades.html?operation=3'],
+]);
+
+export function siteUrl(value) {
+  const raw = String(value ?? '').trim();
+  if (!raw) return '';
+  // Anything with a scheme is the agency pointing OUT of the site (wa.me, its Facebook): that one
+  // travels as it is, through the same scheme check as every other link.
+  if (/^[a-z][a-z0-9+.-]*:/i.test(raw)) return safeUrl(raw);
+  // Only the path matters for the lookup; a trailing slash is the same route.
+  const path = raw.split(/[?#]/)[0].replace(/\/+$/, '') || '/';
+  return SITE_ROUTES.get(path.toLowerCase()) || '';
+}
+
 // Text the agency typed with line breaks (descriptionFormatted, design slide titles).
 export function multiline(value) {
   return escapeHtml(value).replace(/\n/g, '<br>');
