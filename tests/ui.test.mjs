@@ -470,3 +470,18 @@ test('siteUrl traduce las rutas del sitio Mapaprop a las paginas del kit', () =>
   assert.equal(siteUrl('/pagina/creditos.'), '');
   assert.equal(siteUrl('/blog'), '');
 });
+
+test('🔴 todas las paginas declaran el favicon, y el archivo existe', () => {
+  // Medido el 2026-11-11: no se veia ninguno. Son TRES huecos distintos y hacen falta los tres --
+  // la API no manda `images.favicon` para la cuenta del demo, ninguna pagina declaraba
+  // `<link rel="icon">`, y el repo no traia el archivo, asi que el browser pedia `/favicon.ico` y
+  // recibia un 404. `brand.js` ya pisa el link cuando la cuenta SI subio uno: esto es la capa de
+  // abajo, la que cierra el 404 -- la misma que websites-v3 llama "Layer 3: Mapaprop default".
+  const paginas = fs.readdirSync(PUBLIC).filter((f) => f.endsWith('.html'));
+  assert.ok(paginas.length >= 6, 'el barrido no encontro las paginas');
+  const sinIcono = paginas.filter((f) => !/<link[^>]+rel="icon"/.test(
+    fs.readFileSync(path.join(PUBLIC, f), 'utf8')));
+  assert.deepEqual(sinIcono, [], 'estas paginas no declaran favicon');
+  assert.ok(fs.existsSync(path.join(PUBLIC, 'favicon.svg')),
+    'el link apunta a favicon.svg y el archivo no esta en el repo');
+});
