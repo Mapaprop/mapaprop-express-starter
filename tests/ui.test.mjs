@@ -441,6 +441,39 @@ test('🔴 la home declara un hueco por cada call-to-action que manda la API, y 
     'el renderer no puede recortar: cuantos entran lo decide el HTML, que es donde se ve');
 });
 
+test('🔴 la home muestra el blog, y ARRIBA de emprendimientos', () => {
+  // La posicion es la del template: express-basic-1 `home-page.php` incluye slider, searcher,
+  // call-to-action-1, posts y DESPUES developments-home. El orden no es decorativo -- es el que el
+  // dueno del sitio ya vio en basic.mapaprop.com -- y una seccion que existe pero cae al final de
+  // la pagina se lee como "falta el blog", que es exactamente como se reporto.
+  const html = fs.readFileSync(path.join(PUBLIC, 'index.html'), 'utf8');
+  const posts = html.indexOf('id="posts-section"');
+  const developments = html.indexOf('id="developments-section"');
+  const cta1 = html.indexOf('id="cta-1-wrap"');
+
+  assert.ok(posts > 0, 'la home no declara la seccion del blog');
+  assert.ok(html.includes('id="posts-home"'), 'la seccion existe pero no tiene donde renderizar');
+  assert.ok(posts > cta1, 'el blog va DESPUES del primer call-to-action');
+  assert.ok(posts < developments, 'el blog va ARRIBA de emprendimientos');
+  assert.match(html.slice(posts, developments), /href="blog\.html"/,
+    'el encabezado tiene que linkear al blog completo: la home muestra 3 y el resto vive ahi');
+
+  const home = fs.readFileSync(path.join(PUBLIC, 'js', 'home.js'), 'utf8');
+  assert.match(home, /loadPosts\(\);/, 'nadie llama a loadPosts(): la seccion queda hidden para siempre');
+});
+
+test('🔴 la card de una nota se escribe UNA vez y las dos paginas la importan', () => {
+  // El blog y la home tienen que mostrar la misma card. Con dos copias del markup, arreglar una
+  // (el escapeHtml del titulo, el safeUrl de la tapa, la fecha) deja la otra como estaba, y la
+  // diferencia no se ve hasta que alguien compara las dos paginas.
+  for (const archivo of ['blog.js', 'home.js']) {
+    const codigo = fs.readFileSync(path.join(PUBLIC, 'js', archivo), 'utf8');
+    assert.match(codigo, /from '\.\/post-card\.js'/, `${archivo} no importa la card compartida`);
+    assert.doesNotMatch(codigo, /post\.html\?url=/,
+      `${archivo} arma el markup de la nota por su cuenta: va en post-card.js`);
+  }
+});
+
 test('🔴 siteUrl nunca devuelve un esquema peligroso, venga como venga el buttonLink', () => {
   // Es lo que le da derecho a estar en HREF_PERMITIDOS: el dato de la API no puede elegir el
   // protocolo. Mismos vectores que safeUrl, porque el sink es el mismo <a href>.

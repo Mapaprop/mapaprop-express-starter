@@ -45,6 +45,19 @@
     <div class="wrap"><div class="cta" id="cta-1"></div></div>
   </section>
 
+  <!-- Blog preview. It sits between the first call to action and the developments because that is
+       where express-basic-1 puts it (`home-page.php`: slider, searcher, cta-1, posts,
+       developments-home). An account with no posts renders nothing: the section stays hidden. -->
+  <section class="section" id="posts-section" hidden>
+    <div class="wrap">
+      <div class="section__head">
+        <h2 data-i18n="home.posts">Últimas novedades</h2>
+        <a href="blog.html" data-i18n="home.seeAllPosts">Ver todas →</a>
+      </div>
+      <div class="grid" id="posts-home"></div>
+    </div>
+  </section>
+
   <section class="section" id="developments-section" hidden>
     <div class="wrap">
       <div class="section__head">

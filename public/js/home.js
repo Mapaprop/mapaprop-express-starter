@@ -2,6 +2,7 @@ import { api } from './api.js';
 import { layout } from './layout.js';
 import { card, skeletons, escapeHtml, multiline, message, collectZones, safeUrl, siteUrl } from './ui.js';
 import { t } from './i18n.js';
+import { postCard } from './post-card.js';
 
 const featured = document.getElementById('featured');
 featured.innerHTML = skeletons(6);
@@ -131,6 +132,20 @@ async function loadDevelopments() {
   }
 }
 
+async function loadPosts() {
+  try {
+    const { posts = [] } = await api.posts();
+    if (!posts.length) return;
+    // Three, like the template's own home. The cap is on the HOME, not on the API: `blog.html`
+    // lists them all, and the heading links to it -- so an agency with twelve notes still publishes
+    // the twelve, instead of the home quietly becoming the whole blog.
+    document.getElementById('posts-home').innerHTML = posts.slice(0, 3).map(postCard).join('');
+    document.getElementById('posts-section').hidden = false;
+  } catch {
+    /* an account with no blog is the common case, not an error worth showing */
+  }
+}
+
 async function loadBranches() {
   try {
     const { branches = [] } = await api.branches();
@@ -173,5 +188,6 @@ layout().then((data) => {
 });
 fillSearcher();
 loadFeatured();
+loadPosts();
 loadDevelopments();
 loadBranches();

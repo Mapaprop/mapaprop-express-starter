@@ -229,6 +229,9 @@ al formulario de contacto: querés un botón que lleve a algún lado, no uno que
 Las notas son las que cargás en **Sitio Web → Blog** de Mapaprop: el sitio pide `GET
 express-v1/posts` y `posts/{url}`. No hay un segundo lugar donde escribir.
 
+El inicio muestra las **tres últimas** arriba de emprendimientos, con un enlace a `blog.html`, que
+lista todas. Si tu cuenta no tiene notas, esa sección no se dibuja: no queda un hueco vacío.
+
 El listado llega **sin el cuerpo** —la API lo saca a propósito— así que la tarjeta muestra la
 portada, el título y la fecha; el texto completo viaja sólo al abrir la nota. Y ese texto se inserta
 **tal cual viene**: es HTML que escribiste vos en el editor, igual que lo imprime tu sitio de
@@ -322,8 +325,9 @@ Si traducís a un idioma nuevo: agregá su mapa en `i18n.js` con **las mismas cl
 ├── dev-local.mjs          servidor Node que despacha a esa misma función
 ├── fixtures/              respuestas reales anonimizadas + el servidor del modo mock
 ├── public/
-│   ├── index.html         inicio: carrusel, buscador, emprendimientos, destacadas, zonas,
-│   │                      sucursales y los tres llamados a la acción
+│   ├── index.html         inicio: carrusel, buscador, últimas novedades del blog,
+│   │                      emprendimientos, destacadas, zonas, sucursales y los tres
+│   │                      llamados a la acción
 │   ├── propiedades.html   listado con filtros y paginado
 │   ├── propiedad.html     ficha: galería, planos, videos, mapa y el formulario de consulta
 │   ├── emprendimientos.html
