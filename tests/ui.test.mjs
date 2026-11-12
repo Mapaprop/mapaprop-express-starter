@@ -492,7 +492,10 @@ test('siteUrl traduce las rutas del sitio Mapaprop a las paginas del kit', () =>
   // El vocabulario sale del template express-basic-1, que es con el que renderizan estas cuentas.
   assert.equal(siteUrl('/contacto'), 'contacto.html');
   assert.equal(siteUrl('/contacto/'), 'contacto.html', 'la barra final es la misma ruta');
-  assert.equal(siteUrl('/destacados'), 'index.html');
+  // Hasta el 2026-11-12 esto apuntaba a `index.html`: un placeholder puesto a proposito mientras la
+  // pagina no existia, para no linkear a un 404. Ya existe, asi que el boton que la agencia
+  // configuro en Mapaprop tiene que llegar a la vidriera y no a la home.
+  assert.equal(siteUrl('/destacados'), 'destacados.html');
   assert.equal(siteUrl('/desarrollos-inmobiliarios'), 'emprendimientos.html');
   assert.equal(siteUrl('/buscar/ventas/'), 'propiedades.html?operation=1');
   // Externa: viaja tal cual, validada.
@@ -518,6 +521,28 @@ test('🔴 todas las paginas declaran el favicon, y el archivo existe', () => {
   assert.deepEqual(sinIcono, [], 'estas paginas no declaran favicon');
   assert.ok(fs.existsSync(path.join(PUBLIC, 'favicon.svg')),
     'el link apunta a favicon.svg y el archivo no esta en el repo');
+});
+
+test('🔴 los destacados estan completos de punta a punta, no a medias', () => {
+  // Las MISMAS cinco piezas que el blog, y por la misma razon: el 2026-11-12 el proxy ya tenia su
+  // ruta y no habia ni pagina ni accion en el cliente, asi que `/destacados` daba 404 en el demo
+  // mientras el sitio de la cuenta lo mostraba. Una pieza que falte deja la vidriera muda sin error.
+  const proxy = fs.readFileSync(path.join(PUBLIC, '..', 'api', 'mp', '[...path].js'), 'utf8');
+  assert.match(proxy, /match: \/\^featureds\$\//, 'el proxy no habilita los destacados');
+
+  const api = fs.readFileSync(path.join(PUBLIC, 'js', 'api.js'), 'utf8');
+  assert.match(api, /featureds: \(params\) => call\('featureds'/, 'el cliente no expone la accion');
+
+  assert.ok(fs.existsSync(path.join(PUBLIC, 'destacados.html')), 'falta destacados.html');
+
+  const layout = fs.readFileSync(path.join(PUBLIC, 'js', 'layout.js'), 'utf8');
+  assert.match(layout, /href: 'destacados\.html'/, 'no esta en el menu: nadie lo encuentra');
+
+  // 🔴 Y la pieza propia de este caso: la home titula "Propiedades destacadas" y hasta hoy llenaba
+  // ese bloque con `properties`, o sea las primeras de la cartera. Se ve identico en pantalla.
+  const home = fs.readFileSync(path.join(PUBLIC, 'js', 'home.js'), 'utf8');
+  assert.match(home, /api\.featureds\(/, 'la home dice "destacadas" y pide la cartera');
+  assert.doesNotMatch(home, /loadFeatured[\s\S]*?api\.properties\(/, 'el bloque de destacadas sigue leyendo la cartera');
 });
 
 test('🔴 el blog esta completo de punta a punta, no a medias', () => {

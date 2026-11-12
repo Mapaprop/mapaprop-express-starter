@@ -62,7 +62,7 @@ const SITE_ROUTES = new Map([
   ['/', 'index.html'],
   ['/contacto', 'contacto.html'],
   ['/vender', 'vender.html'],
-  ['/destacados', 'index.html'],
+  ['/destacados', 'destacados.html'],
   ['/blog', 'blog.html'],
   ['/desarrollos-inmobiliarios', 'emprendimientos.html'],
   ['/buscar/ventas', 'propiedades.html?operation=1'],

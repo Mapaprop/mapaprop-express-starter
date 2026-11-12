@@ -20,6 +20,7 @@ const NUMBER_LOCALE = { es: 'es-AR', en: 'en-US', pt: 'pt-BR' };
 export const STRINGS = {
   es: {
     'nav.home': 'Inicio',
+    'nav.featured': 'Destacados',
     'nav.sales': 'Ventas',
     'nav.rentals': 'Alquileres',
     'nav.temporary': 'Temporarios',
@@ -73,7 +74,15 @@ export const STRINGS = {
     'home.developments': 'Emprendimientos',
     'home.seeAllDevelopments': 'Ver todos →',
     'home.featured': 'Propiedades destacadas',
-    'home.seeAllProperties': 'Ver toda la cartera →',
+    'home.seeAllFeatured': 'Ver todas las destacadas →',
+
+    'featured.docTitle': 'Destacados',
+    'featured.docDescription': 'Las propiedades que elegimos destacar, en el orden que les dimos.',
+    'featured.title': 'Propiedades destacadas',
+    'featured.intro': 'En el orden que les dimos desde Mapaprop.',
+    'featured.empty': 'Todavía no destacamos ninguna propiedad.',
+    'featured.emptyPage': 'Esta página quedó vacía. Volvé a la primera.',
+    'featured.loadError': 'No pudimos cargar las destacadas: {message}',
     'home.byZone': 'Buscá por zona',
     'home.branches': 'Nuestras sucursales',
     'home.empty': 'Todavía no hay propiedades publicadas en esta cuenta.',
@@ -253,6 +262,7 @@ export const STRINGS = {
 
   en: {
     'nav.home': 'Home',
+    'nav.featured': 'Featured',
     'nav.sales': 'For sale',
     'nav.rentals': 'For rent',
     'nav.temporary': 'Short stay',
@@ -306,7 +316,15 @@ export const STRINGS = {
     'home.developments': 'Developments',
     'home.seeAllDevelopments': 'See all →',
     'home.featured': 'Featured properties',
-    'home.seeAllProperties': 'See the whole portfolio →',
+    'home.seeAllFeatured': 'See all featured →',
+
+    'featured.docTitle': 'Featured',
+    'featured.docDescription': 'The properties we chose to feature, in the order we gave them.',
+    'featured.title': 'Featured properties',
+    'featured.intro': 'In the order we set from Mapaprop.',
+    'featured.empty': 'We have not featured any property yet.',
+    'featured.emptyPage': 'This page came out empty. Go back to the first one.',
+    'featured.loadError': 'We could not load the featured properties: {message}',
     'home.byZone': 'Search by area',
     'home.branches': 'Our offices',
     'home.empty': 'This account has no published properties yet.',
@@ -486,6 +504,7 @@ export const STRINGS = {
 
   pt: {
     'nav.home': 'Início',
+    'nav.featured': 'Destaques',
     'nav.sales': 'Vendas',
     'nav.rentals': 'Aluguéis',
     'nav.temporary': 'Temporada',
@@ -539,7 +558,15 @@ export const STRINGS = {
     'home.developments': 'Empreendimentos',
     'home.seeAllDevelopments': 'Ver todos →',
     'home.featured': 'Imóveis destacados',
-    'home.seeAllProperties': 'Ver toda a carteira →',
+    'home.seeAllFeatured': 'Ver todos os destaques →',
+
+    'featured.docTitle': 'Destaques',
+    'featured.docDescription': 'Os imóveis que escolhemos destacar, na ordem que lhes demos.',
+    'featured.title': 'Imóveis destacados',
+    'featured.intro': 'Na ordem que definimos no Mapaprop.',
+    'featured.empty': 'Ainda não destacamos nenhum imóvel.',
+    'featured.emptyPage': 'Esta página ficou vazia. Volte à primeira.',
+    'featured.loadError': 'Não conseguimos carregar os destaques: {message}',
     'home.byZone': 'Busque por região',
     'home.branches': 'Nossas lojas',
     'home.empty': 'Esta conta ainda não tem imóveis publicados.',

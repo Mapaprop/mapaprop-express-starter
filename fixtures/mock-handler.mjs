@@ -171,6 +171,13 @@ export default async function handler(req, res) {
       return res.status(200).json(property);
     }
 
+    if (action === 'featureds') {
+      // No filters on purpose: the real action only takes `from`/`size`. The ORDER of the fixture is
+      // the content -- it is deliberately not the order of `properties.json`, so that a kit running
+      // on mocks still shows that the showcase is arranged by the agency and not by relevance.
+      return res.status(200).json(page(fixture('featureds').properties || [], req.query));
+    }
+
     if (action === 'developments') {
       return res.status(200).json(page(fixture('developments').properties || [], req.query));
     }

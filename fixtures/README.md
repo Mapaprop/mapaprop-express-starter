@@ -45,6 +45,7 @@ que la API cambie, la escrita a mano sigue diciendo lo que creíamos y la captur
 |---|---|---|
 | `properties.json` | `GET properties` | 20 propiedades, la página completa |
 | `property-detail.json` | `GET properties/{hash}` | el detalle: `branch`, `customer*`, planos |
+| `featureds.json` | `GET featureds` | 7 destacadas, en el orden de la agencia (a propósito distinto al de `properties.json`) |
 | `developments.json` | `GET developments` | 5 emprendimientos con sus `developmentProperties` |
 | `development-detail.json` | `GET properties/{hash}` | el detalle de un emprendimiento |
 | `development-properties.json` | `GET development/properties` | las 6 unidades de uno |

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="featured.docTitle">Destacados</title>
+  <meta name="description" data-i18n-content="featured.docDescription" content="Las propiedades que elegimos destacar, en el orden que les dimos.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/config.js"></script>
+</head>
+<body>
+  <main class="wrap section">
+    <div class="section__head">
+      <h1 data-i18n="featured.title">Propiedades destacadas</h1>
+      <span id="featured-count"></span>
+    </div>
+    <p class="form__hint" data-i18n="featured.intro">En el orden que les dimos desde Mapaprop.</p>
+
+    <div class="grid" id="results"></div>
+    <div id="pagination"></div>
+  </main>
+
+  <script type="module" src="js/destacados.js"></script>
+</body>
+</html>

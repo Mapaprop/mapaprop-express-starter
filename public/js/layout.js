@@ -6,6 +6,7 @@ import { t, applyI18n, lang, languages, setLang, LANG_LABEL, LANG_SHORT } from '
 
 const LINKS = [
   { href: 'index.html', key: 'nav.home' },
+  { href: 'destacados.html', key: 'nav.featured' },
   { href: 'propiedades.html?operation=1', key: 'nav.sales' },
   { href: 'propiedades.html?operation=2', key: 'nav.rentals' },
   { href: 'propiedades.html?operation=3', key: 'nav.temporary', onlyTempRental: true },

@@ -110,7 +110,9 @@ function renderZonePills(zones) {
 
 async function loadFeatured() {
   try {
-    const { properties = [] } = await api.properties({ size: 6 });
+    // `featureds`, not `properties`: this block is titled "featured" and until today it showed the
+    // first 6 of the whole portfolio, which is a different thing and looks identical on screen.
+    const { properties = [] } = await api.featureds({ size: 6 });
     if (!properties.length) {
       message(featured, t('home.empty'));
       return;

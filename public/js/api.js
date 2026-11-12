@@ -57,6 +57,10 @@ export const api = {
   properties: (params) => call('properties', { params }),
   property: (hash) => call(`properties/${encodeURIComponent(hash)}`),
   developments: (params) => call('developments', { params }),
+  // The showcase the agency arranged, in ITS order (`wf_order`), not by relevance. `total` is the
+  // agency's real count, so a page can come back SHORTER than `size` when a featured property is no
+  // longer published: page by `total`, never by whether the page came back full.
+  featureds: (params) => call('featureds', { params }),
   developmentUnits: (propertyIds, params = {}) =>
     call('development/properties', { params: { ...params, propertyIds: [].concat(propertyIds).join(',') } }),
 
