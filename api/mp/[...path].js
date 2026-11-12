@@ -47,6 +47,10 @@ const ROUTES = [
   { method: 'GET', match: /^properties\/[A-Za-z0-9_-]+$/, sMaxAge: 60 },
   { method: 'GET', match: /^developments$/, sMaxAge: 60 },
   { method: 'GET', match: /^development\/properties$/, sMaxAge: 60 },
+  // The showcase the agency arranged. The response IS the `properties` list -- same objects, same
+  // shape -- so it gets the same 60s as the inventory and not the catalogs' day: the agency
+  // reorders its featured properties and expects to see the new order.
+  { method: 'GET', match: /^featureds$/, sMaxAge: 60 },
   // catalogs: the API caches these for a day upstream, so cache them here too
   { method: 'GET', match: /^types$/, sMaxAge: 86400 },
   { method: 'GET', match: /^operations$/, sMaxAge: 86400 },

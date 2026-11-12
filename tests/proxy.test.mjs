@@ -24,8 +24,8 @@ test('buildAction rejects anything that could widen the upstream target', () => 
 });
 
 test('the reads the site needs are allowed', () => {
-  for (const action of ['properties', 'developments', 'development/properties', 'types',
-    'operations', 'zones', 'branches', 'features', 'settings-v2', 'design']) {
+  for (const action of ['properties', 'developments', 'development/properties', 'featureds',
+    'types', 'operations', 'zones', 'branches', 'features', 'settings-v2', 'design']) {
     assert.ok(findRoute('GET', action), `GET ${action} debería estar permitido`);
   }
   assert.ok(findRoute('GET', 'properties/abc123'));
@@ -46,6 +46,7 @@ test('nothing else gets through, including writes this token might be able to ma
   assert.equal(findRoute('POST', 'types'), null);
   assert.equal(findRoute('GET', 'authorize'), null);
   assert.equal(findRoute('GET', 'pages'), null); // not used by this kit: add a ROUTES row first
+  assert.equal(findRoute('POST', 'featureds'), null); // a read-only action stays read-only here
   assert.equal(findRoute('GET', ''), null);
   assert.equal(findRoute('GET', null), null);
 });
