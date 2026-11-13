@@ -43,6 +43,11 @@ navegador.
 
 ## Dónde publicarlo
 
+**Las dos formas de tomarlo.** Con el botón de Vercel, que copia el proyecto a tu cuenta y lo
+deploya; o clonándolo y publicándolo donde quieras. En las dos, lo que queda es **tu copia**: no
+está conectada a este repositorio y no recibe cambios nuestros. Cuando quieras traerte una mejora,
+mirá [Cómo traer una mejora](#cómo-traer-una-mejora).
+
 El sitio son archivos estáticos **más una función de servidor** —la que guarda el token y nunca se lo
 muestra al navegador—. Así que no alcanza un hosting de archivos sueltos: hace falta un lugar que
 ejecute esa función.
@@ -372,7 +377,7 @@ Si traducís a un idioma nuevo: agregá su mapa en `i18n.js` con **las mismas cl
 │       ├── brand.js       aplica el diseño de tu cuenta
 │       ├── layout.js      menú y pie compartidos
 │       └── …              un archivo por página
-├── tests/                 116 tests, sin dependencias
+├── tests/                 131 tests, sin dependencias
 ├── LICENSE
 ├── SECURITY.md
 ├── vercel.json
@@ -397,8 +402,44 @@ Si traducís a un idioma nuevo: agregá su mapa en `i18n.js` con **las mismas cl
 
 ---
 
+## Cómo traer una mejora
+
+Tu copia no se actualiza sola, y es a propósito: lo que publicaste no cambia porque nosotros hayamos
+cambiado algo acá. El repositorio es el único lugar donde mirar qué se movió desde que lo bajaste —
+[los commits](https://github.com/Mapaprop/mapaprop-express-starter/commits/main) dicen qué cambió y
+cuándo, y si querés que te avise, **Watch → Custom** en GitHub.
+
+**Si lo clonaste con `git clone`**, este repositorio ya es tu `origin`:
+
+```bash
+git fetch origin
+git log --oneline HEAD..origin/main      # qué hay de nuevo
+git diff HEAD..origin/main               # qué cambia exactamente
+git merge origin/main                    # traerlo
+```
+
+Si editaste los mismos archivos que tocamos nosotros, el merge te va a pedir resolver el conflicto.
+Es lo único que cuesta trabajo acá, y se evita mirando el `git diff` antes de mergear.
+
+**Si lo trajiste con el botón de Vercel**, tu repositorio es una copia independiente. Agregá este
+como un remoto más:
+
+```bash
+git remote add mapaprop https://github.com/Mapaprop/mapaprop-express-starter.git
+git fetch mapaprop
+git diff HEAD..mapaprop/main
+```
+
+Si Git no reconoce las dos historias como la misma, el `merge` no te va a servir: copiá el archivo
+que te interesa y commiteálo. Para uno o dos archivos es más corto que pelearse con las historias.
+
+Y si no querés traer nada, no traigas nada: tu sitio sigue funcionando igual.
+
+---
+
 ## Documentación
 
+- [El manual de este sitio](https://help.mapaprop.com/es/api/express-api/cliente-de-referencia) — de cero a desplegado, el mapa del código y por qué el token va del lado del servidor
 - [Primeros pasos con la API](https://help.mapaprop.com/es/api/getting-started)
 - [Express API: las 21 acciones](https://help.mapaprop.com/es/api/express-api)
 - [Constantes (tipos, operaciones, estados)](https://help.mapaprop.com/es/api/getting-started/constants)
