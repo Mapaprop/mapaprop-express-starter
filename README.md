@@ -453,17 +453,22 @@ git merge origin/main                    # traerlo
 Si editaste los mismos archivos que tocamos nosotros, el merge te va a pedir resolver el conflicto.
 Es lo único que cuesta trabajo acá, y se evita mirando el `git diff` antes de mergear.
 
-**Si lo trajiste con el botón de Vercel**, tu repositorio es una copia independiente. Agregá este
-como un remoto más:
+**Si lo trajiste con el botón de Vercel**, tu repositorio es una copia independiente: **no es un
+fork**, así que GitHub no lo muestra como relacionado ni te ofrece "Sync fork". Agregá este como un
+remoto más:
 
 ```bash
 git remote add mapaprop https://github.com/Mapaprop/mapaprop-express-starter.git
 git fetch mapaprop
-git diff HEAD..mapaprop/main
+git diff HEAD..mapaprop/main      # qué cambia
+git merge mapaprop/main           # traerlo
 ```
 
-Si Git no reconoce las dos historias como la misma, el `merge` no te va a servir: copiá el archivo
-que te interesa y commiteálo. Para uno o dos archivos es más corto que pelearse con las historias.
+**El clone del botón se lleva la historia completa**, así que ese `merge` normalmente funciona igual
+que con tu propio `origin`. Si en cambio te responde `refusing to merge unrelated histories`, tu
+copia nació sin la historia compartida y el merge no te sirve: copiá el archivo que te interesa y
+commiteálo. Para uno o dos archivos es más corto que pelearse con las historias —forzarlo con
+`--allow-unrelated-histories` te marca **todos** los archivos como conflicto.
 
 Y si no querés traer nada, no traigas nada: tu sitio sigue funcionando igual.
 
