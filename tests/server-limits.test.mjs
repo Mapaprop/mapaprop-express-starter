@@ -59,20 +59,31 @@ test('🔴 un ?path= del visitante no elige una accion distinta a la de la URL',
   assert.ok(Array.isArray(body.types), `respondio otra accion: ${JSON.stringify(body).slice(0, 120)}`);
 });
 
-test('🔴 las URLs limpias se sirven, y el atajo no abre la puerta a salir de public/', async () => {
+test('🔴 cada seccion se sirve por su ruta de directorio, y el atajo no sale de public/', async () => {
   // La inmobiliaria configura `/destacados` en Mapaprop, su sitio websites-v3 sirve ese path, y si
   // MIGRA al kit lo tiene indexado en Google. Contestarle 404 es perder trafico que ya tenia.
-  for (const [ruta, marca] of [['/destacados', 'featured.title'], ['/destacados/', 'featured.title'],
-    ['/contacto', 'contact.title'], ['/', 'home.heroTitle']]) {
+  // Se verifica QUE PAGINA vino, no solo el 200: un index.html servido para todo tambien da 200.
+  for (const [ruta, marca] of [['/', 'home.heroTitle'], ['/destacados', 'featured.title'],
+    ['/propiedades', 'listing.title'], ['/contacto', 'contact.title'], ['/vender', 'sell.title'],
+    ['/emprendimientos', 'developments.title'], ['/blog', 'blog.title']]) {
     const res = await fetch(`${BASE}${ruta}`);
     assert.equal(res.status, 200, `${ruta} no se sirve`);
     assert.match(await res.text(), new RegExp(marca), `${ruta} sirvio otra pagina`);
   }
-  // El `.html` explicito sigue andando: es lo que usan los links internos del kit.
-  assert.equal((await fetch(`${BASE}/destacados.html`)).status, 200);
-  // Y lo que el atajo NO puede hacer: inventar una pagina, ni servir un .html de afuera.
+  // Y los assets resuelven desde una pagina que vive en un subdirectorio: con un `href` relativo
+  // darian 404 y la seccion saldria sin estilos ni JavaScript.
+  for (const asset of ['/css/style.css', '/js/boot.js', '/js/destacados.js', '/favicon.svg']) {
+    assert.equal((await fetch(`${BASE}${asset}`)).status, 200, `${asset} no se sirve`);
+  }
+
+  // Las tres formas de la misma ruta llegan a la misma pagina.
+  for (const forma of ['/destacados', '/destacados/', '/destacados/index.html']) {
+    assert.equal((await fetch(`${BASE}${forma}`)).status, 200, forma);
+  }
+  // Y lo que el atajo NO puede hacer: inventar una pagina, ni servir algo de afuera de public/.
   assert.equal((await fetch(`${BASE}/no-existe`)).status, 404);
   assert.equal((await fetch(`${BASE}/../tests/fixture`)).status, 404);
+  assert.equal((await fetch(`${BASE}/../package`)).status, 404);
 });
 
 test('no se sirven archivos de fuera de public/', async () => {

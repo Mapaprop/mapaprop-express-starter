@@ -12,6 +12,14 @@ import {
 
 const PUBLIC = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 
+// Cada seccion es un DIRECTORIO con su index.html (reforma del 2026-11-13), asi que el barrido de
+// paginas no es un readdir plano. Vive aca y no dentro de un test porque lo usan varios: con una
+// copia por test, el que no se actualiza mira una sola pagina y pasa por no mirar.
+const paginasHtml = () => fs.readdirSync(PUBLIC, { withFileTypes: true })
+  .flatMap((e) => (e.isDirectory()
+    ? (fs.existsSync(path.join(PUBLIC, e.name, 'index.html')) ? [`${e.name}/index.html`] : [])
+    : (e.name.endsWith('.html') ? [e.name] : [])));
+
 test('num treats 0 as "not informed", because that is what the API means by it', () => {
   assert.equal(num(0), null);
   assert.equal(num('0'), null);
@@ -125,13 +133,22 @@ test('collectZones walks states -> counties -> cities and orders by count', () =
 test('only one nav item is active, even though three links share a page', () => {
   const search = (q) => new URLSearchParams(q);
   // On /propiedades?operation=1 only "Ventas" lights up.
-  assert.equal(isActive('propiedades.html?operation=1', 'propiedades.html', search('operation=1')), true);
-  assert.equal(isActive('propiedades.html?operation=2', 'propiedades.html', search('operation=1')), false);
-  assert.equal(isActive('propiedades.html?operation=3', 'propiedades.html', search('operation=1')), false);
+  assert.equal(isActive('/propiedades?operation=1', '/propiedades', search('operation=1')), true);
+  assert.equal(isActive('/propiedades?operation=2', '/propiedades', search('operation=1')), false);
+  assert.equal(isActive('/propiedades?operation=3', '/propiedades', search('operation=1')), false);
   // The plain listing is not any of the three operations.
-  assert.equal(isActive('propiedades.html?operation=1', 'propiedades.html', search('')), false);
-  assert.equal(isActive('index.html', 'index.html', search('')), true);
-  assert.equal(isActive('index.html', 'contacto.html', search('')), false);
+  assert.equal(isActive('/propiedades?operation=1', '/propiedades', search('')), false);
+  assert.equal(isActive('/', '/', search('')), true);
+  assert.equal(isActive('/', '/contacto', search('')), false);
+
+  // 🔴 Las TRES formas de la misma ruta prenden el mismo item. El `current` sale del pathname del
+  // browser, y una pagina abierta como `/propiedades/` o `/propiedades/index.html` es la misma que
+  // `/propiedades`: con la derivacion vieja (`pathname.split('/').pop()`) la primera daba cadena
+  // vacia y caia en la home, asi que el menu marcaba Inicio estando en el listado.
+  for (const forma of ['/propiedades', '/propiedades/', '/propiedades/index.html']) {
+    assert.equal(isActive('/propiedades?operation=1', forma, search('operation=1')), true, forma);
+  }
+  assert.equal(isActive('/', '/index.html', search('')), true, 'la home por su index.html');
 });
 
 test('a pale palette does not become unreadable text', () => {
@@ -219,7 +236,11 @@ const HREF_PERMITIDOS = [
   // "siteUrl nunca devuelve un esquema peligroso" se pone en rojo antes que este.
   /^\$\{escapeHtml\(siteUrl\(/,
   /^\$\{propertyUrl\(/,
-  // Rutas literales del propio kit: el dato entra por query, no elige el destino.
+  // Rutas literales del propio kit: el dato entra por QUERY, no elige el destino. Desde la reforma
+  // del 2026-11-13 las paginas son directorios, asi que la ruta arranca con `/`. La clase de
+  // caracteres no admite `$` ni `{`, asi que un `/${algo}` NO entra por aca.
+  /^`?\/[a-z0-9/._-]*(\?|`|$)/i,
+  // Y el `.html` plano sigue aceptado: una pagina suelta al lado de index.html tambien es nuestra.
   /^`?[a-z0-9._-]+\.html/i,
   /^\$\{l\.href\}/,
   // `url("…")` de CSS con el valor ya validado.
@@ -455,7 +476,7 @@ test('🔴 la home muestra el blog, y ARRIBA de emprendimientos', () => {
   assert.ok(html.includes('id="posts-home"'), 'la seccion existe pero no tiene donde renderizar');
   assert.ok(posts > cta1, 'el blog va DESPUES del primer call-to-action');
   assert.ok(posts < developments, 'el blog va ARRIBA de emprendimientos');
-  assert.match(html.slice(posts, developments), /href="blog\.html"/,
+  assert.match(html.slice(posts, developments), /href="\/blog"/,
     'el encabezado tiene que linkear al blog completo: la home muestra 3 y el resto vive ahi');
 
   const home = fs.readFileSync(path.join(PUBLIC, 'js', 'home.js'), 'utf8');
@@ -490,14 +511,16 @@ test('🔴 siteUrl nunca devuelve un esquema peligroso, venga como venga el butt
 
 test('siteUrl traduce las rutas del sitio Mapaprop a las paginas del kit', () => {
   // El vocabulario sale del template express-basic-1, que es con el que renderizan estas cuentas.
-  assert.equal(siteUrl('/contacto'), 'contacto.html');
-  assert.equal(siteUrl('/contacto/'), 'contacto.html', 'la barra final es la misma ruta');
+  assert.equal(siteUrl('/contacto'), '/contacto');
+  assert.equal(siteUrl('/contacto/'), '/contacto', 'la barra final es la misma ruta');
   // Hasta el 2026-11-12 esto apuntaba a `index.html`: un placeholder puesto a proposito mientras la
   // pagina no existia, para no linkear a un 404. Ya existe, asi que el boton que la agencia
   // configuro en Mapaprop tiene que llegar a la vidriera y no a la home.
-  assert.equal(siteUrl('/destacados'), 'destacados.html');
-  assert.equal(siteUrl('/desarrollos-inmobiliarios'), 'emprendimientos.html');
-  assert.equal(siteUrl('/buscar/ventas/'), 'propiedades.html?operation=1');
+  assert.equal(siteUrl('/destacados'), '/destacados');
+  // 🔴 El vocabulario NO es el mismo de los dos lados, y por eso la tabla sigue existiendo aunque
+  // ahora las dos puntas usen rutas: alla es `/desarrollos-inmobiliarios`, aca `/emprendimientos`.
+  assert.equal(siteUrl('/desarrollos-inmobiliarios'), '/emprendimientos');
+  assert.equal(siteUrl('/buscar/ventas/'), '/propiedades?operation=1');
   // Externa: viaja tal cual, validada.
   assert.equal(siteUrl('https://wa.me/5491155550101'), 'https://wa.me/5491155550101');
   // 🔴 Sin contraparte en el kit: vacio, NUNCA un link a una pagina que no existe. Medido en
@@ -505,7 +528,7 @@ test('siteUrl traduce las rutas del sitio Mapaprop a las paginas del kit', () =>
   // buttonLink viajaba crudo al href.
   assert.equal(siteUrl('/pagina/creditos.'), '');
   // `/blog` SI tiene contraparte desde que el kit trae su pagina de blog.
-  assert.equal(siteUrl('/blog'), 'blog.html');
+  assert.equal(siteUrl('/blog'), '/blog');
 });
 
 test('🔴 todas las paginas declaran el favicon, y el archivo existe', () => {
@@ -514,8 +537,8 @@ test('🔴 todas las paginas declaran el favicon, y el archivo existe', () => {
   // `<link rel="icon">`, y el repo no traia el archivo, asi que el browser pedia `/favicon.ico` y
   // recibia un 404. `brand.js` ya pisa el link cuando la cuenta SI subio uno: esto es la capa de
   // abajo, la que cierra el 404 -- la misma que websites-v3 llama "Layer 3: Mapaprop default".
-  const paginas = fs.readdirSync(PUBLIC).filter((f) => f.endsWith('.html'));
-  assert.ok(paginas.length >= 6, 'el barrido no encontro las paginas');
+  const paginas = paginasHtml();
+  assert.ok(paginas.length >= 6, `el barrido encontro ${paginas.length} paginas`);
   const sinIcono = paginas.filter((f) => !/<link[^>]+rel="icon"/.test(
     fs.readFileSync(path.join(PUBLIC, f), 'utf8')));
   assert.deepEqual(sinIcono, [], 'estas paginas no declaran favicon');
@@ -533,16 +556,65 @@ test('🔴 los destacados estan completos de punta a punta, no a medias', () => 
   const api = fs.readFileSync(path.join(PUBLIC, 'js', 'api.js'), 'utf8');
   assert.match(api, /featureds: \(params\) => call\('featureds'/, 'el cliente no expone la accion');
 
-  assert.ok(fs.existsSync(path.join(PUBLIC, 'destacados.html')), 'falta destacados.html');
+  assert.ok(fs.existsSync(path.join(PUBLIC, 'destacados', 'index.html')),
+    'falta destacados/index.html');
 
   const layout = fs.readFileSync(path.join(PUBLIC, 'js', 'layout.js'), 'utf8');
-  assert.match(layout, /href: 'destacados\.html'/, 'no esta en el menu: nadie lo encuentra');
+  assert.match(layout, /href: '\/destacados'/, 'no esta en el menu: nadie lo encuentra');
 
   // 🔴 Y la pieza propia de este caso: la home titula "Propiedades destacadas" y hasta hoy llenaba
   // ese bloque con `properties`, o sea las primeras de la cartera. Se ve identico en pantalla.
   const home = fs.readFileSync(path.join(PUBLIC, 'js', 'home.js'), 'utf8');
   assert.match(home, /api\.featureds\(/, 'la home dice "destacadas" y pide la cartera');
   assert.doesNotMatch(home, /loadFeatured[\s\S]*?api\.properties\(/, 'el bloque de destacadas sigue leyendo la cartera');
+});
+
+test('🔴 ninguna pagina referencia un asset con ruta relativa', () => {
+  // Es EL modo de falla de la reforma a directorios (2026-11-13): desde `/propiedades/` un
+  // `css/style.css` relativo busca `/propiedades/css/style.css`, da 404 y la pagina sale sin
+  // estilos y sin JavaScript. Se ve roto de una, pero solo en las secciones -- la home, que quedo
+  // en la raiz, sigue andando perfecto. O sea que mirar la home no alcanza para darse cuenta.
+  for (const pagina of paginasHtml()) {
+    const html = fs.readFileSync(path.join(PUBLIC, pagina), 'utf8');
+    const relativos = [...html.matchAll(/(?:href|src)="(?!\/|https?:|mailto:|tel:|#)([^"]+)"/g)]
+      .map((m) => m[1]);
+    assert.deepEqual(relativos, [], `${pagina} referencia ${relativos.join(', ')}`);
+  }
+});
+
+test('🔴 el arranque no muestra el diseno de respaldo, y nunca deja la pagina en blanco', () => {
+  // Reportado por el owner el 2026-11-13: "muestra un diseno primero y luego lo cambia y queda
+  // feo". La pagina nacia con la paleta y el nombre de config.js y repintaba cuando contestaban
+  // `design` y `settings-v2`.
+  const boot = fs.readFileSync(path.join(PUBLIC, 'js', 'boot.js'), 'utf8');
+  assert.match(boot, /classList\.add\('is-booting'\)/, 'nadie marca el arranque');
+
+  // 🔴 La red de seguridad, y no es opcional: quien saca la clase es un modulo que puede fallar al
+  // cargar, y la API puede colgarse. Sin el timeout, un request lento deja el sitio EN BLANCO.
+  assert.match(boot, /setTimeout\([\s\S]{0,160}remove\('is-booting'\)/,
+    'falta el timeout que destapa la pagina si algo falla');
+
+  // Tiene que ser un ARCHIVO y no un bloque inline: la CSP del kit no acepta inline, y lo bloquea
+  // en silencio. Si algun dia la CSP aflojara, este test sobra -- por eso lo afirma.
+  const csp = JSON.parse(fs.readFileSync(path.join(PUBLIC, '..', 'vercel.json'), 'utf8'))
+    .headers[0].headers.find((h) => h.key === 'Content-Security-Policy').value;
+  assert.ok(!/script-src[^;]*unsafe-inline/.test(csp), 'la CSP acepta inline: revisar este test');
+
+  // Y en el <head> de TODAS: un modulo (o un script al final del body) corre despues de que el
+  // cuerpo se pinto, asi que el parpadeo sobreviviria al arreglo.
+  for (const pagina of paginasHtml()) {
+    const html = fs.readFileSync(path.join(PUBLIC, pagina), 'utf8');
+    assert.match(html.split('</head>')[0], /<script src="\/js\/boot\.js"><\/script>/,
+      `${pagina} no carga boot.js en el head`);
+  }
+
+  const css = fs.readFileSync(path.join(PUBLIC, 'css', 'style.css'), 'utf8');
+  assert.match(css, /html\.is-booting body\s*\{[^}]*visibility:\s*hidden/,
+    'el CSS no retiene el pintado');
+
+  const layout = fs.readFileSync(path.join(PUBLIC, 'js', 'layout.js'), 'utf8');
+  assert.match(layout, /classList\.remove\('is-booting'\)/,
+    'nadie saca la clase cuando la marca ya esta aplicada');
 });
 
 test('🔴 el favicon tiene sus TRES capas, y la del medio es el LOGO de la cuenta', () => {
@@ -583,12 +655,12 @@ test('🔴 el blog esta completo de punta a punta, no a medias', () => {
   assert.match(api, /posts: \(\) => call\('posts'\)/, 'el cliente no expone el listado');
   assert.match(api, /post: \(url\) =>/, 'el cliente no expone el detalle');
 
-  for (const page of ['blog.html', 'post.html']) {
-    assert.ok(fs.existsSync(path.join(PUBLIC, page)), `falta ${page}`);
+  for (const page of ['blog', 'post']) {
+    assert.ok(fs.existsSync(path.join(PUBLIC, page, 'index.html')), `falta ${page}/index.html`);
   }
 
   const layout = fs.readFileSync(path.join(PUBLIC, 'js', 'layout.js'), 'utf8');
-  assert.match(layout, /href: 'blog\.html'/, 'el blog no esta en el menu: nadie lo encuentra');
+  assert.match(layout, /href: '\/blog'/, 'el blog no esta en el menu: nadie lo encuentra');
 });
 
 test('🔴 el cuerpo del post se inyecta crudo A PROPOSITO, y dice por que', () => {

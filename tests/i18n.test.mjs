@@ -15,8 +15,26 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = path.join(ROOT, 'public');
 const LANGS = Object.keys(STRINGS);
 
-const html = () => fs.readdirSync(PUBLIC).filter((f) => f.endsWith('.html'))
-  .map((f) => [f, fs.readFileSync(path.join(PUBLIC, f), 'utf8')]);
+// Las paginas son DIRECTORIOS desde el 2026-11-13 (`propiedades/index.html`), asi que el barrido
+// es recursivo. Con el `readdirSync` plano de antes encontraba UNA sola pagina -- la home -- y los
+// tres tests que dependen de el pasaban mirando el 11% del HTML: verde por no mirar.
+const html = () => {
+  const salida = [];
+  const recorrer = (dir, prefijo) => {
+    for (const entrada of fs.readdirSync(dir, { withFileTypes: true })) {
+      const completo = path.join(dir, entrada.name);
+      if (entrada.isDirectory()) {
+        if (entrada.name !== 'js' && entrada.name !== 'css' && entrada.name !== 'img') {
+          recorrer(completo, `${prefijo}${entrada.name}/`);
+        }
+      } else if (entrada.name.endsWith('.html')) {
+        salida.push([`${prefijo}${entrada.name}`, fs.readFileSync(completo, 'utf8')]);
+      }
+    }
+  };
+  recorrer(PUBLIC, '');
+  return salida;
+};
 
 const js = () => fs.readdirSync(path.join(PUBLIC, 'js')).filter((f) => f.endsWith('.js'))
   .map((f) => [f, fs.readFileSync(path.join(PUBLIC, 'js', f), 'utf8')]);
@@ -118,8 +136,9 @@ test('no quedan literales en castellano sueltos en el JS', () => {
       // The seller form sends the type and the operation as free text to the agency's CRM, which
       // reads them in its own language: translating those would file an unmatchable lead.
       if (file === 'vender.js' && /Casa|Venta/.test(line)) return;
-      // A file name is not prose: `propiedades.html?operation=1` is a route, not a label.
-      const candidate = line.replace(/'[^']*\.html[^']*'/g, "''");
+      // A route is not prose: `/propiedades?operation=1` is a destination, not a label. Se saca
+      // la ruta (arranca con `/`) y tambien el `.html` suelto, por si queda una pagina plana.
+      const candidate = line.replace(/'\/[^']*'/g, "''").replace(/'[^']*\.html[^']*'/g, "''");
       const hit = candidate.match(SPANISH);
       assert.ok(!hit, `${file}:${index + 1} tiene un literal en castellano: ${hit?.[0]}`);
     });

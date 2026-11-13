@@ -189,3 +189,48 @@ textarea { min-height: 120px; resize: vertical; }
 
 .whatsapp { position: fixed; right: 18px; bottom: 18px; z-index: 50; width: 54px; height: 54px; border-radius: 50%; background: #25d366; color: #fff; display: grid; place-items: center; box-shadow: var(--shadow); font-size: 1.5rem; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* --- Arranque ------------------------------------------------------------------------------- */
+/* El documento nace con `is-booting` (js/boot.js) y la clase se saca cuando la marca ya esta
+   aplicada (layout.js). Asi la pagina aparece UNA vez, con el diseno de la inmobiliaria, en vez de
+   aparecer con el de respaldo y repintarse cuando contestan `design` y `settings-v2`.
+
+   El spinner cuelga de <html> y no del body porque el body es justamente lo que esta oculto. Y
+   entra con 250 ms de retraso: en una navegacion con el brand ya cacheado el arranque es
+   instantaneo, y un spinner que parpadea se ve peor que ninguno. */
+html.is-booting body {
+	visibility: hidden;
+}
+
+html.is-booting::after {
+	content: '';
+	position: fixed;
+	inset: 0;
+	margin: auto;
+	width: 2.25rem;
+	height: 2.25rem;
+	border: 3px solid rgba(22, 32, 43, 0.12);
+	border-top-color: var(--primary, #195fa9);
+	border-radius: 50%;
+	opacity: 0;
+	animation: boot-spin 0.8s linear infinite, boot-in 0.2s 0.25s forwards;
+}
+
+@keyframes boot-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes boot-in {
+	to {
+		opacity: 1;
+	}
+}
+
+/* Quien pidio menos movimiento recibe el mismo retraso sin la rotacion. */
+@media (prefers-reduced-motion: reduce) {
+	html.is-booting::after {
+		animation: boot-in 0.2s 0.25s forwards;
+	}
+}

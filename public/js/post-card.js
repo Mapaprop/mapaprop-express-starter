@@ -22,7 +22,7 @@ export function postCard(post) {
   const cover = safeUrl(post.mainImage);
   const date = postDate(post.timestamp || post.lastUpdate);
   return `
-    <a class="card" href="post.html?url=${encodeURIComponent(post.url)}">
+    <a class="card" href="/post?url=${encodeURIComponent(post.url)}">
       <div class="card__media">
         ${cover
           ? `<img src="${escapeHtml(safeUrl(post.mainImage))}" alt="${escapeHtml(post.title || '')}" loading="lazy">`

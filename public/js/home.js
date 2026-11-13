@@ -61,7 +61,7 @@ function callToActions(data) {
     host.innerHTML = `
       <h2>${escapeHtml(block.title)}</h2>
       ${block.description ? `<p>${escapeHtml(block.description)}</p>` : ''}
-      ${block.buttonText ? `<a class="btn" href="${escapeHtml(siteUrl(block.buttonLink) || 'contacto.html')}">${escapeHtml(block.buttonText)}</a>` : ''}`;
+      ${block.buttonText ? `<a class="btn" href="${escapeHtml(siteUrl(block.buttonLink) || '/contacto')}">${escapeHtml(block.buttonText)}</a>` : ''}`;
     wrap.hidden = false;
   });
 }
@@ -103,7 +103,7 @@ function renderZonePills(zones) {
   if (!zones.length) return;
   const host = document.getElementById('zones');
   host.innerHTML = zones
-    .map((z) => `<li><a href="propiedades.html?${z.level}=${z.id}">${escapeHtml(z.name)} <strong>${z.count}</strong></a></li>`)
+    .map((z) => `<li><a href="/propiedades?${z.level}=${z.id}">${escapeHtml(z.name)} <strong>${z.count}</strong></a></li>`)
     .join('');
   document.getElementById('zones-section').hidden = false;
 }
@@ -138,7 +138,7 @@ async function loadPosts() {
   try {
     const { posts = [] } = await api.posts();
     if (!posts.length) return;
-    // Three, like the template's own home. The cap is on the HOME, not on the API: `blog.html`
+    // Three, like the template's own home. The cap is on the HOME, not on the API: `/blog`
     // lists them all, and the heading links to it -- so an agency with twelve notes still publishes
     // the twelve, instead of the home quietly becoming the whole blog.
     document.getElementById('posts-home').innerHTML = posts.slice(0, 3).map(postCard).join('');
@@ -181,7 +181,7 @@ document.getElementById('searcher').addEventListener('submit', (event) => {
     const [level, id] = zone.split(':');
     params.set(level, id);
   }
-  window.location.href = `propiedades.html?${params.toString()}`;
+  window.location.href = `/propiedades?${params.toString()}`;
 });
 
 layout().then((data) => {

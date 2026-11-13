@@ -143,7 +143,7 @@ function render(property) {
 
   root.innerHTML = `
     <nav class="form__hint" style="margin-bottom:1rem">
-      <a href="propiedades.html">${escapeHtml(t('detail.back'))}</a>
+      <a href="/propiedades">${escapeHtml(t('detail.back'))}</a>
     </nav>
     <div class="detail">
       <div>

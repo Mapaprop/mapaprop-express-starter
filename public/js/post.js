@@ -28,7 +28,7 @@ async function load() {
     const cover = safeUrl(post.mainImage);
     const date = postDate(post.timestamp || post.lastUpdate);
     root.innerHTML = `
-      <p><a href="blog.html">${escapeHtml(t('blog.back'))}</a></p>
+      <p><a href="/blog">${escapeHtml(t('blog.back'))}</a></p>
       <h1>${escapeHtml(post.title || '')}</h1>
       <p class="card__kicker">${escapeHtml([date, post.editor].filter(Boolean).join(' · '))}</p>
       ${cover ? `<p><img src="${escapeHtml(safeUrl(post.mainImage))}" alt="${escapeHtml(post.title || '')}" loading="lazy" style="max-width:100%;height:auto"></p>` : ''}

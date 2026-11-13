@@ -146,12 +146,21 @@ const server = http.createServer(async (req, res) => {
   const asked = url.pathname.replace(/\/+$/, '') || '/';
   const requested = asked === '/' ? '/index.html' : asked;
   let file = path.join(PUBLIC_DIR, path.normalize(requested).replace(/^(\.\.[/\\])+/, ''));
-  // Clean URLs. The agency configures `/destacados` in Mapaprop, its websites-v3 site serves that
-  // path, and an agency MIGRATING to this kit has `/destacados`, `/contacto` and `/vender` already
-  // indexed -- answering 404 to those is losing traffic it already had. `cleanUrls` in vercel.json
-  // does the same on the platform, so the demo and a Vercel deploy behave alike.
-  // The containment check below runs on the RESOLVED path, so appending here cannot escape.
-  if (!path.extname(file) && fs.existsSync(`${file}.html`)) file += '.html';
+  // Directory URLs. Every section is a FOLDER with its own `index.html`, so `/propiedades` is the
+  // canonical URL and resolves to `propiedades/index.html` -- the same thing Vercel, nginx, S3 and
+  // GitHub Pages do with a directory, which is why the structure is a folder per section: the URL
+  // comes out clean on every host without a rewrite rule that each of them spells differently.
+  //
+  // It matters beyond looks: the agency configures `/destacados` in Mapaprop, its websites-v3 site
+  // serves that path, and an agency MIGRATING here has `/destacados`, `/contacto` and `/vender`
+  // already indexed -- answering 404 to those is losing traffic it already had.
+  //
+  // A flat `<ruta>.html` still resolves too, so a page dropped next to index.html keeps working.
+  // The containment check below runs on the RESOLVED path, so neither branch can escape public/.
+  if (!path.extname(file)) {
+    if (fs.existsSync(path.join(file, 'index.html'))) file = path.join(file, 'index.html');
+    else if (fs.existsSync(`${file}.html`)) file += '.html';
+  }
   // `startsWith(PUBLIC_DIR)` alone is not enough: a sibling directory called `public-anything`
   // also starts with it. The separator is what makes it mean "inside".
   if (!(file + path.sep).startsWith(PUBLIC_DIR + path.sep)

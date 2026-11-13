@@ -1,19 +1,19 @@
 // Header and footer injected from one place. There is no build step here, so sharing the chrome
 // through a script is what keeps the nav from being copied into six files.
 import { getBrand, applyBrand } from './brand.js';
-import { isActive, installImageFallback } from './ui.js';
+import { isActive, installImageFallback, routeOf } from './ui.js';
 import { t, applyI18n, lang, languages, setLang, LANG_LABEL, LANG_SHORT } from './i18n.js';
 
 const LINKS = [
-  { href: 'index.html', key: 'nav.home' },
-  { href: 'destacados.html', key: 'nav.featured' },
-  { href: 'propiedades.html?operation=1', key: 'nav.sales' },
-  { href: 'propiedades.html?operation=2', key: 'nav.rentals' },
-  { href: 'propiedades.html?operation=3', key: 'nav.temporary', onlyTempRental: true },
-  { href: 'emprendimientos.html', key: 'nav.developments' },
-  { href: 'blog.html', key: 'nav.blog' },
-  { href: 'vender.html', key: 'nav.sell' },
-  { href: 'contacto.html', key: 'nav.contact' },
+  { href: '/', key: 'nav.home' },
+  { href: '/destacados', key: 'nav.featured' },
+  { href: '/propiedades?operation=1', key: 'nav.sales' },
+  { href: '/propiedades?operation=2', key: 'nav.rentals' },
+  { href: '/propiedades?operation=3', key: 'nav.temporary', onlyTempRental: true },
+  { href: '/emprendimientos', key: 'nav.developments' },
+  { href: '/blog', key: 'nav.blog' },
+  { href: '/vender', key: 'nav.sell' },
+  { href: '/contacto', key: 'nav.contact' },
 ];
 
 function header(current, data) {
@@ -26,7 +26,7 @@ function header(current, data) {
     .join('');
 
   return `<header class="header"><div class="wrap header__bar">
-      <a class="logo" href="index.html" data-brand-logo></a>
+      <a class="logo" href="/" data-brand-logo></a>
       <nav class="nav">${links}</nav>
       ${langSwitcher()}
       <button class="nav__toggle" aria-label="${t('nav.toggle')}">☰</button>
@@ -59,14 +59,14 @@ function footer() {
         </div>
         <div>
           <h4>${t('footer.properties')}</h4>
-          <p><a href="propiedades.html?operation=1">${t('footer.forSale')}</a></p>
-          <p><a href="propiedades.html?operation=2">${t('footer.forRent')}</a></p>
-          <p><a href="emprendimientos.html">${t('footer.developments')}</a></p>
+          <p><a href="/propiedades?operation=1">${t('footer.forSale')}</a></p>
+          <p><a href="/propiedades?operation=2">${t('footer.forRent')}</a></p>
+          <p><a href="/emprendimientos">${t('footer.developments')}</a></p>
         </div>
         <div>
           <h4>${t('footer.contact')}</h4>
-          <p><a href="contacto.html">${t('footer.writeUs')}</a></p>
-          <p><a href="vender.html">${t('footer.sellOrRent')}</a></p>
+          <p><a href="/contacto">${t('footer.writeUs')}</a></p>
+          <p><a href="/vender">${t('footer.sellOrRent')}</a></p>
         </div>
         <div>
           <h4>${t('footer.followUs')}</h4>
@@ -82,7 +82,7 @@ function footer() {
 }
 
 export async function layout() {
-  const current = window.location.pathname.split('/').pop() || 'index.html';
+  const current = routeOf(window.location.pathname);
   installImageFallback();
 
   // 🔴 El chrome se pinta PASE LO QUE PASE. Sin este catch, cualquier excepcion al traer o aplicar
@@ -111,6 +111,12 @@ export async function layout() {
   } catch (error) {
     console.error('[layout] no se pudo aplicar la marca:', error);
   }
+
+  // La marca ya esta puesta: que aparezca la pagina. Se saca ACA y no mas abajo porque lo que
+  // falta son los listados, y esos tienen sus propios skeletons -- esperarlos cambiaria un
+  // parpadeo por una espera en blanco. Corre fuera de los try/catch de arriba a proposito: si
+  // traer o aplicar la marca falla, la pagina igual tiene que aparecer.
+  document.documentElement.classList.remove('is-booting');
 
   document.querySelector('.nav__toggle')?.addEventListener('click', () => {
     document.querySelector('.nav')?.classList.toggle('is-open');

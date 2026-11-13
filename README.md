@@ -220,21 +220,27 @@ tus redes sociales** — lo que ya configuraste en **Sitio Web → Diseño**. No
 **Los tres bloques de llamado a la acción** se reparten a lo largo del inicio: están como `cta-1`,
 `cta-2` y `cta-3` en `public/index.html`, y si configuraste menos, los que sobran no se dibujan.
 El botón de cada uno apunta a donde lo mandaste desde Mapaprop (`/contacto`, `/destacados`, …);
-como acá las páginas son archivos `.html`, `siteUrl()` en `public/js/ui.js` traduce esas rutas. Una
+y el vocabulario no es el mismo de los dos lados —`/desarrollos-inmobiliarios` acá es
+`/emprendimientos`, y `/buscar/ventas` es un filtro del listado—, así que `siteUrl()` en
+`public/js/ui.js` traduce esas rutas. Una
 ruta sin equivalente en el kit —`/pagina/…`, que es una página estática que el kit no tiene— manda
 al formulario de contacto: querés un botón que lleve a algún lado, no uno que dé 404.
 
-**Y las rutas sin `.html` también se sirven**: `/destacados` entrega `destacados.html`, igual que
-tu sitio de Mapaprop. Importa si estás **migrando**, porque esas URLs ya están indexadas en Google
-y contestarles 404 es perder visitas que ya tenías. Lo hace el servidor del kit y, en Vercel, el
-`cleanUrls` de `vercel.json`: las dos formas de desplegar se comportan igual.
+### El sitio aparece una sola vez, ya con tu diseño
+
+Mientras `design` y `settings-v2` viajan, el documento lleva la clase `is-booting` y el cuerpo
+queda retenido con un spinner (`public/js/boot.js` y el bloque *Arranque* de `css/style.css`).
+Sin eso la página se dibuja con los colores de respaldo de `config.js` y repinta un instante
+después con los tuyos, que es un parpadeo feo. Si algo falla o tarda, a los 2,5 segundos la página
+aparece igual: preferimos un repintado a un sitio en blanco. Y en la segunda navegación no se ve
+spinner, porque tu diseño ya está en caché.
 
 ### El blog sale del mismo lugar que el resto
 
 Las notas son las que cargás en **Sitio Web → Blog** de Mapaprop: el sitio pide `GET
 express-v1/posts` y `posts/{url}`. No hay un segundo lugar donde escribir.
 
-El inicio muestra las **tres últimas** arriba de emprendimientos, con un enlace a `blog.html`, que
+El inicio muestra las **tres últimas** arriba de emprendimientos, con un enlace a `/blog`, que
 lista todas. Si tu cuenta no tiene notas, esa sección no se dibuja: no queda un hueco vacío.
 
 El listado llega **sin el cuerpo** —la API lo saca a propósito— así que la tarjeta muestra la
@@ -256,12 +262,27 @@ inventario no depende de tener un sitio.
 | Los links del menú y el pie | `public/js/layout.js` |
 | Cómo se ve una tarjeta de propiedad | la función `card()` en `public/js/ui.js` |
 | Qué muestra la ficha | `public/js/ficha.js` |
-| Los filtros del buscador | `public/propiedades.html` y `public/js/listado.js` |
+| Los filtros del buscador | `public/propiedades/index.html` y `public/js/listado.js` |
+
+### Una carpeta por sección, y por qué
+
+Cada sección es una **carpeta con su `index.html`**: `public/propiedades/index.html` se sirve en
+`tudominio.com/propiedades`. No hace falta configurar nada — Vercel, nginx, S3 y GitHub Pages
+sirven el `index.html` de un directorio por sí solos, y cada uno escribe su regla de reescritura
+distinto. Así la URL sale limpia en todos.
+
+Importa si estás **migrando** desde tu sitio de Mapaprop: ahí tus páginas ya viven en
+`/destacados`, `/contacto` y `/vender`, esas URLs están indexadas en Google y con esta estructura
+siguen funcionando igual. Las tres formas llegan a la misma página (`/destacados`,
+`/destacados/` y `/destacados/index.html`).
+
+⚠️ Por eso los `href` de las páginas apuntan a la **raíz** (`/css/style.css`, `/js/home.js`): desde
+`/propiedades/` un `css/style.css` relativo buscaría `/propiedades/css/style.css`.
 
 ### Agregar una página
 
-Copiá cualquier `.html` de `public/`, cambiale el contenido y agregá el link en `LINKS`, dentro de
-`public/js/layout.js`.
+Creá `public/<tu-seccion>/index.html` copiando cualquier otra, cambiale el contenido y agregá el
+link en `LINKS`, dentro de `public/js/layout.js`.
 
 ---
 
@@ -333,14 +354,14 @@ Si traducís a un idioma nuevo: agregá su mapa en `i18n.js` con **las mismas cl
 │   ├── index.html         inicio: carrusel, buscador, últimas novedades del blog,
 │   │                      emprendimientos, destacadas, zonas, sucursales y los tres
 │   │                      llamados a la acción
-│   ├── destacados.html    la vidriera que armaste en Mapaprop, en SU orden
-│   ├── propiedades.html   listado con filtros y paginado
-│   ├── propiedad.html     ficha: galería, planos, videos, mapa y el formulario de consulta
-│   ├── emprendimientos.html
-│   ├── blog.html          las notas de tu blog de Mapaprop
-│   ├── post.html          una nota
-│   ├── contacto.html
-│   ├── vender.html        captación de propietarios, con adjuntos
+│   ├── destacados/index.html       la vidriera que armaste en Mapaprop, en SU orden
+│   ├── propiedades/index.html      listado con filtros y paginado
+│   ├── propiedad/index.html        ficha: galería, planos, videos, mapa y consulta
+│   ├── emprendimientos/index.html
+│   ├── blog/index.html             las notas de tu blog de Mapaprop
+│   ├── post/index.html             una nota
+│   ├── contacto/index.html
+│   ├── vender/index.html           captación de propietarios, con adjuntos
 │   ├── css/style.css
 │   ├── img/               fotos e ilustraciones de ejemplo (sin texto: una imagen no se traduce)
 │   └── js/

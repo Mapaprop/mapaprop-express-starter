@@ -50,24 +50,27 @@ export function safeUrl(value) {
 // The routes a Mapaprop website uses, mapped onto the pages THIS kit ships.
 //
 // Why it is needed: `design.callToActions[].buttonLink` is configured against the agency's Mapaprop
-// site, so it arrives as `/contacto`, `/destacados`, `/buscar/ventas/` -- paths that exist there and
-// not here, where the pages are files ending in `.html`. Measured in production on 2026-11-11: the
-// demo's buttons pointed at `/contacto` and `/pagina/creditos.` and both answered 404.
+// site, so it arrives as `/contacto`, `/destacados`, `/buscar/ventas/` -- and the vocabulary is not
+// ours: `/desarrollos-inmobiliarios` is `/emprendimientos` here and `/buscar/ventas` is a filter on
+// the listing. Since 2026-11-13 the pages are DIRECTORIES, so the two sides finally look alike --
+// but alike is not equal, and a path with no counterpart still has to be caught. Measured in
+// production on 2026-11-11: the demo's buttons pointed at `/contacto` and `/pagina/creditos.` and
+// both answered 404.
 //
 // The left column is not invented: it is the href vocabulary of the `express-basic-1` template, the
 // one these accounts render with. A path with no counterpart here -- `/pagina/<slug>`, a
 // property by seoUrl -- returns empty on purpose, so the caller decides what to do instead of
 // linking somewhere that does not exist.
 const SITE_ROUTES = new Map([
-  ['/', 'index.html'],
-  ['/contacto', 'contacto.html'],
-  ['/vender', 'vender.html'],
-  ['/destacados', 'destacados.html'],
-  ['/blog', 'blog.html'],
-  ['/desarrollos-inmobiliarios', 'emprendimientos.html'],
-  ['/buscar/ventas', 'propiedades.html?operation=1'],
-  ['/buscar/alquileres', 'propiedades.html?operation=2'],
-  ['/buscar/alquileres-temporarios', 'propiedades.html?operation=3'],
+  ['/', '/'],
+  ['/contacto', '/contacto'],
+  ['/vender', '/vender'],
+  ['/destacados', '/destacados'],
+  ['/blog', '/blog'],
+  ['/desarrollos-inmobiliarios', '/emprendimientos'],
+  ['/buscar/ventas', '/propiedades?operation=1'],
+  ['/buscar/alquileres', '/propiedades?operation=2'],
+  ['/buscar/alquileres-temporarios', '/propiedades?operation=3'],
 ]);
 
 export function siteUrl(value) {
@@ -153,7 +156,7 @@ export function specs(property) {
 }
 
 export function propertyUrl(property) {
-  return `propiedad.html?hash=${encodeURIComponent(property.propertyHash)}`;
+  return `/propiedad?hash=${encodeURIComponent(property.propertyHash)}`;
 }
 
 export function card(property) {
@@ -290,9 +293,18 @@ export function collectZones(payload) {
 
 // Three of the links point at the same page and differ only by `operation`, so comparing the file
 // name alone lights all three up at once. The query has to be part of the comparison.
+// The route of a URL, as the nav compares them: no trailing slash and no `index.html`, so
+// `/propiedades`, `/propiedades/` and `/propiedades/index.html` are ONE route. Without this the nav
+// highlights nothing on `/propiedades/` -- the old `pathname.split('/').pop()` gave an empty string
+// there and fell back to the home, so the home looked active on every section.
+export function routeOf(value) {
+  const path = String(value ?? '/').split(/[?#]/)[0].replace(/\/index\.html$/, '/').replace(/\/+$/, '');
+  return path || '/';
+}
+
 export function isActive(href, current, search) {
   const [page, query] = href.split('?');
-  if (page !== current) return false;
+  if (routeOf(page) !== routeOf(current)) return false;
   const wanted = new URLSearchParams(query || '').get('operation');
   const actual = search.get('operation');
   return wanted === actual || (!wanted && !actual);
