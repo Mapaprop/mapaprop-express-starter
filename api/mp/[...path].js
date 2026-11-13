@@ -8,7 +8,7 @@
 // function knows the token.
 //
 // Two bonuses: the visitor never needs the `cors` scope enabled, and this function can fill the
-// three fields `POST messages` requires that a browser cannot know about itself (ip, user agent,
+// three fields the POSTs require that a browser cannot know about itself (ip, user agent,
 // referer).
 
 // Production by default. `MAPAPROP_API_BASE` only exists so the kit can be pointed at a local
@@ -22,6 +22,19 @@ const API_BASE = process.env.MAPAPROP_API_BASE || 'https://mapaprop.app/api/acti
 // Las dos listas salen de la wiki publica de cada endpoint, no de memoria.
 const MESSAGE_FIELDS = [
   'propertyHash', 'name', 'email', 'phone', 'message',
+  'url', 'ip', 'userAgent', 'referer',
+];
+
+// La consulta GENERICA (`POST contact`, nueva el 2026-11-13). Misma forma que `messages` menos el
+// `propertyHash`, porque justamente no es sobre una propiedad.
+//
+// 🔴 `subject` NO esta en la lista, y es a proposito: el endpoint lo acepta y es opcional -- sin el
+// arma "Nueva consulta general de <nombre>" -- pero es el ASUNTO DEL MAIL que le llega a la
+// inmobiliaria. Dejarlo pasar le permite a un visitante elegir ese asunto, que es el mismo
+// argumento por el que `websiteId` esta afuera de SELLER_FIELDS: el kit no lo necesita y regalarlo
+// no compra nada. Si tu sitio de verdad necesita asuntos propios, agregalo aca deliberadamente.
+const CONTACT_FIELDS = [
+  'name', 'email', 'phone', 'message',
   'url', 'ip', 'userAgent', 'referer',
 ];
 
@@ -69,6 +82,9 @@ const ROUTES = [
   { method: 'GET', match: /^design$/, sMaxAge: 3600 },
   // the two entry points: a lead on a property, and the seller form
   { method: 'POST', match: /^messages$/, sMaxAge: 0, form: true, fields: MESSAGE_FIELDS },
+  // La tercera puerta: consulta general, sin propiedad. `form: true` como `messages` -- el endpoint
+  // lee parametros de request, no JSON.
+  { method: 'POST', match: /^contact$/, sMaxAge: 0, form: true, fields: CONTACT_FIELDS },
   { method: 'POST', match: /^seller-submissions$/, sMaxAge: 0, json: true, fields: SELLER_FIELDS },
 ];
 

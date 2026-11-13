@@ -114,6 +114,40 @@ test('messages goes out form-encoded with ip, userAgent and referer filled by th
   assert.equal(sent.get('url'), 'https://misitio.com/propiedad.html?hash=abc');
 });
 
+test('contact sale form-encoded, sin propertyHash y descartando el subject del cliente', async () => {
+  const res = fakeRes();
+  await handler(fakeReq({
+    method: 'POST',
+    path: ['contact'],
+    body: {
+      name: 'Ana', email: 'ana@example.com', message: 'Quiero vender mi depto',
+      // las dos que el proxy TIENE que descartar
+      subject: 'URGENTE: responder ya', propertyHash: 'abc',
+    },
+    headers: {
+      'x-forwarded-for': '200.1.2.3, 10.0.0.9',
+      'user-agent': 'Mozilla/5.0 (prueba)',
+      referer: 'https://misitio.com/contacto/',
+    },
+  }), res);
+
+  assert.equal(res.statusCode, 200);
+  const { url, init } = calls[0];
+  assert.ok(url.endsWith('/contact'), `fue a ${url}`);
+  assert.equal(init.headers['Content-Type'], 'application/x-www-form-urlencoded');
+  const sent = new URLSearchParams(init.body);
+  assert.equal(sent.get('name'), 'Ana');
+  assert.equal(sent.get('message'), 'Quiero vender mi depto');
+  // 🔴 lo que el visitante no puede elegir
+  assert.equal(sent.get('subject'), null);
+  assert.equal(sent.get('propertyHash'), null);
+  // y los tres que pone el servidor
+  assert.equal(sent.get('ip'), '10.0.0.9');
+  assert.equal(sent.get('userAgent'), 'Mozilla/5.0 (prueba)');
+  assert.equal(sent.get('referer'), 'https://misitio.com/contacto/');
+  assert.equal(sent.get('url'), 'https://misitio.com/contacto/');
+});
+
 test('a client cannot spoof its own ip through the proxy', async () => {
   const res = fakeRes();
   await handler(fakeReq({

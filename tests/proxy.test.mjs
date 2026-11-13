@@ -31,10 +31,12 @@ test('the reads the site needs are allowed', () => {
   assert.ok(findRoute('GET', 'properties/abc123'));
 });
 
-test('the two entry points are allowed, and only as POST', () => {
+test('the three entry points are allowed, and only as POST', () => {
   assert.ok(findRoute('POST', 'messages'));
+  assert.ok(findRoute('POST', 'contact'));
   assert.ok(findRoute('POST', 'seller-submissions'));
   assert.equal(findRoute('GET', 'messages'), null);
+  assert.equal(findRoute('GET', 'contact'), null);
   assert.equal(findRoute('GET', 'seller-submissions'), null);
 });
 
@@ -56,5 +58,18 @@ test('catalogs are cached and the entry points are not', () => {
   assert.equal(findRoute('POST', 'messages').sMaxAge, 0);
   // messages is form-encoded, seller-submissions is JSON: the endpoints differ and so must we.
   assert.equal(findRoute('POST', 'messages').form, true);
+  assert.equal(findRoute('POST', 'contact').sMaxAge, 0);
+  // `contact` lee parametros de request como `messages`, no JSON como seller-submissions.
+  assert.equal(findRoute('POST', 'contact').form, true);
   assert.equal(findRoute('POST', 'seller-submissions').json, true);
+});
+
+test('🔴 `contact` no deja pasar el `subject`: el visitante no elige el asunto del mail al dueno', () => {
+  // El endpoint lo acepta y es opcional. Dejarlo pasar le daria a cualquiera la linea de asunto del
+  // correo que recibe la inmobiliaria. Es el mismo argumento por el que `websiteId` esta afuera de
+  // seller-submissions.
+  assert.equal(findRoute('POST', 'contact').fields.includes('subject'), false);
+  assert.ok(findRoute('POST', 'contact').fields.includes('message'));
+  // Y tampoco el propertyHash: si viniera, esto dejaria de ser la consulta generica.
+  assert.equal(findRoute('POST', 'contact').fields.includes('propertyHash'), false);
 });

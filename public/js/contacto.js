@@ -3,14 +3,18 @@ import { layout } from './layout.js';
 import { escapeHtml, message } from './ui.js';
 import { t } from './i18n.js';
 
-// NOTE ON THIS PAGE, and it is a real limitation of the API, not a shortcut:
-// `POST express-v1/messages` requires a `propertyHash` and rejects the request without one -- it
-// then checks that the property exists and is published. So a GENERIC enquiry has no endpoint: it
-// cannot be delivered into the agency's CRM through Express API.
+// Esta pagina manda la consulta GENERICA -- la que no es sobre ninguna propiedad -- por
+// `POST express-v1/contact`, y entra al CRM de la inmobiliaria como un lead igual que la consulta
+// de una ficha.
 //
-// Rather than fake it (misusing `seller-submissions`, which would file a fake seller lead), this
-// form composes an email to the chosen branch and the page pushes visitors towards the property
-// sheet, whose form DOES land in the CRM. See the README.
+// Hasta el 2026-11-13 no habia endpoint para esto: `messages` exige un `propertyHash` y lo verifica
+// publicado, asi que una consulta general no tenia por donde entrar. Este formulario armaba un
+// `mailto:` y abria el programa de correo del visitante -- se perdia fuera del sistema, y la mitad
+// de los visitantes no tiene un cliente de correo configurado.
+//
+// La sucursal elegida NO es un campo de la API: el lead entra a la bandeja de la cuenta. Se agrega
+// como una linea del mensaje, que es honesto -- dice lo que el visitante eligio -- sin inventar un
+// ruteo que no existe.
 const branchSelect = document.getElementById('c-branch');
 const hint = document.getElementById('c-hint');
 let branches = [];
@@ -44,41 +48,53 @@ async function loadBranches() {
     .map((b, index) => `<option value="${index}">${escapeHtml(b.name || t('contact.branchFallback'))}</option>`)
     .join('') || `<option value="">${escapeHtml(t('search.none'))}</option>`;
 
-  hint.textContent = branches.some((b) => b.email)
-    ? t('contact.hintMailto')
-    : t('contact.hintNoEmail');
+  hint.textContent = t('contact.hint');
 }
 
-document.getElementById('generic-contact').addEventListener('submit', (event) => {
+const form = document.getElementById('generic-contact');
+
+form.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const branch = branches[Number(branchSelect.value)] || branches[0];
-  if (!branch?.email) {
-    message(hint, t('contact.noBranchEmail'), 'error');
-    return;
-  }
   const name = document.getElementById('c-name').value.trim();
   const email = document.getElementById('c-email').value.trim();
   const phone = document.getElementById('c-phone').value.trim();
   const text = document.getElementById('c-message').value.trim();
-  const body = [
-    t('contact.mailName', { name }),
-    email ? t('contact.mailEmail', { email }) : '',
-    phone ? t('contact.mailPhone', { phone }) : '',
-    '',
-    text,
-  ].filter((line) => line !== '').join('\n');
-  // 🔴 El email se arma con `URL`, no concatenando. `mailto:` fija el esquema, asi que no hay XSS
-  // -- pero una direccion con la forma `ventas@x.com?cc=tercero@evil.com` inyecta DESTINATARIOS en
-  // el borrador que abre el programa de correo del visitante, y la consulta sale con copia a un
-  // tercero sin que nadie lo vea. El dato es de la propia inmobiliaria, asi que el caso realista es
-  // un alta mal tipeada o una cuenta comprometida; igual no cuesta nada cerrarlo.
-  const mail = new URL(`mailto:${encodeURIComponent(branch.email)}`);
-  mail.searchParams.set('subject', t('contact.mailSubject', { name }));
-  mail.searchParams.set('body', body);
-  // url-ok: el esquema es literal (`mailto:`) y lo arma `new URL` dos lineas arriba, asi que el
-  // dato de la API no puede elegirlo; lo que si podia inyectar -- destinatarios -- lo cierra el
-  // encodeURIComponent del constructor.
-  window.location.href = mail.toString();
+
+  // La API rechaza al visitante que no deja ningun canal de respuesta, asi que se avisa aca en vez
+  // de gastar el envio y devolverle un error del servidor.
+  if (!email && !phone) {
+    message(hint, t('enquiry.needContact'), 'error');
+    return;
+  }
+
+  const branch = branches[Number(branchSelect.value)];
+  const body = branch?.name
+    ? `${text}\n\n${t('contact.branchInterest', { branch: branch.name })}`
+    : text;
+
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = true;
+  button.textContent = t('contact.sending');
+
+  try {
+    // ip, userAgent y referer los pone el proxy: el browser no conoce su propia IP y la API exige
+    // los tres para su chequeo de spam.
+    const response = await api.sendContact({
+      name, email, phone, message: body, url: window.location.href,
+    });
+
+    if (response.success === false) {
+      message(hint, t('contact.errorGeneric', { message: response.error || 'error' }), 'error');
+    } else {
+      form.querySelectorAll('input, textarea').forEach((field) => { field.value = ''; });
+      message(hint, t('contact.success'), 'ok');
+    }
+  } catch (error) {
+    message(hint, t('contact.errorGeneric', { message: error.message }), 'error');
+  } finally {
+    button.disabled = false;
+    button.textContent = t('contact.submit');
+  }
 });
 
 layout();

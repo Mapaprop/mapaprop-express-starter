@@ -190,18 +190,32 @@ Si cambiás ese formulario por uno que te mande un email y nada más, el círcul
 cargando las propiedades en Mapaprop, pero atendés a los clientes afuera y la consulta no existe
 para tu CRM. Es la mitad del sistema que ya estás pagando.
 
-### La limitación honesta: la consulta genérica no tiene endpoint
+### Las tres puertas de entrada al CRM
 
-`POST messages` **exige** el identificador de una propiedad publicada, así que una consulta que no
-es sobre ninguna propiedad **no puede entrar al CRM por la API**. Por eso la página de contacto de
-este sitio:
+Nada de lo que un visitante escribe en este sitio se pierde fuera de tu sistema. Hay tres
+formularios y los tres terminan en tu bandeja de Mapaprop:
 
-- muestra tus sucursales con teléfono, email y WhatsApp,
-- empuja al visitante hacia las fichas, donde la consulta sí entra al CRM,
-- y su formulario abre el programa de correo del visitante con el mensaje armado.
+| Dónde | Qué manda | Endpoint |
+|---|---|---|
+| La ficha de una propiedad | la consulta, **con los datos de esa propiedad** | `POST messages` |
+| La página de contacto | una consulta general, sin propiedad de por medio | `POST contact` |
+| "Quiero vender o alquilar" | una captación, con sus adjuntos | `POST seller-submissions` |
 
-Lo que **sí** entra al CRM sin una propiedad de por medio es el formulario de **"Quiero vender o
-alquilar"** (`seller-submissions`): crea un contacto en tu CRM y te manda un email con los adjuntos.
+La página de contacto además muestra tus sucursales con teléfono, email y WhatsApp, y la sucursal
+que el visitante elige en el formulario viaja como una línea del mensaje. **No es un campo de la
+API**: el lead entra a la bandeja de la cuenta y el ruteo lo decidís vos.
+
+**Si mandaste una consulta de prueba y no la ves en el Inbox**, antes de buscar un error en el
+kit: el antispam de Mapaprop puntúa cada consulta, y la que marca como sospechosa **entra a
+moderación** en vez de a la bandeja. Al visitante se le responde que la recibimos igual —es
+deliberado: no se le avisa a un spammer que lo detectaron— así que desde el sitio no se nota la
+diferencia. Una consulta con texto de prueba (*"test"*, *"asdasd"*) es justo la que el clasificador
+manda a moderar.
+
+> Hasta noviembre de 2026 la consulta general **no tenía endpoint** —`messages` exige el
+> identificador de una propiedad publicada— y este formulario abría el programa de correo del
+> visitante. Se perdía fuera del sistema, y la mitad de la gente no tiene un cliente de correo
+> configurado.
 
 ---
 
@@ -397,7 +411,7 @@ Si traducís a un idioma nuevo: agregá su mapa en `i18n.js` con **las mismas cl
 
 > Si lo publicás en Vercel, saltéate esto entero: no te aplica.
 
-**Dónde usa el kit la IP del visitante.** En un solo lugar: los dos formularios. Se la manda a
+**Dónde usa el kit la IP del visitante.** En un solo lugar: los tres formularios. Se la manda a
 Mapaprop junto con la consulta —su antispam la puntúa— y limita a **10 envíos por minuto** por
 visitante. Navegar el sitio no la toca nunca.
 

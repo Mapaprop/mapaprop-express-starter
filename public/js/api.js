@@ -77,8 +77,11 @@ export const api = {
   settings: () => call('settings-v2'),
   design: () => call('design'),
 
-  // The two entry points. `ip`, `userAgent` and `referer` are filled by the proxy.
+  // The three entry points. `ip`, `userAgent` and `referer` are filled by the proxy.
   sendMessage: (payload) => call('messages', { method: 'POST', body: payload }),
+  // A GENERIC enquiry: not about any property. Needs `name`, `message` and at LEAST one of
+  // `email` / `phone` -- the API rejects a visitor who leaves no way to answer them.
+  sendContact: (payload) => call('contact', { method: 'POST', body: payload }),
   sendSellerSubmission: (payload) => call('seller-submissions', { method: 'POST', body: payload }),
 };
 
