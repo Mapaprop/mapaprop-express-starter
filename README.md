@@ -224,6 +224,11 @@ como acá las páginas son archivos `.html`, `siteUrl()` en `public/js/ui.js` tr
 ruta sin equivalente en el kit —`/pagina/…`, que es una página estática que el kit no tiene— manda
 al formulario de contacto: querés un botón que lleve a algún lado, no uno que dé 404.
 
+**Y las rutas sin `.html` también se sirven**: `/destacados` entrega `destacados.html`, igual que
+tu sitio de Mapaprop. Importa si estás **migrando**, porque esas URLs ya están indexadas en Google
+y contestarles 404 es perder visitas que ya tenías. Lo hace el servidor del kit y, en Vercel, el
+`cleanUrls` de `vercel.json`: las dos formas de desplegar se comportan igual.
+
 ### El blog sale del mismo lugar que el resto
 
 Las notas son las que cargás en **Sitio Web → Blog** de Mapaprop: el sitio pide `GET
@@ -328,6 +333,7 @@ Si traducís a un idioma nuevo: agregá su mapa en `i18n.js` con **las mismas cl
 │   ├── index.html         inicio: carrusel, buscador, últimas novedades del blog,
 │   │                      emprendimientos, destacadas, zonas, sucursales y los tres
 │   │                      llamados a la acción
+│   ├── destacados.html    la vidriera que armaste en Mapaprop, en SU orden
 │   ├── propiedades.html   listado con filtros y paginado
 │   ├── propiedad.html     ficha: galería, planos, videos, mapa y el formulario de consulta
 │   ├── emprendimientos.html

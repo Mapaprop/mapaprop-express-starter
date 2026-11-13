@@ -59,6 +59,22 @@ test('🔴 un ?path= del visitante no elige una accion distinta a la de la URL',
   assert.ok(Array.isArray(body.types), `respondio otra accion: ${JSON.stringify(body).slice(0, 120)}`);
 });
 
+test('🔴 las URLs limpias se sirven, y el atajo no abre la puerta a salir de public/', async () => {
+  // La inmobiliaria configura `/destacados` en Mapaprop, su sitio websites-v3 sirve ese path, y si
+  // MIGRA al kit lo tiene indexado en Google. Contestarle 404 es perder trafico que ya tenia.
+  for (const [ruta, marca] of [['/destacados', 'featured.title'], ['/destacados/', 'featured.title'],
+    ['/contacto', 'contact.title'], ['/', 'home.heroTitle']]) {
+    const res = await fetch(`${BASE}${ruta}`);
+    assert.equal(res.status, 200, `${ruta} no se sirve`);
+    assert.match(await res.text(), new RegExp(marca), `${ruta} sirvio otra pagina`);
+  }
+  // El `.html` explicito sigue andando: es lo que usan los links internos del kit.
+  assert.equal((await fetch(`${BASE}/destacados.html`)).status, 200);
+  // Y lo que el atajo NO puede hacer: inventar una pagina, ni servir un .html de afuera.
+  assert.equal((await fetch(`${BASE}/no-existe`)).status, 404);
+  assert.equal((await fetch(`${BASE}/../tests/fixture`)).status, 404);
+});
+
 test('no se sirven archivos de fuera de public/', async () => {
   for (const ruta of ['/../package.json', '/..%2fpackage.json', '/../.env.local', '/../fixtures/properties.json']) {
     const res = await fetch(`${BASE}${ruta}`);

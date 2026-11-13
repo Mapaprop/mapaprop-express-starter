@@ -142,8 +142,16 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  const requested = url.pathname === '/' ? '/index.html' : url.pathname;
-  const file = path.join(PUBLIC_DIR, path.normalize(requested).replace(/^(\.\.[/\\])+/, ''));
+  // A trailing slash is the same page: `/destacados/` and `/destacados` are one URL.
+  const asked = url.pathname.replace(/\/+$/, '') || '/';
+  const requested = asked === '/' ? '/index.html' : asked;
+  let file = path.join(PUBLIC_DIR, path.normalize(requested).replace(/^(\.\.[/\\])+/, ''));
+  // Clean URLs. The agency configures `/destacados` in Mapaprop, its websites-v3 site serves that
+  // path, and an agency MIGRATING to this kit has `/destacados`, `/contacto` and `/vender` already
+  // indexed -- answering 404 to those is losing traffic it already had. `cleanUrls` in vercel.json
+  // does the same on the platform, so the demo and a Vercel deploy behave alike.
+  // The containment check below runs on the RESOLVED path, so appending here cannot escape.
+  if (!path.extname(file) && fs.existsSync(`${file}.html`)) file += '.html';
   // `startsWith(PUBLIC_DIR)` alone is not enough: a sibling directory called `public-anything`
   // also starts with it. The separator is what makes it mean "inside".
   if (!(file + path.sep).startsWith(PUBLIC_DIR + path.sep)
