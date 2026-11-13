@@ -81,8 +81,10 @@ lo tome.
 
 ### Tu propio servidor
 
-También funciona tal cual. Es un servidor Node sin dependencias: lo levantás detrás de nginx o
-Apache como cualquier otra aplicación.
+> **¿No sabés qué es un reverse proxy?** Entonces este camino no es el tuyo: usá **Vercel**, es un
+> clic y no hay nada que configurar.
+
+Es un servidor Node sin dependencias: se levanta como cualquier otra aplicación.
 
 ```bash
 MAPAPROP_API_TOKEN=tu-token PORT=3000 node dev-local.mjs
@@ -92,11 +94,7 @@ MAPAPROP_API_TOKEN=tu-token PORT=3000 node dev-local.mjs
 habla a Mapaprop. El servidor lo chequea al arrancar y te lo dice; si el Node del sistema es viejo,
 `nvm install 20 && nvm use 20` suele ser la salida más corta.
 
-🔴 **Si va detrás de un reverse proxy, mandale `X-Real-IP`.** El kit usa la IP del visitante para
-dos cosas: la manda a Mapaprop en la consulta (su antispam la puntúa) y limita cuántos envíos acepta
-por minuto. Sin esa cabecera tiene que deducirla del `X-Forwarded-For`, **que el visitante también
-puede mandar** — nginx agrega la real al final en vez de reemplazar, así que el kit lee el último
-salto. Funciona, pero `X-Real-IP` es explícito y no depende de cómo esté armada la cadena:
+Si va detrás de nginx, con este bloque alcanza:
 
 ```nginx
 location / {
@@ -109,15 +107,8 @@ location / {
 }
 ```
 
-Con ese bloque puesto, arrancá el kit con **`TRUST_X_REAL_IP=1`**. Es opt-in a propósito: el código
-no puede saber si esa cabecera la escribió tu proxy o el visitante, así que **por defecto la
-ignora** y usa el último salto del `X-Forwarded-For`, que lo agrega siempre tu propio borde. Si la
-prefiriera sin preguntar, alcanzaría con que alguien mandara un `X-Real-IP` inventado en cada
-pedido para volver al problema que esto resuelve.
-
-**El tamaño del cuerpo tiene un techo**, porque sin él un solo envío puede ocupar toda la memoria
-del proceso: 6 MB por defecto, configurable con `MAX_BODY_BYTES`. Si lo subís, subí también el
-`client_max_body_size` de nginx — y al revés: el más chico de los dos es el que manda.
+Con ese bloque puesto, arrancá el kit con `TRUST_X_REAL_IP=1`. El porqué de cada línea, y qué pasa
+si no ponés nada, está en [Letra chica del servidor propio](#letra-chica-del-servidor-propio).
 
 ### Otras plataformas
 
@@ -399,6 +390,33 @@ Si traducís a un idioma nuevo: agregá su mapa en `i18n.js` con **las mismas cl
 | **Si das de baja el plan** | El token se desactiva y el sitio deja de traer propiedades. |
 | **Adjuntos de "Vender"** | 2 MB por archivo y 10 MB de bandwidth por hora, de la API. ⚠️ **El límite que de verdad corta es el del total**: los adjuntos viajan en base64, que infla ~33%, así que dos archivos de 2 MB son ~5,3 MB de cuerpo. El kit los rechaza antes de enviarlos si juntos superan el techo del runtime más chico (`MAX_PAYLOAD_CHARS` en `vender.js`), con un mensaje que dice que el problema es el total. Y por el mismo motivo, **los 10 envíos por hora son inalcanzables si llevan adjuntos**: el cuello es el bandwidth, no la cantidad. |
 | **"Vender" necesita un sitio atado al token** | Si te da un aviso, atalo en **Configuración → Token de API**, tarjeta **Función Sitio Web**. |
+
+---
+
+## Letra chica del servidor propio
+
+> Si lo publicás en Vercel, saltéate esto entero: no te aplica.
+
+**Dónde usa el kit la IP del visitante.** En un solo lugar: los dos formularios. Se la manda a
+Mapaprop junto con la consulta —su antispam la puntúa— y limita a **10 envíos por minuto** por
+visitante. Navegar el sitio no la toca nunca.
+
+Corriendo solo, sin nada adelante, el kit **ve la IP real** y no hay nada que configurar. Con un
+proxy en el medio el pedido le llega desde la propia máquina, así que la IP viaja en una cabecera:
+
+| Cómo está tu proxy | Qué pasa |
+|---|---|
+| manda `X-Forwarded-For` (toda receta estándar, la de arriba incluida) | **anda**: el kit lee el **último** salto, el que agregó tu propio nginx — el único que nadie de afuera puede falsear |
+| además manda `X-Real-IP` y arrancás con `TRUST_X_REAL_IP=1` | ídem, y no depende de cómo esté armada la cadena. Es lo que conviene si tenés un CDN adelante |
+| un `proxy_pass` pelado, sin cabeceras | el sitio anda igual, pero **todos tus visitantes cuentan como uno**: el envío número 11 de cualquiera recibe un "probá de nuevo en un minuto" |
+
+**Por qué `TRUST_X_REAL_IP` es opt-in y no automático:** el código no puede saber si esa cabecera la
+escribió tu proxy o el visitante. Si la prefiriera siempre, a cualquiera le alcanzaría con mandar un
+`X-Real-IP` inventado en cada pedido para saltear el límite.
+
+**El cuerpo de un envío tiene un techo**: 6 MB, configurable con `MAX_BODY_BYTES`. Sin él, un solo
+envío puede ocupar toda la memoria del proceso. Si lo subís, subí también el `client_max_body_size`
+de nginx — y al revés: manda el más chico de los dos.
 
 ---
 
