@@ -545,6 +545,31 @@ test('🔴 los destacados estan completos de punta a punta, no a medias', () => 
   assert.doesNotMatch(home, /loadFeatured[\s\S]*?api\.properties\(/, 'el bloque de destacadas sigue leyendo la cartera');
 });
 
+test('🔴 el favicon tiene sus TRES capas, y la del medio es el LOGO de la cuenta', () => {
+  // brand.js no se puede importar aca (lee `window.SITE_CONFIG` al cargar), asi que las capas se
+  // verifican sobre el fuente. Son assertions de cableado, como las del blog.
+  const brand = fs.readFileSync(path.join(PUBLIC, 'js', 'brand.js'), 'utf8');
+
+  // Capa 1: el favicon que la cuenta subio.
+  assert.match(brand, /brand\.favicon = usableImage\(d\.images\?\.favicon\)/,
+    'nadie lee el favicon de la cuenta');
+
+  // Capa 2: su LOGO cuando no subio favicon (decision del owner, 2026-11-12). Medido ese dia: la
+  // cuenta del demo tiene `logo` y `logo.s3.ext` en website_config y NINGUNA fila de favicon, asi
+  // que la capa 1 no alcanzaba nunca y se veia el icono neutro del kit.
+  assert.match(brand, /if \(!brand\.favicon\) brand\.favicon = brand\.logo;/,
+    'no cae al logo');
+
+  // 🔴 Y el ORDEN importa: si el fallback corriera antes de resolver el logo de la API, tomaria el
+  // de config.js y la cuenta veria el logo de respaldo en vez del suyo.
+  assert.ok(brand.indexOf('brand.logo = usableImage(d.images?.logo)')
+    < brand.indexOf('if (!brand.favicon) brand.favicon = brand.logo;'),
+    'el fallback corre antes de resolver el logo de la cuenta');
+
+  // El `type` del HTML declara el SVG del kit y el logo suele ser .png: no puede sobrevivir al swap.
+  assert.match(brand, /icon\.removeAttribute\('type'\)/, 'el type del link queda mintiendo');
+});
+
 test('🔴 el blog esta completo de punta a punta, no a medias', () => {
   // Son CINCO piezas y una sola que falte deja el blog mudo sin error: la ruta en el proxy (sin
   // ella la API contesta NOT_ALLOWED), la accion en el cliente, las dos paginas, el link del menu

@@ -9,7 +9,10 @@ import { t, lang } from './i18n.js';
 const FALLBACK = window.SITE_CONFIG || {};
 // The language is part of the key: the cached brand holds translated fallbacks, so a site served
 // in two languages must not hand the Spanish one to the English page.
-const CACHE_KEY = `mp-brand-v1-${lang}`;
+// v2 desde el 2026-11-12: `favicon` cambio de significado (vacio ya no quiere decir "no hay", cae
+// al logo). Sin subir la version, una pestaña tibia sigue una hora con el valor viejo y el cambio
+// se lee como que no funciono -- que es la misma trampa que `writeCache` ya describe para el mock.
+const CACHE_KEY = `mp-brand-v2-${lang}`;
 const CACHE_TTL_MS = 60 * 60 * 1000; // design is cached upstream for an hour; match it
 
 function readCache() {
@@ -103,6 +106,12 @@ async function load() {
     }
   }
 
+  // No favicon uploaded: fall back to the account's LOGO. A tab showing the agency's mark beats the
+  // kit's neutral icon, even though a wide logo gets letterboxed at 16px -- decision of the owner,
+  // 2026-11-12. It goes HERE and not inside the `design` block so it also covers the account with
+  // no active website, where the only logo we know is the one configured in config.js.
+  if (!brand.favicon) brand.favicon = brand.logo;
+
   writeCache(brand);
   return brand;
 }
@@ -143,6 +152,10 @@ function paint(brand) {
   if (brand.favicon) {
     const icon = document.querySelector('link[rel="icon"]') || document.createElement('link');
     icon.rel = 'icon';
+    // The `type` in the HTML declares the kit's SVG. Overwriting the href with the account's file
+    // -- a .png in the common case -- leaves that type lying about it, so it is dropped and the
+    // browser sniffs instead.
+    icon.removeAttribute('type');
     // usableImage() ya lo filtro al cargarlo, pero esa defensa vive arriba: la garantia se
     // escribe donde se escribe el href.
     icon.href = safeUrl(brand.favicon);
