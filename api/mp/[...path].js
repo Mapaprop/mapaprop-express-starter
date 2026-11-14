@@ -58,6 +58,9 @@ const ROUTES = [
   // inventory
   { method: 'GET', match: /^properties$/, sMaxAge: 60 },
   { method: 'GET', match: /^properties\/[A-Za-z0-9_-]+$/, sMaxAge: 60 },
+  // La lectura por propertyId. Existe porque el sitemap NO puede devolver el `hash` (el índice de
+  // búsqueda no tiene ese campo), así que una ficha que se abre desde el sitemap llega por el id.
+  { method: 'GET', match: /^properties\/id\/[0-9]+$/, sMaxAge: 60 },
   { method: 'GET', match: /^developments$/, sMaxAge: 60 },
   { method: 'GET', match: /^development\/properties$/, sMaxAge: 60 },
   // The showcase the agency arranged. The response IS the `properties` list -- same objects, same

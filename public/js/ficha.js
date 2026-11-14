@@ -7,7 +7,11 @@ import {
 import { t, formatNumber } from './i18n.js';
 
 const root = document.getElementById('detail-root');
+// La ficha acepta DOS identificadores: `?hash=` (el de la API) y `?id=` (el propertyId). El segundo
+// existe porque el sitemap no puede emitir el hash -- el índice de búsqueda no tiene ese campo --
+// así que las URLs que publicamos a los buscadores llevan el id.
 const hash = qs('hash');
+const propertyId = qs('id');
 
 function facts(property) {
   // The LABEL is ours and gets translated; the VALUE comes from the API already in the account's
@@ -251,13 +255,13 @@ async function loadUnits(property) {
 
 async function start() {
   layout();
-  if (!hash) {
+  if (!hash && !propertyId) {
     message(root, t('detail.noHash'), 'error');
     return;
   }
   try {
     // The detail response comes at the root of the document, not wrapped in { property: ... }.
-    const property = await api.property(hash);
+    const property = hash ? await api.property(hash) : await api.propertyById(propertyId);
     if (!property || !property.propertyHash) {
       message(root, t('detail.notFound'), 'error');
       return;

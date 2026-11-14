@@ -44,6 +44,14 @@ const { default: handler } = MOCK
   ? await import('./fixtures/mock-handler.mjs')
   : await import('./api/mp/[...path].js');
 
+// `/sitemap.xml` and `/robots.txt` are functions too, and on Vercel they are reached through the
+// rewrites in `vercel.json`. This server has to map them itself, or they would only work deployed
+// -- which is exactly the kind of difference between local and production this file exists to avoid.
+const SEO_ROUTES = MOCK ? {} : {
+  '/sitemap.xml': (await import('./api/sitemap.xml.js')).default,
+  '/robots.txt': (await import('./api/robots.txt.js')).default,
+};
+
 // Leidas de vercel.json para que haya UNA sola definicion: dos copias de una CSP divergen, y la
 // que se queda vieja es siempre la que nadie mira.
 const SECURITY_HEADERS = Object.fromEntries(
@@ -109,6 +117,19 @@ function adapt(req, res, url) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
+
+  const seoHandler = SEO_ROUTES[url.pathname];
+  if (seoHandler) {
+    adapt(req, res, url);
+    try {
+      await seoHandler(req, res);
+    } catch (error) {
+      console.error('[seo] handler error:', error);
+      res.statusCode = 500;
+      res.end('Error interno.');
+    }
+    return;
+  }
 
   if (url.pathname.startsWith('/api/mp/')) {
     try {

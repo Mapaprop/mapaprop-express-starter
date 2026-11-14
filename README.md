@@ -219,6 +219,40 @@ manda a moderar.
 
 ---
 
+## El sitemap y el robots.txt se generan solos
+
+`/sitemap.xml` y `/robots.txt` no son archivos: son dos funciones que leen tu inventario cuando un
+buscador las pide. No hay nada que regenerar cuando publicás una propiedad.
+
+| | |
+| --- | --- |
+| Qué lista el sitemap | las secciones del sitio, **todas** tus propiedades publicadas y los posts del blog |
+| Cada cuánto se refresca | una vez por día (`s-maxage` de 24 h): una propiedad nueva aparece dentro de ese plazo |
+| Cuánto cuesta | **2 llamadas a la API por día**, no una por cada visita de un buscador |
+| Si la API falla | responde **503**, nunca un sitemap vacío |
+
+Lo último no es un detalle de implementación. Un sitemap vacío pero válido le dice al buscador *"este
+sitio no tiene páginas"* y el buscador actúa en consecuencia; un 503 lo deja usando el anterior y
+volver más tarde.
+
+El `robots.txt` apunta al sitemap con **tu** dominio —por eso también es una función: un archivo
+estático tendría que llevar un dominio escrito a mano— y bloquea `/api/`, que sólo devuelve JSON para
+el propio sitio.
+
+**En un servidor propio funciona igual**: `dev-local.mjs` sirve las dos rutas. En otra plataforma hay
+que mapear `/sitemap.xml` y `/robots.txt` a esas funciones, que es lo que hacen los `rewrites` de
+`vercel.json`.
+
+> **Las fichas se publican por `id`, no por `hash`**: el servicio de sitemap no devuelve el hash, así
+> que las URLs que van a los buscadores son `/propiedad?id=...`. La ficha acepta los dos, así que un
+> link viejo con `?hash=` sigue funcionando.
+>
+> **La limitación honesta**: el identificador va en la query y no en la ruta. Los buscadores lo
+> indexan, pero una URL con el barrio y la operación adentro posiciona mejor. Cambiar eso es cambiar
+> el ruteo del sitio, no el sitemap.
+
+---
+
 ## Personalizarlo
 
 ### Los colores y el logo salen de tu cuenta

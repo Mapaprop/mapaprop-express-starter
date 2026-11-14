@@ -56,6 +56,7 @@ export const api = {
   // Inventory. `size` is capped at 20 per request by the API; pass `from` to page through `total`.
   properties: (params) => call('properties', { params }),
   property: (hash) => call(`properties/${encodeURIComponent(hash)}`),
+  propertyById: (id) => call(`properties/id/${encodeURIComponent(id)}`),
   developments: (params) => call('developments', { params }),
   // The showcase the agency arranged, in ITS order (`wf_order`), not by relevance. `total` is the
   // agency's real count, so a page can come back SHORTER than `size` when a featured property is no
